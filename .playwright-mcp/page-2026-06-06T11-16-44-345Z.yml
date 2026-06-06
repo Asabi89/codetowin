@@ -1,0 +1,107 @@
+- main [ref=e2]:
+  - region "Hackathon highlight" [ref=e3]:
+    - paragraph [ref=e4]:
+      - strong [ref=e5]: CodeToWin
+      - text: hackathons, all in one place.
+  - search "Search hackathons" [ref=e6]:
+    - searchbox [ref=e8]
+    - button "Search" [ref=e9] [cursor=pointer]:
+      - img [ref=e10]
+  - region "Filter hackathons" [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e14]: All
+      - combobox "Filter by status" [ref=e15] [cursor=pointer]:
+        - option "All" [selected]
+        - option "Live"
+        - option "Upcoming"
+        - option "Ended"
+      - text: ⌄
+    - generic [ref=e16]:
+      - generic [ref=e17]: Location
+      - combobox "Filter by location" [ref=e18] [cursor=pointer]:
+        - option "All locations" [selected]
+        - option "Accra, Ghana"
+        - option "Lagos, Nigeria"
+        - option "Nairobi, Kenya"
+        - option "Dakar, Senegal"
+        - option "Kigali, Rwanda"
+      - text: ⌄
+    - generic [ref=e19]:
+      - generic [ref=e20]: Interest
+      - combobox "Filter by interest" [ref=e21] [cursor=pointer]:
+        - option "All interests" [selected]
+        - option "Developers"
+        - option "Designers"
+        - option "Data Analysts"
+        - option "Makers"
+        - option "Security"
+      - text: ⌄
+  - region "All hackathons" [ref=e23]:
+    - heading "All hackathons" [level=2] [ref=e24]
+    - generic [ref=e25]: 5 hackathons
+  - generic [ref=e26]:
+    - article [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e30]: CT
+        - generic [ref=e31]:
+          - generic [ref=e32]: Online
+          - generic [ref=e33]: Accra, Ghana
+      - heading "CodeToWin Africa AI Sprint" [level=3] [ref=e34]
+      - generic [ref=e35]:
+        - generic [ref=e36]: 6 days left
+        - generic [ref=e37]: Jun 01 - Jun 12
+        - generic [ref=e38]:
+          - strong [ref=e39]: $8,000
+          - text: prize
+    - article [ref=e40]:
+      - generic [ref=e41]:
+        - generic [ref=e43]: PD
+        - generic [ref=e44]:
+          - generic [ref=e45]: Online
+          - generic [ref=e46]: Lagos, Nigeria
+      - heading "Product Design Hack Weekend" [level=3] [ref=e47]
+      - generic [ref=e48]:
+        - generic [ref=e49]: Upcoming
+        - generic [ref=e50]: Jun 10 - Jun 14
+        - generic [ref=e51]:
+          - strong [ref=e52]: $5,000
+          - text: prize
+    - article [ref=e53]:
+      - generic [ref=e54]:
+        - generic [ref=e56]: DA
+        - generic [ref=e57]:
+          - generic [ref=e58]: Online
+          - generic [ref=e59]: Nairobi, Kenya
+      - heading "Data for Impact Challenge" [level=3] [ref=e60]
+      - generic [ref=e61]:
+        - generic [ref=e62]: Ended
+        - generic [ref=e63]: May 15 - May 20
+        - generic [ref=e64]:
+          - strong [ref=e65]: $6,000
+          - text: prize
+    - article [ref=e66]:
+      - generic [ref=e67]:
+        - generic [ref=e69]: IN
+        - generic [ref=e70]:
+          - generic [ref=e71]: Online
+          - generic [ref=e72]: Dakar, Senegal
+      - heading "Young Innovators Lab" [level=3] [ref=e73]
+      - generic [ref=e74]:
+        - generic [ref=e75]: 2 days left
+        - generic [ref=e76]: Jun 06 - Jun 08
+        - generic [ref=e77]:
+          - strong [ref=e78]: $7,500
+          - text: prize
+    - article [ref=e79]:
+      - generic [ref=e80]:
+        - generic [ref=e82]: CS
+        - generic [ref=e83]:
+          - generic [ref=e84]: Online
+          - generic [ref=e85]: Kigali, Rwanda
+      - heading "Cloud & Security Open Hack" [level=3] [ref=e86]
+      - generic [ref=e87]:
+        - generic [ref=e88]: Upcoming
+        - generic [ref=e89]: Jun 18 - Jun 22
+        - generic [ref=e90]:
+          - strong [ref=e91]: $9,000
+          - text: prize

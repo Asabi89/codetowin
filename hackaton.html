@@ -1,0 +1,1078 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="CodeToWin hackathons with search, dropdown filters, prize details, and a responsive three-column desktop layout."
+    />
+    <title>CodeToWin - Hackathons</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2326a69a'/%3E%3Cpath d='M10 22V10h3v4h6v-4h3v12h-3v-5h-6v5z' fill='white'/%3E%3C/svg%3E"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        color-scheme: light;
+        --teal: #26a69a;
+        --teal-dark: #0f766e;
+        --blue: #1a73e8;
+        --text: #111111;
+        --muted: #555555;
+        --line: #e8e8e8;
+        --filter-surface: #f7fbf9;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow-x: hidden;
+        background: #ffffff;
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      body.menu-open {
+        overflow: hidden;
+      }
+
+      .site-header {
+        border-bottom: 1px solid #e5e7eb;
+        background: rgba(255, 255, 255, 0.96);
+      }
+
+      .header-inner {
+        width: min(1240px, calc(100% - 2rem));
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.75rem 0;
+      }
+
+      .brand-link {
+        display: inline-flex;
+        align-items: center;
+        min-width: 0;
+      }
+
+      .brand-mark {
+        display: block;
+        width: auto;
+        object-fit: contain;
+      }
+
+      .brand-mark-header {
+        height: 3rem;
+      }
+
+      .desktop-nav {
+        display: none;
+        align-items: center;
+        gap: 1.25rem;
+      }
+
+      .desktop-nav-link {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #334155;
+        transition: color 180ms ease;
+      }
+
+      .desktop-nav-link:hover {
+        color: #047857;
+      }
+
+      .desktop-nav-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background: #047857;
+        color: #ffffff;
+        padding: 0.85rem 1.15rem;
+        font-size: 0.92rem;
+        font-weight: 800;
+        box-shadow: 0 10px 24px rgba(4, 120, 87, 0.16);
+        transition:
+          background-color 180ms ease,
+          transform 180ms ease,
+          box-shadow 180ms ease;
+      }
+
+      .desktop-nav-cta:hover {
+        background: #065f46;
+        transform: translateY(-1px);
+        box-shadow: 0 14px 30px rgba(4, 120, 87, 0.18);
+      }
+
+      .mobile-nav-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border: 0;
+        background: transparent;
+        color: #0f172a;
+        transition:
+          color 180ms ease,
+          transform 180ms ease,
+          opacity 180ms ease;
+        cursor: pointer;
+      }
+
+      .mobile-nav-button svg {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      .mobile-nav-button:hover {
+        color: #047857;
+        opacity: 0.9;
+      }
+
+      .mobile-nav-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: rgba(15, 23, 42, 0.45);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 220ms ease;
+      }
+
+      .mobile-nav-backdrop.is-open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .mobile-nav-sidebar {
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        height: 100vh;
+        width: min(20rem, 84vw);
+        flex-direction: column;
+        border-left: 1px solid #dbe3ea;
+        background: #ffffff;
+        transform: translateX(100%);
+        transition: transform 240ms ease;
+        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.14);
+        overflow-y: auto;
+      }
+
+      .mobile-nav-sidebar.is-open {
+        transform: translateX(0);
+      }
+
+      .mobile-nav-sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1rem 0.75rem;
+        border-bottom: 1px solid #eef2f7;
+      }
+
+      .mobile-nav-label {
+        color: #047857;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+      }
+
+      .mobile-nav-sidebar-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+      }
+
+      .mobile-nav-sidebar-link {
+        display: block;
+        border-radius: 0.9rem;
+        padding: 0.85rem 0.95rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #334155;
+        transition: background-color 180ms ease, color 180ms ease;
+      }
+
+      .mobile-nav-sidebar-link:hover {
+        background: #f0fdf4;
+        color: #047857;
+      }
+
+      .mobile-nav-sidebar-actions {
+        display: grid;
+        gap: 0.75rem;
+        padding: 0 1rem 1rem;
+      }
+
+      .mobile-nav-primary,
+      .mobile-nav-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        padding: 0.85rem 1rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+      }
+
+      .mobile-nav-primary {
+        background: #047857;
+        color: #ffffff;
+      }
+
+      .mobile-nav-primary:hover {
+        background: #065f46;
+      }
+
+      .mobile-nav-secondary {
+        border: 1px solid #047857;
+        color: #047857;
+        background: #ffffff;
+      }
+
+      .mobile-nav-secondary:hover {
+        background: #f0fdf4;
+      }
+
+      .page-shell {
+        width: min(1240px, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 0 0 32px;
+      }
+
+      .hero-strip {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 10vh;
+        min-height: 88px;
+        max-height: 124px;
+        margin: 0 0 12px;
+        padding: 0 1rem;
+        background: linear-gradient(90deg, #047857 0%, #0ea36b 100%);
+        color: #ffffff;
+        overflow: hidden;
+        text-align: center;
+      }
+
+      .hero-strip strong {
+        font-weight: 800;
+      }
+
+      .hero-strip p {
+        margin: 0;
+        max-width: 44ch;
+        font-size: clamp(1.4rem, 2.8vw, 2.4rem);
+        font-weight: 800;
+        line-height: 1.1;
+      }
+
+      .search-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0 12px;
+      }
+
+      .search-input-wrap {
+        flex: 1;
+        border: 1.5px solid #d0d0d0;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        padding: 12px 14px;
+        background: #fff;
+        min-width: 0;
+      }
+
+      .search-input-wrap:focus-within {
+        border-color: rgba(26, 115, 232, 0.7);
+        box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.08);
+      }
+
+      .search-input-wrap input {
+        border: none;
+        outline: none;
+        font-size: 15px;
+        color: #111;
+        width: 100%;
+        background: transparent;
+      }
+
+      .search-input-wrap input::placeholder {
+        color: #9aa0a6;
+      }
+
+      .search-btn {
+        background: var(--blue);
+        border: none;
+        border-radius: 11px;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        box-shadow: 0 8px 18px rgba(26, 115, 232, 0.18);
+      }
+
+      .search-btn svg {
+        width: 22px;
+        height: 22px;
+        fill: #fff;
+      }
+
+      .filter-tabs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        padding-bottom: 14px;
+      }
+
+      .filter-tab {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        border: 1px solid #dcefe6;
+        background: var(--filter-surface);
+        border-radius: 9999px;
+        padding: 0.9rem 1rem;
+        min-width: 0;
+      }
+
+      .filter-tab:focus-within {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 4px rgba(38, 166, 154, 0.08);
+      }
+
+      .filter-tab::after {
+        content: "⌄";
+        position: absolute;
+        right: 0.9rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        pointer-events: none;
+        font-size: 1rem;
+        line-height: 1;
+      }
+
+      .filter-tab span {
+        flex-shrink: 0;
+        color: var(--teal-dark);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .filter-tab select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.95rem;
+        font-weight: 700;
+        outline: none;
+        padding-right: 1.5rem;
+        text-align: right;
+        width: 100%;
+      }
+
+      .divider {
+        height: 1px;
+        background: var(--line);
+        margin: 0 0 20px;
+      }
+
+      .section-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0 0 8px;
+      }
+
+      .section-heading h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0;
+      }
+
+      .section-count {
+        color: var(--teal-dark);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+        padding: 12px 0 24px;
+      }
+
+      @media (min-width: 680px) {
+        .cards {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (min-width: 1080px) {
+        .cards {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+
+      .card {
+        border: 1.5px solid #e0e0e0;
+        border-left: 4px solid var(--teal);
+        border-radius: 8px;
+        padding: 16px;
+        background: #fff;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+      }
+
+      .card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .card-logo {
+        width: 56px;
+        height: 56px;
+        border-radius: 6px;
+        flex-shrink: 0;
+        background: #111;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        font-size: 0.9rem;
+      }
+
+      .card-logo span {
+        transform: translateY(0.5px);
+      }
+
+      .card-location {
+        text-align: right;
+        min-width: 0;
+      }
+
+      .card-location-status {
+        display: block;
+        color: var(--teal-dark);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .card-location-place {
+        display: block;
+        margin-top: 0.3rem;
+        color: #111;
+        font-size: 0.9rem;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+
+      .card h3 {
+        font-size: 19px;
+        font-weight: 700;
+        color: #111;
+        line-height: 1.25;
+        margin-bottom: 12px;
+      }
+
+      .card-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px 12px;
+        flex-wrap: wrap;
+      }
+
+      .badge {
+        background: var(--teal);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 20px;
+        padding: 5px 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .badge::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #fff;
+        display: inline-block;
+      }
+
+      .date-range {
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .prize {
+        font-size: 14px;
+        font-weight: 700;
+        color: #065f46;
+      }
+
+      .prize strong {
+        color: #111;
+      }
+
+      .empty-state {
+        display: none;
+        padding: 18px 0 8px;
+        color: #555;
+        font-size: 14px;
+      }
+
+      .empty-state.is-visible {
+        display: block;
+      }
+
+      @media (max-width: 720px) {
+        .page-shell {
+          width: min(1240px, calc(100% - 1rem));
+        }
+
+        .filter-tabs {
+          grid-template-columns: 1fr;
+        }
+
+        .section-heading {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+
+      @media (min-width: 640px) {
+        .desktop-nav {
+          display: flex;
+        }
+
+        .mobile-nav-button {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+      <symbol id="icon-close" viewBox="0 0 24 24">
+        <path
+          d="M6 6l12 12M18 6 6 18"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        ></path>
+      </symbol>
+      <symbol id="icon-menu" viewBox="0 0 24 24">
+        <path
+          d="M4 7h16M4 12h16M4 17h16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        ></path>
+      </symbol>
+    </svg>
+
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="froentend/home.html#hero" class="brand-link" aria-label="CodeToWin">
+          <img src="assets/brand/codetowin-brand.png" alt="CodeToWin" class="brand-mark brand-mark-header" decoding="async" />
+        </a>
+
+        <nav class="desktop-nav" aria-label="Navigation principale">
+          <a href="froentend/home.html#hackathons" class="desktop-nav-link">Explorer les hackathons</a>
+          <a href="froentend/home.html#participer" class="desktop-nav-link">Rejoindre un hackathon</a>
+          <a href="froentend/home.html#organiser" class="desktop-nav-cta">Créer un hackathon</a>
+        </nav>
+
+        <button
+          id="mobile-nav-toggle"
+          type="button"
+          class="mobile-nav-button"
+          aria-label="Ouvrir le menu"
+          aria-controls="mobile-nav-sidebar"
+          aria-expanded="false"
+        >
+          <svg class="h-6 w-6" aria-hidden="true">
+            <use href="#icon-menu"></use>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <button
+      id="mobile-nav-backdrop"
+      type="button"
+      class="mobile-nav-backdrop"
+      aria-label="Fermer le menu"
+      tabindex="-1"
+    ></button>
+
+    <aside id="mobile-nav-sidebar" class="mobile-nav-sidebar" aria-label="Navigation mobile">
+      <div class="mobile-nav-sidebar-header">
+        <span class="mobile-nav-label">Menu</span>
+        <button id="mobile-nav-close" type="button" class="mobile-nav-button" aria-label="Fermer le menu">
+          <svg class="h-6 w-6" aria-hidden="true">
+            <use href="#icon-close"></use>
+          </svg>
+        </button>
+      </div>
+
+      <div class="mobile-nav-sidebar-links">
+        <a href="froentend/home.html#hackathons" class="mobile-nav-sidebar-link" onclick="closeMobileNav()">Explorer les hackathons</a>
+      </div>
+
+      <div class="mobile-nav-sidebar-actions">
+        <a href="froentend/home.html#participer" class="mobile-nav-secondary" onclick="closeMobileNav()">Rejoindre un hackathon</a>
+        <a href="froentend/home.html#organiser" class="mobile-nav-primary" onclick="closeMobileNav()">Créer un hackathon</a>
+      </div>
+    </aside>
+
+    <section class="hero-strip" aria-label="Hackathon highlight">
+      <p><strong>CodeToWin</strong> hackathons, all in one place.</p>
+    </section>
+
+    <main class="page-shell">
+
+      <form class="search-bar" id="searchForm" role="search" aria-label="Search hackathons">
+        <label class="search-input-wrap" for="searchInput">
+          <input
+            id="searchInput"
+            name="search"
+            type="search"
+            placeholder="Search hackathons"
+            autocomplete="off"
+          />
+        </label>
+        <button class="search-btn" type="submit" aria-label="Search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Zm7.15 11.73 3.08 3.09a1 1 0 0 1-1.42 1.41l-3.08-3.08a1 1 0 0 1 1.42-1.42Z"
+            />
+          </svg>
+        </button>
+      </form>
+
+      <section class="filter-tabs" aria-label="Filter hackathons">
+        <label class="filter-tab" for="statusFilter">
+          <span>All</span>
+          <select id="statusFilter" aria-label="Filter by status"></select>
+        </label>
+        <label class="filter-tab" for="locationFilter">
+          <span>Location</span>
+          <select id="locationFilter" aria-label="Filter by location"></select>
+        </label>
+        <label class="filter-tab" for="interestFilter">
+          <span>Interest</span>
+          <select id="interestFilter" aria-label="Filter by interest"></select>
+        </label>
+      </section>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <section class="section-heading" aria-labelledby="section-title">
+        <h2 id="section-title">All hackathons</h2>
+        <span class="section-count" id="resultsCount">5 hackathons</span>
+      </section>
+
+      <section class="cards" id="cards">
+        <article
+          class="card"
+          data-start="2026-06-01"
+          data-end="2026-06-12"
+          data-location="Accra, Ghana"
+          data-interest="Developers"
+          data-prize="$8,000"
+          data-keywords="codetowin africa ai sprint online hybrid devs makers ai"
+        >
+          <div class="card-top">
+            <div class="card-logo" aria-hidden="true"><span>CT</span></div>
+            <div class="card-location">
+              <span class="card-location-status">Online</span>
+              <span class="card-location-place">Accra, Ghana</span>
+            </div>
+          </div>
+          <h3>CodeToWin Africa AI Sprint</h3>
+          <div class="card-meta">
+            <span class="badge" data-status-badge>6 days left</span>
+            <span class="date-range">Jun 01 - Jun 12</span>
+            <span class="prize"><strong>$8,000</strong> prize</span>
+          </div>
+        </article>
+
+        <article
+          class="card"
+          data-start="2026-06-10"
+          data-end="2026-06-14"
+          data-location="Lagos, Nigeria"
+          data-interest="Designers"
+          data-prize="$5,000"
+          data-keywords="product design hack weekend online remote designers founders builders ui ux"
+        >
+          <div class="card-top">
+            <div class="card-logo" aria-hidden="true"><span>PD</span></div>
+            <div class="card-location">
+              <span class="card-location-status">Online</span>
+              <span class="card-location-place">Lagos, Nigeria</span>
+            </div>
+          </div>
+          <h3>Product Design Hack Weekend</h3>
+          <div class="card-meta">
+            <span class="badge" data-status-badge>Upcoming</span>
+            <span class="date-range">Jun 10 - Jun 14</span>
+            <span class="prize"><strong>$5,000</strong> prize</span>
+          </div>
+        </article>
+
+        <article
+          class="card"
+          data-start="2026-05-15"
+          data-end="2026-05-20"
+          data-location="Nairobi, Kenya"
+          data-interest="Data Analysts"
+          data-prize="$6,000"
+          data-keywords="data for impact challenge online virtual data analysts builders researchers social impact"
+        >
+          <div class="card-top">
+            <div class="card-logo" aria-hidden="true"><span>DA</span></div>
+            <div class="card-location">
+              <span class="card-location-status">Online</span>
+              <span class="card-location-place">Nairobi, Kenya</span>
+            </div>
+          </div>
+          <h3>Data for Impact Challenge</h3>
+          <div class="card-meta">
+            <span class="badge" data-status-badge>Ended</span>
+            <span class="date-range">May 15 - May 20</span>
+            <span class="prize"><strong>$6,000</strong> prize</span>
+          </div>
+        </article>
+
+        <article
+          class="card"
+          data-start="2026-06-06"
+          data-end="2026-06-08"
+          data-location="Dakar, Senegal"
+          data-interest="Makers"
+          data-prize="$7,500"
+          data-keywords="young innovators lab online makers submissions developers designers students"
+        >
+          <div class="card-top">
+            <div class="card-logo" aria-hidden="true"><span>IN</span></div>
+            <div class="card-location">
+              <span class="card-location-status">Online</span>
+              <span class="card-location-place">Dakar, Senegal</span>
+            </div>
+          </div>
+          <h3>Young Innovators Lab</h3>
+          <div class="card-meta">
+            <span class="badge" data-status-badge>2 days left</span>
+            <span class="date-range">Jun 06 - Jun 08</span>
+            <span class="prize"><strong>$7,500</strong> prize</span>
+          </div>
+        </article>
+
+        <article
+          class="card"
+          data-start="2026-06-18"
+          data-end="2026-06-22"
+          data-location="Kigali, Rwanda"
+          data-interest="Security"
+          data-prize="$9,000"
+          data-keywords="cloud and security open hack online builders devs makers engineers security cloud"
+        >
+          <div class="card-top">
+            <div class="card-logo" aria-hidden="true"><span>CS</span></div>
+            <div class="card-location">
+              <span class="card-location-status">Online</span>
+              <span class="card-location-place">Kigali, Rwanda</span>
+            </div>
+          </div>
+          <h3>Cloud &amp; Security Open Hack</h3>
+          <div class="card-meta">
+            <span class="badge" data-status-badge>Upcoming</span>
+            <span class="date-range">Jun 18 - Jun 22</span>
+            <span class="prize"><strong>$9,000</strong> prize</span>
+          </div>
+        </article>
+      </section>
+
+      <p class="empty-state" id="emptyState">No hackathons match your search or filters.</p>
+    </main>
+
+    <script>
+      const searchForm = document.getElementById("searchForm");
+      const searchInput = document.getElementById("searchInput");
+      const statusFilter = document.getElementById("statusFilter");
+      const locationFilter = document.getElementById("locationFilter");
+      const interestFilter = document.getElementById("interestFilter");
+      const cards = Array.from(document.querySelectorAll(".card"));
+      const resultsCount = document.getElementById("resultsCount");
+      const emptyState = document.getElementById("emptyState");
+      const mobileNavToggle = document.getElementById("mobile-nav-toggle");
+      const mobileNavBackdrop = document.getElementById("mobile-nav-backdrop");
+      const mobileNavClose = document.getElementById("mobile-nav-close");
+
+      function setMobileNavOpen(isOpen) {
+        const sidebar = document.getElementById("mobile-nav-sidebar");
+
+        if (!sidebar || !mobileNavToggle || !mobileNavBackdrop) {
+          return;
+        }
+
+        sidebar.classList.toggle("is-open", isOpen);
+        mobileNavBackdrop.classList.toggle("is-open", isOpen);
+        document.body.classList.toggle("menu-open", isOpen);
+        mobileNavToggle.setAttribute("aria-expanded", String(isOpen));
+      }
+
+      function openMobileNav() {
+        setMobileNavOpen(true);
+      }
+
+      function closeMobileNav() {
+        setMobileNavOpen(false);
+      }
+
+      function toggleMobileNav() {
+        const sidebar = document.getElementById("mobile-nav-sidebar");
+
+        if (!sidebar) {
+          return;
+        }
+
+        setMobileNavOpen(!sidebar.classList.contains("is-open"));
+      }
+
+      function normalizeText(value) {
+        return String(value || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, " ")
+          .trim()
+          .replace(/\s+/g, " ");
+      }
+
+      function titleCase(value) {
+        return String(value || "")
+          .split(/\s+/)
+          .filter(Boolean)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+      }
+
+      function addOption(select, value, label) {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        select.appendChild(option);
+      }
+
+      function populateSelect(select, values, allLabel, formatter = (value) => value) {
+        select.innerHTML = "";
+        addOption(select, "all", allLabel);
+        values.forEach((value) => addOption(select, value, formatter(value)));
+      }
+
+      function getStatusFromDates(startValue, endValue) {
+        const today = new Date();
+        const start = new Date(`${startValue}T00:00:00`);
+        const end = new Date(`${endValue}T23:59:59`);
+        const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+        const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+        const msPerDay = 24 * 60 * 60 * 1000;
+
+        if (todayStart < startDay) {
+          return { filter: "upcoming", label: "Upcoming" };
+        }
+
+        if (todayStart > endDay) {
+          return { filter: "ended", label: "Ended" };
+        }
+
+        const daysLeft = Math.max(0, Math.ceil((endDay - todayStart) / msPerDay));
+
+        if (daysLeft === 0) {
+          return { filter: "live", label: "Ends today" };
+        }
+
+        return {
+          filter: "live",
+          label: `${daysLeft} day${daysLeft === 1 ? "" : "s"} left`,
+        };
+      }
+
+      function initializeCards() {
+        cards.forEach((card) => {
+          const badge = card.querySelector("[data-status-badge]");
+          const status = getStatusFromDates(card.dataset.start, card.dataset.end);
+          const title = card.querySelector("h3")?.textContent || "";
+          const prize = card.dataset.prize || "";
+          const location = card.dataset.location || "";
+          const interest = card.dataset.interest || "";
+
+          card.dataset.status = status.filter;
+          if (badge) {
+            badge.textContent = status.label;
+          }
+
+          card.dataset.search = normalizeText(
+            [
+              card.dataset.keywords,
+              title,
+              prize,
+              location,
+              interest,
+              card.textContent,
+            ].join(" ")
+          );
+        });
+      }
+
+      function initializeFilters() {
+        populateSelect(statusFilter, ["live", "upcoming", "ended"], "All", titleCase);
+
+        const locations = [...new Set(cards.map((card) => card.dataset.location).filter(Boolean))];
+        const interests = [...new Set(cards.map((card) => card.dataset.interest).filter(Boolean))];
+
+        populateSelect(locationFilter, locations, "All locations");
+        populateSelect(interestFilter, interests, "All interests", titleCase);
+
+        statusFilter.value = "all";
+        locationFilter.value = "all";
+        interestFilter.value = "all";
+      }
+
+      function applyFilter() {
+        const query = normalizeText(searchInput.value);
+        const compactQuery = query.replace(/\s+/g, "");
+        const selectedStatus = statusFilter.value;
+        const selectedLocation = normalizeText(locationFilter.value);
+        const selectedInterest = normalizeText(interestFilter.value);
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          const haystack = card.dataset.search || "";
+          const compactHaystack = haystack.replace(/\s+/g, "");
+          const matchesSearch =
+            !query || haystack.includes(query) || compactHaystack.includes(compactQuery);
+          const matchesStatus = selectedStatus === "all" || card.dataset.status === selectedStatus;
+          const matchesLocation =
+            selectedLocation === "all" || normalizeText(card.dataset.location).includes(selectedLocation);
+          const matchesInterest =
+            selectedInterest === "all" ||
+            normalizeText(card.dataset.interest).includes(selectedInterest) ||
+            selectedInterest.includes(normalizeText(card.dataset.interest));
+
+          const isVisible =
+            matchesSearch && matchesStatus && matchesLocation && matchesInterest;
+
+          card.hidden = !isVisible;
+          if (isVisible) visibleCount += 1;
+        });
+
+        resultsCount.textContent = `${visibleCount} hackathon${visibleCount === 1 ? "" : "s"}`;
+        emptyState.classList.toggle("is-visible", visibleCount === 0);
+      }
+
+      searchForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        applyFilter();
+      });
+
+      if (mobileNavToggle) {
+        mobileNavToggle.addEventListener("click", toggleMobileNav);
+      }
+
+      if (mobileNavBackdrop) {
+        mobileNavBackdrop.addEventListener("click", closeMobileNav);
+      }
+
+      if (mobileNavClose) {
+        mobileNavClose.addEventListener("click", closeMobileNav);
+      }
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth >= 640) {
+          closeMobileNav();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeMobileNav();
+        }
+      });
+
+      searchInput.addEventListener("input", applyFilter);
+      statusFilter.addEventListener("change", applyFilter);
+      locationFilter.addEventListener("change", applyFilter);
+      interestFilter.addEventListener("change", applyFilter);
+
+      initializeCards();
+      initializeFilters();
+      applyFilter();
+    </script>
+  </body>
+</html>

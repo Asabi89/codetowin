@@ -1,0 +1,140 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "HackAfrica" [ref=e4] [cursor=pointer]:
+        - /url: "#hero"
+        - img [ref=e5]
+        - generic [ref=e7]: HackAfrica
+      - generic [ref=e8]:
+        - link "Explorer" [ref=e9] [cursor=pointer]:
+          - /url: "#hackathons"
+        - button "Créer un hackathon" [ref=e10] [cursor=pointer]
+  - main [ref=e11]:
+    - generic [ref=e14]:
+      - heading "Ton talent mérite d'être vu. On s'en occupe." [level=1] [ref=e15]
+      - paragraph [ref=e16]: Les opportunités tech en Afrique existent. Le problème ? Elles sont éparpillées, mal relayées, et souvent passées sous le radar. HackAfrica change ça — un seul endroit pour trouver les bons hackathons, rejoindre les bonnes équipes et repartir avec une preuve concrète de ce que tu sais faire.
+      - generic [ref=e17]:
+        - button "Explorer les hackathons" [ref=e18] [cursor=pointer]
+        - button "Créer un hackathon" [ref=e19] [cursor=pointer]
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - heading "Les prochains challenges qui valent le déplacement" [level=2] [ref=e23]
+        - paragraph [ref=e24]: On sélectionne uniquement des hackathons sérieux — pour les devs, designers, data analysts, makers et jeunes innovateurs qui ne veulent plus juste apprendre, mais prouver.
+      - generic [ref=e25]:
+        - article [ref=e26]:
+          - generic [ref=e27]:
+            - img [ref=e29]
+            - generic [ref=e31]: En ligne
+          - heading "AI for Climate Africa" [level=3] [ref=e32]
+          - paragraph [ref=e33]: En ligne · AI / ClimateTech · 24–26 mai 2026
+          - paragraph [ref=e34]: "Prix : 5 000 $ + accompagnement incubation"
+          - button "Voir le challenge" [ref=e35] [cursor=pointer]:
+            - text: Voir le challenge
+            - img [ref=e36]
+        - article [ref=e38]:
+          - generic [ref=e39]:
+            - img [ref=e41]
+            - generic [ref=e43]: Lagos, Nigeria
+          - heading "Fintech Builders Challenge" [level=3] [ref=e44]
+          - paragraph [ref=e45]: Lagos, Nigeria · Fintech / Payments · 7–9 juin 2026
+          - paragraph [ref=e46]: "Prix : 8 000 $"
+          - button "Voir le challenge" [ref=e47] [cursor=pointer]:
+            - text: Voir le challenge
+            - img [ref=e48]
+        - article [ref=e50]:
+          - generic [ref=e51]:
+            - img [ref=e53]
+            - generic [ref=e55]: À distance
+          - heading "AgriTech Youth Hack" [level=3] [ref=e56]
+          - paragraph [ref=e57]: À distance · Agritech / Data · 14–16 juin 2026
+          - paragraph [ref=e58]: "Prix : 3 000 $"
+          - button "Voir le challenge" [ref=e59] [cursor=pointer]:
+            - text: Voir le challenge
+            - img [ref=e60]
+      - button "Voir tous les hackathons" [ref=e63] [cursor=pointer]:
+        - text: Voir tous les hackathons
+        - img [ref=e64]
+    - generic [ref=e68]:
+      - generic [ref=e69]:
+        - heading "Tu veux participer ? Voilà comment ça se passe." [level=2] [ref=e70]
+        - paragraph [ref=e71]: Fini les groupes WhatsApp chaotiques, les annonces enterrées dans des fils de discussion et les formulaires Google bricolés à la dernière minute. Sur HackAfrica, tu trouves un hackathon qui te correspond, tu rejoins une équipe qui avance vraiment, tu soumets ton projet — et tu repars avec un profil qui prouve ce que tu as construit.
+        - button "Créer mon profil gratuitement" [ref=e73] [cursor=pointer]
+      - generic [ref=e74]:
+        - img "Profil public d’un participant affichant compétences, projets, certificats et badges de hackathon" [ref=e75]
+        - generic [ref=e76]:
+          - heading "Profil qui progresse" [level=3] [ref=e77]
+          - generic [ref=e78]:
+            - generic [ref=e79]:
+              - img [ref=e80]
+              - paragraph [ref=e82]: Trouve un hackathon qui te correspond
+            - generic [ref=e83]:
+              - img [ref=e84]
+              - paragraph [ref=e86]: Rejoins une équipe qui avance vraiment
+            - generic [ref=e87]:
+              - img [ref=e88]
+              - paragraph [ref=e90]: Soumets un projet concret
+            - generic [ref=e91]:
+              - img [ref=e92]
+              - paragraph [ref=e94]: Garde une preuve visible de ce que tu as construit
+    - generic [ref=e97]:
+      - generic [ref=e98]:
+        - img "Tableau de bord organisateur affichant participants, équipes, soumissions, mentors et résultats d’un hackathon" [ref=e99]
+        - generic [ref=e100]:
+          - heading "Ce que tu centralises" [level=3] [ref=e101]
+          - generic [ref=e102]:
+            - generic [ref=e103]:
+              - img [ref=e104]
+              - paragraph [ref=e106]: Publication claire et centralisée
+            - generic [ref=e107]:
+              - img [ref=e108]
+              - paragraph [ref=e110]: Gestion des équipes et des inscriptions
+            - generic [ref=e111]:
+              - img [ref=e112]
+              - paragraph [ref=e114]: Suivi des projets et des soumissions
+            - generic [ref=e115]:
+              - img [ref=e116]
+              - paragraph [ref=e118]: Génération de certificats
+      - generic [ref=e119]:
+        - heading "Tu organises un hackathon ? On simplifie tout." [level=2] [ref=e120]
+        - paragraph [ref=e121]: "Publication claire, inscriptions centralisées, gestion des équipes, suivi des projets, génération des certificats. Plus de fichiers Excel qui se perdent, plus de soumissions dans 12 endroits différents, plus de maux de tête logistiques. Tu te concentres sur l'essentiel : créer un challenge qui inspire."
+        - button "Publier mon hackathon" [ref=e123] [cursor=pointer]
+    - generic [ref=e125]:
+      - heading "Ce qui rend HackAfrica différent" [level=2] [ref=e127]
+      - generic [ref=e128]:
+        - article [ref=e129]:
+          - img [ref=e131]
+          - heading "Des hackathons vraiment trouvables" [level=3] [ref=e133]
+          - paragraph [ref=e134]: Pays, thème, format, deadline, prix, niveau — tout ce qu'il faut savoir est visible dès le départ. Pas de mauvaises surprises.
+        - article [ref=e135]:
+          - img [ref=e137]
+          - heading "Des projets qui laissent une trace" [level=3] [ref=e139]
+          - paragraph [ref=e140]: Chaque participant peut documenter son équipe, sa solution, son repo GitHub, sa démo live et son résultat. Ton travail reste visible bien après la fin du hackathon.
+        - article [ref=e141]:
+          - img [ref=e143]
+          - heading "Des certificats vérifiables, pas juste décoratifs" [level=3] [ref=e145]
+          - paragraph [ref=e146]: Participation, finaliste, gagnant, mentor — chaque certificat est consultable publiquement via un identifiant unique ou un QR code.
+    - generic [ref=e148]:
+      - heading "HackAfrica, c'est plus qu'un calendrier de hackathons." [level=2] [ref=e149]
+      - paragraph [ref=e150]: "C'est l'infrastructure qui manquait à l'écosystème tech africain : un espace pour construire, collaborer, se faire repérer et prouver ses compétences — avec des vraies preuves à l'appui."
+      - generic [ref=e151]:
+        - button "Explorer les hackathons" [ref=e152] [cursor=pointer]
+        - button "Créer un hackathon" [ref=e153] [cursor=pointer]
+  - contentinfo [ref=e154]:
+    - generic [ref=e155]:
+      - generic [ref=e156]:
+        - generic [ref=e157]:
+          - link "HackAfrica" [ref=e158] [cursor=pointer]:
+            - /url: "#hero"
+            - img [ref=e159]
+            - generic [ref=e161]: HackAfrica
+          - paragraph [ref=e162]: HackAfrica relie les talents tech africains et les organisateurs autour de projets concrets, de profils publics et de preuves vérifiables.
+        - generic [ref=e163]:
+          - link "Hackathons" [ref=e164] [cursor=pointer]:
+            - /url: "#hackathons"
+          - link "Participants" [ref=e165] [cursor=pointer]:
+            - /url: "#participer"
+          - link "Organisateurs" [ref=e166] [cursor=pointer]:
+            - /url: "#organiser"
+          - link "Différences" [ref=e167] [cursor=pointer]:
+            - /url: "#difference"
+      - paragraph [ref=e169]: © 2026 HackAfrica. Tous droits réservés.

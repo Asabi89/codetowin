@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="CodeToWin centralise les hackathons vérifiés, la création d’équipes, les projets soumis et les certificats vérifiables pour les talents tech africains."
+    />
+    <meta
+      name="keywords"
+      content="hackathons vérifiés, talents tech africains, certificats vérifiables, équipes hackathon, organisateurs hackathon"
+    />
+    <meta property="og:title" content="CodeToWin — Hackathons vérifiés, équipes et certificats" />
+    <meta
+      property="og:description"
+      content="CodeToWin centralise les hackathons vérifiés, la création d’équipes, les projets soumis et les certificats vérifiables pour les talents tech africains."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="https://example.com/codetowin" />
+    <title>CodeToWin — Hackathons vérifiés, équipes et certificats</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23047857'/%3E%3Cpath d='M10 22V10h3v4h6v-4h3v12h-3v-5h-6v5z' fill='white'/%3E%3C/svg%3E"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow-x: hidden;
+        background: #ffffff;
+        color: #0f172a;
+        font-family: "Manrope", sans-serif;
+      }
+
+      .font-display {
+        font-family: "Space Grotesk", sans-serif;
+      }
+
+      .illustration-frame {
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 11px;
+        padding: 1rem;
+      }
+
+      .hero-bg {
+        background:
+          radial-gradient(circle at top left, rgba(4, 120, 87, 0.08), transparent 34%),
+          radial-gradient(circle at top right, rgba(15, 23, 42, 0.04), transparent 30%),
+          linear-gradient(180deg, #f7f4ed 0%, #f3efe7 100%);
+      }
+
+      .keyword-highlight {
+        color: #047857;
+        font-weight: 700;
+        text-shadow: 0 0 0.5px rgba(4, 120, 87, 0.35);
+      }
+
+      .location-badge {
+        color: #047857;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .headline-outline-green {
+        color: #f8fafc;
+        -webkit-text-stroke: 1.5px #047857;
+        text-shadow:
+          1px 0 0 #047857,
+          -1px 0 0 #047857,
+          0 1px 0 #047857,
+          0 -1px 0 #047857;
+      }
+
+      .brand-mark {
+        display: block;
+        width: auto;
+        object-fit: contain;
+      }
+
+      .brand-mark-header {
+        height: 3rem;
+      }
+
+      .brand-mark-footer {
+        height: 3.25rem;
+        filter: brightness(0) invert(1);
+      }
+
+      body.menu-open {
+        overflow: hidden;
+      }
+
+      .mobile-nav-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border: 0;
+        background: transparent;
+        color: #0f172a;
+        transition:
+          color 180ms ease,
+          transform 180ms ease,
+          opacity 180ms ease;
+        cursor: pointer;
+      }
+
+      .mobile-nav-button:hover {
+        color: #047857;
+        opacity: 0.9;
+      }
+
+      .mobile-nav-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: rgba(15, 23, 42, 0.45);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 220ms ease;
+      }
+
+      .mobile-nav-backdrop.is-open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .mobile-nav-sidebar {
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        height: 100vh;
+        width: min(20rem, 84vw);
+        flex-direction: column;
+        border-left: 1px solid #dbe3ea;
+        background: #ffffff;
+        transform: translateX(100%);
+        transition: transform 240ms ease;
+        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.14);
+        overflow-y: auto;
+      }
+
+      .mobile-nav-sidebar.is-open {
+        transform: translateX(0);
+      }
+
+      .mobile-nav-sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1rem 0.75rem;
+        border-bottom: 1px solid #eef2f7;
+      }
+
+      .mobile-nav-sidebar-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+      }
+
+      .mobile-nav-sidebar-link {
+        display: block;
+        border-radius: 0.9rem;
+        padding: 0.85rem 0.95rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #334155;
+        transition: background-color 180ms ease, color 180ms ease;
+      }
+
+      .mobile-nav-sidebar-link:hover {
+        background: #f0fdf4;
+        color: #047857;
+      }
+
+      .mobile-nav-sidebar-actions {
+        display: grid;
+        gap: 0.75rem;
+        padding: 0 1rem 1rem;
+      }
+
+      .mobile-nav-primary,
+      .mobile-nav-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        padding: 0.85rem 1rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+      }
+
+      .mobile-nav-primary {
+        background: #047857;
+        color: #ffffff;
+      }
+
+      .mobile-nav-primary:hover {
+        background: #065f46;
+      }
+
+      .mobile-nav-secondary {
+        border: 1px solid #047857;
+        color: #047857;
+        background: #ffffff;
+      }
+
+      .mobile-nav-secondary:hover {
+        background: #f0fdf4;
+      }
+    </style>
+  </head>
+  <body class="bg-white text-slate-900 antialiased">
+    <svg aria-hidden="true" focusable="false" class="absolute h-0 w-0 overflow-hidden">
+      <symbol id="icon-close" viewBox="0 0 24 24">
+        <path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+      </symbol>
+      <symbol id="icon-menu" viewBox="0 0 24 24">
+        <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+      </symbol>
+      <symbol id="icon-arrow-right" viewBox="0 0 24 24">
+        <path d="M5 12h13M13 6l5 6-5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+      </symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="5.8" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+        <path d="M15.5 15.5 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+      </symbol>
+      <symbol id="icon-users" viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+        <path d="M3.5 19a5.5 5.5 0 0 1 11 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+        <circle cx="17" cy="9" r="2.4" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+        <path d="M14.4 19a4.6 4.6 0 0 1 6.1-3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+      </symbol>
+      <symbol id="icon-code" viewBox="0 0 24 24">
+        <path d="m9 6-5 6 5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="m15 6 5 6-5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+      </symbol>
+      <symbol id="icon-certificate" viewBox="0 0 24 24">
+        <rect x="4" y="4" width="11" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect>
+        <path d="M7 8h5M7 11h5M7 14h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+        <circle cx="17.2" cy="15.2" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+        <path d="m16.3 17.1-1 2.9 1.8-1 1.8 1-1-2.9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path>
+      </symbol>
+      <symbol id="icon-check-circle" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+        <path d="m8.6 12.2 2.2 2.2 4.7-4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+      </symbol>
+      <symbol id="icon-brain" viewBox="0 0 24 24">
+        <path d="M9 6.2a3 3 0 0 0-2.2 5.1A3 3 0 0 0 8 17.1 3.6 3.6 0 0 0 13 19h2.2A3 3 0 0 0 18 16a3.1 3.1 0 0 0-.9-2.2A3 3 0 0 0 15 7.2a3.7 3.7 0 0 0-6 0Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path>
+        <path d="M11 7.5V17M13 7.5V17M7.6 10.2H16.4M7.6 13.8H16.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
+      </symbol>
+      <symbol id="icon-wallet" viewBox="0 0 24 24">
+        <path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h11A2.5 2.5 0 0 1 20 8.5V16a2 2 0 0 1-2 2H6.5A2.5 2.5 0 0 1 4 15.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+        <path d="M16.2 11.8h2.6v2.4h-2.6a1.2 1.2 0 1 1 0-2.4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+      </symbol>
+      <symbol id="icon-leaf" viewBox="0 0 24 24">
+        <path d="M18 6c-5.5.2-10.4 3.3-12.5 8.3C4.7 16.3 6.9 19 10 19c4.8 0 8.5-4.1 8-13Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+        <path d="M7.5 16.5c1.9-2.7 4.2-4.8 7.2-6.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+      </symbol>
+    </svg>
+
+    <header class="border-b border-slate-200 bg-white">
+      <div class="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between gap-4">
+          <a href="#hero" class="inline-flex items-center" aria-label="CodeToWin">
+            <img
+              src="assets/brand/codetowin-brand.png"
+              alt="CodeToWin"
+              class="brand-mark brand-mark-header"
+            decoding="async"
+          />
+          </a>
+
+          <nav class="hidden items-center gap-7 sm:flex" aria-label="Navigation principale">
+            <a href="#hackathons" class="text-sm font-semibold text-slate-700 transition hover:text-emerald-700">Explorer les hackathons</a>
+            <a href="#participer" class="text-sm font-semibold text-slate-700 transition hover:text-emerald-700">Rejoindre un hackathon</a>
+            <a href="#organiser" class="text-sm font-semibold text-slate-700 transition hover:text-emerald-700">Créer un hackathon</a>
+          </nav>
+
+          <button
+            id="mobile-nav-toggle"
+            type="button"
+            class="mobile-nav-button sm:hidden"
+            aria-label="Ouvrir le menu"
+            aria-controls="mobile-nav-sidebar"
+            aria-expanded="false"
+          >
+            <svg class="h-6 w-6" aria-hidden="true">
+              <use href="#icon-menu"></use>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <button
+      id="mobile-nav-backdrop"
+      type="button"
+      class="mobile-nav-backdrop sm:hidden"
+      aria-label="Fermer le menu"
+      tabindex="-1"
+    ></button>
+
+    <aside id="mobile-nav-sidebar" class="mobile-nav-sidebar sm:hidden" aria-label="Navigation mobile">
+      <div class="mobile-nav-sidebar-header">
+        <span class="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Menu</span>
+        <button
+          id="mobile-nav-close"
+          type="button"
+          class="mobile-nav-button"
+          aria-label="Fermer le menu"
+        >
+          <svg class="h-6 w-6" aria-hidden="true">
+            <use href="#icon-close"></use>
+          </svg>
+        </button>
+      </div>
+
+      <div class="mobile-nav-sidebar-links">
+        <a href="#hackathons" class="mobile-nav-sidebar-link" onclick="closeMobileNav()">Explorer les hackathons</a>
+      </div>
+
+      <div class="mobile-nav-sidebar-actions">
+        <a href="#participer" class="mobile-nav-secondary" onclick="closeMobileNav()">Rejoindre un hackathon</a>
+        <a href="#organiser" class="mobile-nav-primary" onclick="closeMobileNav()">Créer un hackathon</a>
+      </div>
+    </aside>
+
+    <main>
+      <section id="hero" class="hero-bg border-b border-amber-100 py-24 lg:py-32">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+          <div class="mx-auto max-w-4xl text-center">
+            <h1 class="font-display text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl md:text-6xl lg:text-7xl">
+              Ton talent mérite d'être vu. On s'en occupe.
+            </h1>
+            <p class="mx-auto mt-6 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg md:text-xl">
+               Un bon projet peut changer ton parcours, mais encore faut-il tomber sur la bonne opportunité. <strong>CodeToWin</strong> t’aide à découvrir les hackathons qui comptent, à travailler avec les bonnes personnes et à transformer ta participation en preuve concrète de compétence.
+            </p>
+            <div class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
+              <button
+                type="button"
+                onclick="handleExploreHackathons()"
+                class="inline-flex min-w-[220px] items-center justify-center rounded-full bg-emerald-700 px-7 py-3.5 text-base font-semibold text-white transition duration-200 hover:bg-emerald-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+              >
+                Explorer les hackathons
+              </button>
+              <button
+                type="button"
+                onclick="handleCreateHackathon()"
+                class="inline-flex min-w-[220px] items-center justify-center rounded-full border border-slate-300 bg-white px-7 py-3.5 text-base font-semibold text-slate-700 transition duration-200 hover:border-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+              >
+                Créer un hackathon
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="hackathons" class="border-t border-slate-200 bg-slate-50 py-20 lg:py-24">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+          <div class="mx-auto max-w-3xl text-center">
+            <h2 class="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+              Les prochains challenges qui valent le déplacement
+            </h2>
+            <p class="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
+              On sélectionne uniquement des hackathons sérieux — pour les
+              <span class="keyword-highlight">devs</span>,
+              <span class="keyword-highlight">designers</span>,
+              <span class="keyword-highlight">data analysts</span>,
+              <span class="keyword-highlight">makers</span>
+              et
+              <span class="keyword-highlight">jeunes innovateurs</span>
+              qui ne veulent plus juste apprendre, mais prouver.
+            </p>
+          </div>
+
+          <div class="mt-12 grid gap-6 md:grid-cols-3">
+            <article class="rounded-[11px] border border-emerald-200 bg-white p-6 shadow-[0_1px_2px_rgba(5,150,105,0.04)] transition hover:border-emerald-300">
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-[11px] border border-emerald-200 text-emerald-700">
+                  <svg class="h-6 w-6" aria-hidden="true"><use href="#icon-brain"></use></svg>
+                </div>
+                <span class="location-badge">En ligne</span>
+              </div>
+              <h3 class="mt-6 text-xl font-semibold tracking-tight text-slate-900">AI for Climate Africa</h3>
+              <p class="mt-3 text-sm leading-6 text-slate-600">En ligne · AI / ClimateTech · 24–26 mai 2026</p>
+              <p class="mt-3 text-sm font-semibold text-slate-900">Prix : 5 000 $ + accompagnement incubation</p>
+              <button
+                type="button"
+                onclick="handleViewHackathonDetails('ai-for-climate-africa')"
+                class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 transition hover:text-emerald-800"
+              >
+                Voir le challenge
+                <svg class="h-4 w-4" aria-hidden="true"><use href="#icon-arrow-right"></use></svg>
+              </button>
+            </article>
+
+            <article class="rounded-[11px] border border-emerald-200 bg-white p-6 shadow-[0_1px_2px_rgba(5,150,105,0.04)] transition hover:border-emerald-300">
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-[11px] border border-emerald-200 text-emerald-700">
+                  <svg class="h-6 w-6" aria-hidden="true"><use href="#icon-wallet"></use></svg>
+                </div>
+                <span class="location-badge">Lagos, Nigeria</span>
+              </div>
+              <h3 class="mt-6 text-xl font-semibold tracking-tight text-slate-900">Fintech Builders Challenge</h3>
+              <p class="mt-3 text-sm leading-6 text-slate-600">Lagos, Nigeria · Fintech / Payments · 7–9 juin 2026</p>
+              <p class="mt-3 text-sm font-semibold text-slate-900">Prix : 8 000 $</p>
+              <button
+                type="button"
+                onclick="handleViewHackathonDetails('fintech-builders-challenge')"
+                class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 transition hover:text-emerald-800"
+              >
+                Voir le challenge
+                <svg class="h-4 w-4" aria-hidden="true"><use href="#icon-arrow-right"></use></svg>
+              </button>
+            </article>
+
+            <article class="rounded-[11px] border border-emerald-200 bg-white p-6 shadow-[0_1px_2px_rgba(5,150,105,0.04)] transition hover:border-emerald-300">
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-[11px] border border-emerald-200 text-emerald-700">
+                  <svg class="h-6 w-6" aria-hidden="true"><use href="#icon-leaf"></use></svg>
+                </div>
+                <span class="location-badge">À distance</span>
+              </div>
+              <h3 class="mt-6 text-xl font-semibold tracking-tight text-slate-900">AgriTech Youth Hack</h3>
+              <p class="mt-3 text-sm leading-6 text-slate-600">À distance · Agritech / Data · 14–16 juin 2026</p>
+              <p class="mt-3 text-sm font-semibold text-slate-900">Prix : 3 000 $</p>
+              <button
+                type="button"
+                onclick="handleViewHackathonDetails('agritech-youth-hack')"
+                class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 transition hover:text-emerald-800"
+              >
+                Voir le challenge
+                <svg class="h-4 w-4" aria-hidden="true"><use href="#icon-arrow-right"></use></svg>
+              </button>
+            </article>
+          </div>
+
+          <div class="mt-10 text-center">
+            <button
+              type="button"
+              onclick="handleExploreHackathons()"
+              class="inline-flex items-center gap-2 text-sm font-semibold text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-900"
+            >
+              Voir tous les hackathons
+              <svg class="h-4 w-4" aria-hidden="true"><use href="#icon-arrow-right"></use></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="participer" class="border-t border-slate-200 bg-white py-20 lg:py-24">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+          <div class="grid gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
+            <div class="mx-auto max-w-2xl">
+              <h2 class="text-center font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+                Tu veux <span class="headline-outline-green">participer</span> ? Voici comment démarrer.
+              </h2>
+              <p class="mx-auto mt-5 max-w-xl text-center text-base leading-8 text-slate-500 sm:text-lg">
+                En quatre étapes simples, tu passes de la découverte à la participation sans te perdre dans les canaux dispersés.
+              </p>
+
+              <div class="mt-8 space-y-5">
+                <div class="flex gap-4">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">1</div>
+                  <div>
+                    <h3 class="text-base font-semibold text-slate-900">Choisis un hackathon</h3>
+                    <p class="mt-1 text-sm leading-6 text-slate-500">Filtre par thème, format, pays et niveau pour trouver le bon défi.</p>
+                  </div>
+                </div>
+
+                <div class="flex gap-4">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">2</div>
+                  <div>
+                    <h3 class="text-base font-semibold text-slate-900">Rejoins ou crée ton équipe</h3>
+                    <p class="mt-1 text-sm leading-6 text-slate-500">Trouve des coéquipiers motivés ou lance ton propre groupe.</p>
+                  </div>
+                </div>
+
+                <div class="flex gap-4">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">3</div>
+                  <div>
+                    <h3 class="text-base font-semibold text-slate-900">Construis et soumets</h3>
+                    <p class="mt-1 text-sm leading-6 text-slate-500">Travaille sur ton projet, partage ta démo et dépose ta soumission.</p>
+                  </div>
+                </div>
+
+                <div class="flex gap-4">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">4</div>
+                  <div>
+                    <h3 class="text-base font-semibold text-slate-900">Garde une preuve visible</h3>
+                    <p class="mt-1 text-sm leading-6 text-slate-500">Ton profil conserve ton projet, tes badges et tes certificats vérifiables.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-8 flex justify-center">
+                <button
+                  type="button"
+                  onclick="handleJoinAsParticipant()"
+                  class="inline-flex items-center justify-center rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                >
+                  Créer mon profil gratuitement
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <img
+                src="assets/illustrations/participant-profile.png"
+                alt="Profil public d’un participant affichant compétences, projets, certificats et badges de hackathon"
+                class="h-auto w-full object-contain"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="organiser" class="border-t border-slate-200 bg-slate-50 py-20 lg:py-24">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+          <div class="grid gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
+            <div class="mx-auto max-w-2xl">
+              <h2 class="text-center font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+                Tu veux <span class="headline-outline-green">organiser</span> un hackathon ? Voici comment démarrer.
+              </h2>
+              <p class="mx-auto mt-5 max-w-xl text-center text-base leading-8 text-slate-500 sm:text-lg">
+                En quelques étapes, tu passes d’une idée à un événement clair, centralisé et facile à suivre.
+              </p>
+
+              <div class="mt-8 space-y-5">
+                <div class="flex gap-4">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">1</div>
+                  <div>
+                    <h3 class="text-base font-semibold text-slate-900">Publie ton hackathon</h3>
+                    <p class="mt-1 text-sm leading-6 text-slate-500">Ajoute le thème, les dates, le format, la localisation et les récompenses.</p>
+                  </div>
+                </div>
+
+                <div class="flex gap-4">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">2</div>
+                  <div>
+                    <h3 class="text-base font-semibold text-slate-900">Centralise les inscriptions</h3>
+                    <p class="mt-1 text-sm leading-6 text-slate-500">Garde les participants, les équipes et les candidatures au même endroit.</p>
+                  </div>
+                </div>
+
+                <div class="flex gap-4">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">3</div>
+                  <div>
+                    <h3 class="text-base font-semibold text-slate-900">Suis les projets</h3>
+                    <p class="mt-1 text-sm leading-6 text-slate-500">Visualise les équipes, les soumissions et les résultats sans feuilles dispersées.</p>
+                  </div>
+                </div>
+
+                <div class="flex gap-4">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">4</div>
+                  <div>
+                    <h3 class="text-base font-semibold text-slate-900">Génère des certificats</h3>
+                    <p class="mt-1 text-sm leading-6 text-slate-500">Donne une preuve claire et vérifiable à chaque participant.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-8 flex justify-center">
+                <button
+                  type="button"
+                  onclick="handleCreateHackathon()"
+                  class="inline-flex items-center justify-center rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50"
+                >
+                  Publier mon hackathon
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <img
+                src="assets/illustrations/organisateur-dashboard.png"
+                alt="Tableau de bord organisateur affichant participants, équipes, soumissions, mentors et résultats d’un hackathon"
+                class="h-auto w-full object-contain"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="difference" class="border-t border-slate-200 bg-white py-20 lg:py-24">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+          <div class="mx-auto max-w-4xl text-center">
+            <h2 class="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+              Ce qui rend <strong class="font-semibold">CodeToWin</strong> différent
+            </h2>
+          </div>
+
+          <div class="mt-12 grid gap-6 md:grid-cols-3">
+            <article class="rounded-[11px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <div class="flex h-12 w-12 items-center justify-center rounded-[11px] border border-slate-200 text-emerald-700">
+                <svg class="h-6 w-6" aria-hidden="true"><use href="#icon-search"></use></svg>
+              </div>
+              <h3 class="mt-6 text-xl font-semibold tracking-tight text-slate-900">Des hackathons vraiment trouvables</h3>
+              <p class="mt-3 text-sm leading-7 text-slate-600">
+                Pays, thème, format, deadline, prix, niveau — tout ce qu'il faut savoir est visible dès le départ. Pas de mauvaises surprises.
+              </p>
+            </article>
+
+            <article class="rounded-[11px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <div class="flex h-12 w-12 items-center justify-center rounded-[11px] border border-slate-200 text-emerald-700">
+                <svg class="h-6 w-6" aria-hidden="true"><use href="#icon-code"></use></svg>
+              </div>
+              <h3 class="mt-6 text-xl font-semibold tracking-tight text-slate-900">Des projets qui laissent une trace</h3>
+              <p class="mt-3 text-sm leading-7 text-slate-600">
+                Chaque participant peut documenter son équipe, sa solution, son repo GitHub, sa démo live et son résultat. Ton travail reste visible bien après la fin du hackathon.
+              </p>
+            </article>
+
+            <article class="rounded-[11px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <div class="flex h-12 w-12 items-center justify-center rounded-[11px] border border-slate-200 text-emerald-700">
+                <svg class="h-6 w-6" aria-hidden="true"><use href="#icon-certificate"></use></svg>
+              </div>
+              <h3 class="mt-6 text-xl font-semibold tracking-tight text-slate-900">Des certificats vérifiables, pas juste décoratifs</h3>
+              <p class="mt-3 text-sm leading-7 text-slate-600">
+                Participation, finaliste, gagnant, mentor — chaque certificat est consultable publiquement via un identifiant unique ou un QR code.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="cta" class="border-t border-slate-900 bg-slate-950 py-20 text-white lg:py-24">
+        <div class="mx-auto max-w-4xl px-6 text-center lg:px-8">
+          <h2 class="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+            <strong class="font-semibold">CodeToWin</strong>, c'est plus qu'un calendrier de hackathons.
+          </h2>
+          <p class="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
+            C'est l'infrastructure qui manquait à l'écosystème tech africain : un espace pour construire, collaborer, se faire repérer et prouver ses compétences — avec des vraies preuves à l'appui.
+          </p>
+          <div class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
+            <button
+              type="button"
+              onclick="handleExploreHackathons()"
+              class="inline-flex min-w-[220px] items-center justify-center rounded-full bg-emerald-700 px-7 py-3.5 text-base font-semibold text-white transition hover:bg-emerald-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+            >
+              Explorer les hackathons
+            </button>
+            <button
+              type="button"
+              onclick="handleCreateHackathon()"
+              class="inline-flex min-w-[220px] items-center justify-center rounded-full border border-white/20 bg-white/5 px-7 py-3.5 text-base font-semibold text-white transition hover:border-white/35 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+            >
+              Créer un hackathon
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-white/10 bg-slate-950 py-10 text-slate-300">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+          <div class="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <a href="#hero" class="inline-flex items-center" aria-label="CodeToWin">
+              <img
+                src="assets/brand/codetowin-brand.png"
+                alt="CodeToWin"
+                class="brand-mark brand-mark-footer"
+                decoding="async"
+              />
+            </a>
+            <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-400">
+              <strong class="font-semibold text-white">CodeToWin</strong> relie les talents tech africains et les organisateurs autour de projets concrets, de profils publics et de preuves vérifiables.
+            </p>
+          </div>
+
+          <div class="grid gap-3 text-sm text-slate-400 sm:text-right">
+            <a class="transition hover:text-white" href="#hackathons">Hackathons</a>
+            <a class="transition hover:text-white" href="#participer">Participants</a>
+            <a class="transition hover:text-white" href="#organiser">Organisateurs</a>
+            <a class="transition hover:text-white" href="#difference">Différences</a>
+          </div>
+        </div>
+
+        <div class="mt-10 border-t border-white/10 pt-6 text-sm text-slate-500">
+          <p>© 2026 <strong class="font-semibold text-white">CodeToWin</strong>. Tous droits réservés.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      function setMobileNavOpen(isOpen) {
+        const sidebar = document.getElementById("mobile-nav-sidebar");
+        const backdrop = document.getElementById("mobile-nav-backdrop");
+        const toggle = document.getElementById("mobile-nav-toggle");
+
+        if (!sidebar || !backdrop || !toggle) {
+          return;
+        }
+
+        sidebar.classList.toggle("is-open", isOpen);
+        backdrop.classList.toggle("is-open", isOpen);
+        document.body.classList.toggle("menu-open", isOpen);
+        toggle.setAttribute("aria-expanded", String(isOpen));
+      }
+
+      function openMobileNav() {
+        setMobileNavOpen(true);
+      }
+
+      function closeMobileNav() {
+        setMobileNavOpen(false);
+      }
+
+      function toggleMobileNav() {
+        const sidebar = document.getElementById("mobile-nav-sidebar");
+        if (!sidebar) {
+          return;
+        }
+
+        setMobileNavOpen(!sidebar.classList.contains("is-open"));
+      }
+
+      const mobileNavToggle = document.getElementById("mobile-nav-toggle");
+      const mobileNavBackdrop = document.getElementById("mobile-nav-backdrop");
+      const mobileNavClose = document.getElementById("mobile-nav-close");
+
+      if (mobileNavToggle) {
+        mobileNavToggle.addEventListener("click", toggleMobileNav);
+      }
+
+      if (mobileNavBackdrop) {
+        mobileNavBackdrop.addEventListener("click", closeMobileNav);
+      }
+
+      if (mobileNavClose) {
+        mobileNavClose.addEventListener("click", closeMobileNav);
+      }
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth >= 640) {
+          closeMobileNav();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeMobileNav();
+        }
+      });
+
+      function handleExploreHackathons() {
+        window.location.href = "/hackathons";
+      }
+
+      function handleCreateHackathon() {
+        window.location.href = "/create-hackathon";
+      }
+
+      function handleViewHackathonDetails(slug) {
+        console.log("View hackathon details:", slug);
+        window.location.href = "/hackathons/" + slug;
+      }
+
+      function handleJoinAsParticipant() {
+        window.location.href = "/register";
+      }
+    </script>
+  </body>
+</html>

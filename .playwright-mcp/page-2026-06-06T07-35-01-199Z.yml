@@ -1,0 +1,172 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "CodeToWin" [ref=e5] [cursor=pointer]:
+        - /url: "#hero"
+        - img "CodeToWin" [ref=e6]
+      - button "Ouvrir le menu" [ref=e7] [cursor=pointer]:
+        - img [ref=e8]
+  - button "Fermer le menu"
+  - complementary "Navigation mobile" [ref=e10]:
+    - generic [ref=e11]:
+      - generic [ref=e12]: Menu
+      - button "Fermer le menu" [ref=e13] [cursor=pointer]:
+        - img [ref=e14]
+    - link "Explorer les hackathons" [ref=e17] [cursor=pointer]:
+      - /url: "#hackathons"
+    - generic [ref=e18]:
+      - link "Rejoindre un hackathon" [ref=e19] [cursor=pointer]:
+        - /url: "#participer"
+      - link "Créer un hackathon" [ref=e20] [cursor=pointer]:
+        - /url: "#organiser"
+  - main [ref=e21]:
+    - generic [ref=e24]:
+      - heading "Ton talent mérite d'être vu. On s'en occupe." [level=1] [ref=e25]
+      - paragraph [ref=e26]:
+        - text: Un bon projet peut changer ton parcours, mais encore faut-il tomber sur la bonne opportunité.
+        - strong [ref=e27]: CodeToWin
+        - text: t’aide à découvrir les hackathons qui comptent, à travailler avec les bonnes personnes et à transformer ta participation en preuve concrète de compétence.
+      - generic [ref=e28]:
+        - button "Explorer les hackathons" [ref=e29] [cursor=pointer]
+        - button "Créer un hackathon" [ref=e30] [cursor=pointer]
+    - generic [ref=e32]:
+      - generic [ref=e33]:
+        - heading "Les prochains challenges qui valent le déplacement" [level=2] [ref=e34]
+        - paragraph [ref=e35]: On sélectionne uniquement des hackathons sérieux — pour les devs, designers, data analysts, makers et jeunes innovateurs qui ne veulent plus juste apprendre, mais prouver.
+      - generic [ref=e36]:
+        - article [ref=e37]:
+          - generic [ref=e38]:
+            - img [ref=e40]
+            - generic [ref=e42]: En ligne
+          - heading "AI for Climate Africa" [level=3] [ref=e43]
+          - paragraph [ref=e44]: En ligne · AI / ClimateTech · 24–26 mai 2026
+          - paragraph [ref=e45]: "Prix : 5 000 $ + accompagnement incubation"
+          - button "Voir le challenge" [ref=e46] [cursor=pointer]:
+            - text: Voir le challenge
+            - img [ref=e47]
+        - article [ref=e49]:
+          - generic [ref=e50]:
+            - img [ref=e52]
+            - generic [ref=e54]: Lagos, Nigeria
+          - heading "Fintech Builders Challenge" [level=3] [ref=e55]
+          - paragraph [ref=e56]: Lagos, Nigeria · Fintech / Payments · 7–9 juin 2026
+          - paragraph [ref=e57]: "Prix : 8 000 $"
+          - button "Voir le challenge" [ref=e58] [cursor=pointer]:
+            - text: Voir le challenge
+            - img [ref=e59]
+        - article [ref=e61]:
+          - generic [ref=e62]:
+            - img [ref=e64]
+            - generic [ref=e66]: À distance
+          - heading "AgriTech Youth Hack" [level=3] [ref=e67]
+          - paragraph [ref=e68]: À distance · Agritech / Data · 14–16 juin 2026
+          - paragraph [ref=e69]: "Prix : 3 000 $"
+          - button "Voir le challenge" [ref=e70] [cursor=pointer]:
+            - text: Voir le challenge
+            - img [ref=e71]
+      - button "Voir tous les hackathons" [ref=e74] [cursor=pointer]:
+        - text: Voir tous les hackathons
+        - img [ref=e75]
+    - generic [ref=e79]:
+      - generic [ref=e80]:
+        - heading "Tu veux participer ? Voici comment démarrer." [level=2] [ref=e81]
+        - paragraph [ref=e82]: En quatre étapes simples, tu passes de la découverte à la participation sans te perdre dans les canaux dispersés.
+        - generic [ref=e83]:
+          - generic [ref=e84]:
+            - generic [ref=e85]: "1"
+            - generic [ref=e86]:
+              - heading "Choisis un hackathon" [level=3] [ref=e87]
+              - paragraph [ref=e88]: Filtre par thème, format, pays et niveau pour trouver le bon défi.
+          - generic [ref=e89]:
+            - generic [ref=e90]: "2"
+            - generic [ref=e91]:
+              - heading "Rejoins ou crée ton équipe" [level=3] [ref=e92]
+              - paragraph [ref=e93]: Trouve des coéquipiers motivés ou lance ton propre groupe.
+          - generic [ref=e94]:
+            - generic [ref=e95]: "3"
+            - generic [ref=e96]:
+              - heading "Construis et soumets" [level=3] [ref=e97]
+              - paragraph [ref=e98]: Travaille sur ton projet, partage ta démo et dépose ta soumission.
+          - generic [ref=e99]:
+            - generic [ref=e100]: "4"
+            - generic [ref=e101]:
+              - heading "Garde une preuve visible" [level=3] [ref=e102]
+              - paragraph [ref=e103]: Ton profil conserve ton projet, tes badges et tes certificats vérifiables.
+        - button "Créer mon profil gratuitement" [ref=e105] [cursor=pointer]
+      - img "Profil public d’un participant affichant compétences, projets, certificats et badges de hackathon" [ref=e107]
+    - generic [ref=e110]:
+      - generic [ref=e111]:
+        - heading "Tu veux organiser un hackathon ? Voici comment démarrer." [level=2] [ref=e112]
+        - paragraph [ref=e113]: En quelques étapes, tu passes d’une idée à un événement clair, centralisé et facile à suivre.
+        - generic [ref=e114]:
+          - generic [ref=e115]:
+            - generic [ref=e116]: "1"
+            - generic [ref=e117]:
+              - heading "Publie ton hackathon" [level=3] [ref=e118]
+              - paragraph [ref=e119]: Ajoute le thème, les dates, le format, la localisation et les récompenses.
+          - generic [ref=e120]:
+            - generic [ref=e121]: "2"
+            - generic [ref=e122]:
+              - heading "Centralise les inscriptions" [level=3] [ref=e123]
+              - paragraph [ref=e124]: Garde les participants, les équipes et les candidatures au même endroit.
+          - generic [ref=e125]:
+            - generic [ref=e126]: "3"
+            - generic [ref=e127]:
+              - heading "Suis les projets" [level=3] [ref=e128]
+              - paragraph [ref=e129]: Visualise les équipes, les soumissions et les résultats sans feuilles dispersées.
+          - generic [ref=e130]:
+            - generic [ref=e131]: "4"
+            - generic [ref=e132]:
+              - heading "Génère des certificats" [level=3] [ref=e133]
+              - paragraph [ref=e134]: Donne une preuve claire et vérifiable à chaque participant.
+        - button "Publier mon hackathon" [ref=e136] [cursor=pointer]
+      - img "Tableau de bord organisateur affichant participants, équipes, soumissions, mentors et résultats d’un hackathon" [ref=e138]
+    - generic [ref=e140]:
+      - heading "Ce qui rend CodeToWin différent" [level=2] [ref=e142]:
+        - text: Ce qui rend
+        - strong [ref=e143]: CodeToWin
+        - text: différent
+      - generic [ref=e144]:
+        - article [ref=e145]:
+          - img [ref=e147]
+          - heading "Des hackathons vraiment trouvables" [level=3] [ref=e149]
+          - paragraph [ref=e150]: Pays, thème, format, deadline, prix, niveau — tout ce qu'il faut savoir est visible dès le départ. Pas de mauvaises surprises.
+        - article [ref=e151]:
+          - img [ref=e153]
+          - heading "Des projets qui laissent une trace" [level=3] [ref=e155]
+          - paragraph [ref=e156]: Chaque participant peut documenter son équipe, sa solution, son repo GitHub, sa démo live et son résultat. Ton travail reste visible bien après la fin du hackathon.
+        - article [ref=e157]:
+          - img [ref=e159]
+          - heading "Des certificats vérifiables, pas juste décoratifs" [level=3] [ref=e161]
+          - paragraph [ref=e162]: Participation, finaliste, gagnant, mentor — chaque certificat est consultable publiquement via un identifiant unique ou un QR code.
+    - generic [ref=e164]:
+      - heading "CodeToWin, c'est plus qu'un calendrier de hackathons." [level=2] [ref=e165]:
+        - strong [ref=e166]: CodeToWin
+        - text: ", c'est plus qu'un calendrier de hackathons."
+      - paragraph [ref=e167]: "C'est l'infrastructure qui manquait à l'écosystème tech africain : un espace pour construire, collaborer, se faire repérer et prouver ses compétences — avec des vraies preuves à l'appui."
+      - generic [ref=e168]:
+        - button "Explorer les hackathons" [ref=e169] [cursor=pointer]
+        - button "Créer un hackathon" [ref=e170] [cursor=pointer]
+  - contentinfo [ref=e171]:
+    - generic [ref=e172]:
+      - generic [ref=e173]:
+        - generic [ref=e174]:
+          - link "CodeToWin" [ref=e175] [cursor=pointer]:
+            - /url: "#hero"
+            - img "CodeToWin" [ref=e176]
+          - paragraph [ref=e177]:
+            - strong [ref=e178]: CodeToWin
+            - text: relie les talents tech africains et les organisateurs autour de projets concrets, de profils publics et de preuves vérifiables.
+        - generic [ref=e179]:
+          - link "Hackathons" [ref=e180] [cursor=pointer]:
+            - /url: "#hackathons"
+          - link "Participants" [ref=e181] [cursor=pointer]:
+            - /url: "#participer"
+          - link "Organisateurs" [ref=e182] [cursor=pointer]:
+            - /url: "#organiser"
+          - link "Différences" [ref=e183] [cursor=pointer]:
+            - /url: "#difference"
+      - paragraph [ref=e185]:
+        - text: © 2026
+        - strong [ref=e186]: CodeToWin
+        - text: . Tous droits réservés.
