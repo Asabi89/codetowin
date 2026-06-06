@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nouvelle Annonce — Organisateur CodeToWin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Space Grotesk", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#ECFDF5",
+                100: "#D1FAE5",
+                200: "#A7F3D0",
+                300: "#6EE7B7",
+                400: "#34D399",
+                500: "#10B981",
+                600: "#059669",
+                700: "#047857",
+                800: "#065F46",
+                900: "#064E3B",
+                950: "#022C22",
+              },
+              navy: {
+                900: "#0F172A",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #F8FAFC;
+        color: #0F172A;
+      }
+    </style>
+  </head>
+  <body class="flex h-screen overflow-hidden bg-slate-50">
+    
+    <!-- Sidebar -->
+    <aside class="hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex">
+      <div class="flex h-16 items-center border-b border-slate-200 px-6">
+        <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" class="h-8" onerror="this.src='https://placehold.co/120x32/047857/white?text=CodeToWin'" />
+      </div>
+      <div class="flex-1 overflow-y-auto py-4">
+        <nav class="space-y-1 px-3">
+          <a href="organisateur-dashboard.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+            Dashboard
+          </a>
+          <a href="organisateur-hackathons.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+            Mes Hackathons
+          </a>
+          <!-- Contextual Sub-menu for active hackathon -->
+          <div class="mt-4 border-l-2 border-brand-500 pl-3 ml-4 space-y-1">
+            <a href="organisateur-edit-hackathon.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+              Détails
+            </a>
+            <a href="organisateur-teams.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+              Équipes
+            </a>
+            <a href="organisateur-participants.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+              Participants
+            </a>
+            <a href="organisateur-submissions.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+              Soumissions
+            </a>
+            <a href="organisateur-mentors.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+              Mentors
+            </a>
+            <a href="organisateur-announcements.html" class="flex items-center rounded-md bg-brand-50 px-3 py-2 text-sm font-medium text-brand-700">
+              Annonces
+            </a>
+            <a href="organisateur-results.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+              Résultats
+            </a>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex flex-1 flex-col overflow-hidden">
+      <!-- Topbar -->
+      <header class="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+        <div class="flex items-center">
+          <button class="text-slate-500 focus:outline-none sm:hidden">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div class="ml-4 flex items-center space-x-2 text-sm sm:ml-0">
+            <a href="organisateur-hackathons.html" class="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</a>
+            <svg class="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <a href="organisateur-announcements.html" class="font-medium text-slate-500 hover:text-slate-900">Annonces</a>
+            <svg class="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <span class="font-medium text-slate-900">Nouvelle Annonce</span>
+          </div>
+        </div>
+      </header>
+
+      
+
+
+      <!-- Main scrollable area -->
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        
+        <div class="mx-auto max-w-3xl">
+          <!-- Navigation retour -->
+          <div class="mb-6">
+            <a href="organisateur-announcements.html" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-700">
+              <svg class="mr-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              Retour aux annonces
+            </a>
+          </div>
+
+          <div class="sm:flex sm:items-center sm:justify-between mb-8">
+            <div class="sm:flex-auto">
+              <h1 class="font-display text-3xl font-bold text-slate-900">Nouvelle Annonce</h1>
+              <p class="mt-2 text-sm text-slate-700">Rédigez un message à diffuser aux participants de l'événement.</p>
+            </div>
+          </div>
+
+          <!-- Compose Area -->
+          <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div class="px-4 py-5 sm:p-6">
+              <form action="#" method="POST" class="space-y-8" onsubmit="event.preventDefault(); alert('Annonce envoyée avec succès !'); window.location.href='organisateur-announcements.html';">
+                
+                <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
+                  <div class="sm:col-span-2">
+                    <label for="audience" class="block text-sm font-semibold text-slate-900">Audience cible</label>
+                    <p class="text-xs text-slate-500 mb-2">Qui doit recevoir ce message ?</p>
+                    <select id="audience" name="audience" class="mt-1 block w-full rounded-md border-slate-300 py-2.5 pl-3 pr-10 text-base focus:border-brand-500 focus:outline-none focus:ring-brand-500 sm:text-sm border ring-1 ring-inset ring-slate-300">
+                      <option>Tous les participants</option>
+                      <option>Équipes formées uniquement</option>
+                      <option>Mentors uniquement</option>
+                      <option>Participants sans équipe</option>
+                    </select>
+                  </div>
+
+                  <div class="sm:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-900 mb-3">Canaux de diffusion</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <!-- Channel In-App -->
+                      <div class="relative flex items-start rounded-lg border border-slate-200 p-4 shadow-sm">
+                        <div class="flex h-5 items-center">
+                          <input id="channel-inapp" name="channels" type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                        </div>
+                        <div class="ml-3 text-sm">
+                          <label for="channel-inapp" class="font-medium text-slate-900 cursor-pointer">Notification plateforme</label>
+                          <p class="text-slate-500 mt-1">Apparaît dans le centre de notifications.</p>
+                        </div>
+                      </div>
+                      <!-- Channel Email -->
+                      <div class="relative flex items-start rounded-lg border border-slate-200 p-4 shadow-sm">
+                        <div class="flex h-5 items-center">
+                          <input id="channel-email" name="channels" type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                        </div>
+                        <div class="ml-3 text-sm">
+                          <label for="channel-email" class="font-medium text-slate-900 cursor-pointer">Email direct</label>
+                          <p class="text-slate-500 mt-1">Envoi dans la boîte mail des utilisateurs.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="sm:col-span-2">
+                    <label for="subject" class="block text-sm font-semibold text-slate-900">Sujet de l'annonce</label>
+                    <div class="mt-2">
+                      <input type="text" name="subject" id="subject" class="block w-full rounded-md border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" placeholder="ex: Cérémonie de remise des prix" required>
+                    </div>
+                  </div>
+
+                  <div class="sm:col-span-2">
+                    <label for="message" class="block text-sm font-semibold text-slate-900">Contenu du message</label>
+                    <div class="mt-2">
+                      <textarea id="message" name="message" rows="10" class="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" placeholder="Bonjour à tous,..." required></textarea>
+                    </div>
+                    <p class="mt-2 text-sm text-slate-500 flex items-center">
+                      <svg class="mr-1.5 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Formatage Markdown supporté pour mettre en gras (**texte**), créer des listes (- item), etc.
+                    </p>
+                  </div>
+
+                  <div class="sm:col-span-2">
+                    <label for="schedule" class="block text-sm font-semibold text-slate-900">Planification de l'envoi (optionnel)</label>
+                    <p class="text-xs text-slate-500 mb-2">Laissez vide pour envoyer immédiatement.</p>
+                    <div class="mt-1 max-w-sm">
+                      <input type="datetime-local" name="schedule" id="schedule" class="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex justify-end space-x-4 pt-6 border-t border-slate-200">
+                  <button type="button" class="rounded-md bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
+                    Sauvegarder en brouillon
+                  </button>
+                  <button type="submit" class="inline-flex justify-center rounded-md bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+                    <svg class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                    </svg>
+                    Envoyer l'annonce
+                  </button>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

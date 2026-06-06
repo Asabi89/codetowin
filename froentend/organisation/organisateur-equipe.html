@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion de l'Équipe — CodeToWin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Space Grotesk", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#ECFDF5",
+                100: "#D1FAE5",
+                200: "#A7F3D0",
+                300: "#6EE7B7",
+                400: "#34D399",
+                500: "#10B981",
+                600: "#059669",
+                700: "#047857", // Primary Green
+                800: "#065F46", // Dark Green
+                900: "#064E3B",
+                950: "#022C22",
+              },
+              navy: {
+                900: "#0F172A", // Dark Navy
+              },
+              gold: {
+                400: "#FBBF24", // Gold Accent
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #F8FAFC;
+        color: #0F172A;
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="flex h-screen overflow-hidden bg-slate-50">
+    
+    <!-- Sidebar -->
+    <aside class="hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex">
+      <div class="flex h-16 items-center border-b border-slate-200 px-6">
+        <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" class="h-8" onerror="this.src='https://placehold.co/120x32/047857/white?text=CodeToWin'" />
+      </div>
+      <div class="flex-1 overflow-y-auto py-4">
+        <nav class="space-y-1 px-3">
+          <a href="organisateur-dashboard.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Dashboard
+          </a>
+          <a href="organisateur-hackathons.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Mes Hackathons
+          </a>
+          <a href="organisateur-create-hackathon.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Créer un hackathon
+          </a>
+          <a href="organisateur-equipe.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium bg-brand-50 text-brand-700">
+            <svg class="mr-3 h-5 w-5 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Équipe
+          </a>
+          <a href="organisateur-messages.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900 justify-between">
+            <div class="flex items-center">
+              <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+              Messages
+            </div>
+            <span class="inline-flex items-center justify-center rounded-full bg-brand-600 px-2 py-0.5 text-xs font-bold text-white">2</span>
+          </a>
+          <a href="organisateur-settings.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Paramètres
+          </a>
+        </nav>
+      </div>
+      <div class="border-t border-slate-200 p-4">
+        <a href="#" class="group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900">
+          <img src="https://ui-avatars.com/api/?name=TechHub+Senegal&background=047857&color=fff" alt="" class="mr-3 h-8 w-8 rounded-full" />
+          <span class="truncate">TechHub Sénégal</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex flex-1 flex-col overflow-hidden">
+      <!-- Topbar -->
+      <header class="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+        <div class="flex items-center">
+          <button class="text-slate-500 focus:outline-none sm:hidden">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <h1 class="ml-4 text-xl font-semibold text-slate-900 sm:ml-0">Gestion de l'Équipe</h1>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="organisateur-notifications.html" class="relative block text-slate-400 hover:text-slate-500">
+            <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">3</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </a>
+        </div>
+      </header>
+
+      <!-- Main scrollable area -->
+      <main class="flex-1 overflow-y-auto bg-slate-50">
+        
+        <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+          
+          
+
+          <!-- Tab Content: Rôles -->
+          <div id="roles" class="mt-8 space-y-6">
+            <div class="bg-white shadow sm:rounded-xl">
+              <div class="px-4 py-6 sm:p-8">
+                <div class="sm:flex sm:items-center sm:justify-between">
+                  <div>
+                    <h2 class="text-base font-semibold leading-7 text-slate-900">Membres de l'équipe</h2>
+                    <p class="mt-1 text-sm leading-6 text-slate-500">Gérez qui a accès à l'administration de vos hackathons.</p>
+                  </div>
+                  <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                    <button type="button" id="btn-invite-member" class="block rounded-md bg-brand-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">Inviter un membre</button>
+                  </div>
+                </div>
+
+                <div class="mt-8 flow-root">
+                  <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                      <table class="min-w-full divide-y divide-slate-300">
+                        <thead>
+                          <tr>
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-0">Nom</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Rôle</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Statut</th>
+                            <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                              <span class="sr-only">Actions</span>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                          <tr>
+                            <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                              <div class="flex items-center">
+                                <div class="h-10 w-10 flex-shrink-0">
+                                  <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Emmanuel+D&background=047857&color=fff" alt="">
+                                </div>
+                                <div class="ml-4">
+                                  <div class="font-medium text-slate-900">Emmanuel D.</div>
+                                  <div class="mt-1 text-slate-500">emmanuel@techhub.com</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-slate-500">
+                              <div class="text-slate-900">Propriétaire</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-slate-500">
+                              <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Actif</span>
+                            </td>
+                            <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                              <!-- No actions for owner -->
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                              <div class="flex items-center">
+                                <div class="h-10 w-10 flex-shrink-0">
+                                  <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Aissatou+S&background=cbd5e1&color=334155" alt="">
+                                </div>
+                                <div class="ml-4">
+                                  <div class="font-medium text-slate-900">Aïssatou S.</div>
+                                  <div class="mt-1 text-slate-500">aissatou@techhub.com</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-slate-500">
+                              <select class="rounded-md border-0 py-1.5 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6">
+                                <option>Administrateur</option>
+                                <option selected>Éditeur</option>
+                                <option>Évaluateur</option>
+                              </select>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-slate-500">
+                              <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Actif</span>
+                            </td>
+                            <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                              <a href="#" class="text-red-600 hover:text-red-900">Retirer</a>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                              <div class="flex items-center">
+                                <div class="h-10 w-10 flex-shrink-0">
+                                  <div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 font-medium text-slate-600">M</div>
+                                </div>
+                                <div class="ml-4">
+                                  <div class="font-medium text-slate-900">Moussa K.</div>
+                                  <div class="mt-1 text-slate-500">moussa@gmail.com</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-slate-500">
+                              <select class="rounded-md border-0 py-1.5 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6">
+                                <option selected>Administrateur</option>
+                                <option>Éditeur</option>
+                                <option>Évaluateur</option>
+                              </select>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-slate-500">
+                              <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Invitation en attente</span>
+                            </td>
+                            <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                              <a href="#" class="text-brand-600 hover:text-brand-900">Renvoyer</a>
+                              <span class="mx-2 text-slate-300">|</span>
+                              <a href="#" class="text-red-600 hover:text-red-900">Annuler</a>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Inviter Membre Équipe -->
+    <div id="invite-member-modal" class="relative z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity"></div>
+      <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg class="h-6 w-6 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
+                </div>
+                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                  <h3 class="text-lg font-semibold leading-6 text-slate-900" id="modal-title">Inviter un membre d'équipe</h3>
+                  <div class="mt-4 space-y-5">
+                    <div>
+                      <label for="member-email" class="block text-sm font-medium leading-6 text-slate-900">Adresse e-mail <span class="text-red-500">*</span></label>
+                      <div class="mt-2">
+                        <input type="email" id="member-email" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm px-3" placeholder="collegue@techhub.com" required>
+                      </div>
+                    </div>
+                    <div>
+                      <label for="member-role" class="block text-sm font-medium leading-6 text-slate-900">Rôle <span class="text-red-500">*</span></label>
+                      <select id="member-role" class="mt-2 block w-full rounded-md border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm">
+                        <option value="admin">Administrateur (Accès total)</option>
+                        <option value="editor" selected>Éditeur (Peut créer/modifier des hackathons)</option>
+                        <option value="viewer">Évaluateur (Peut voir et noter les soumissions)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+              <button type="button" id="btn-send-member-invite" class="inline-flex w-full justify-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 sm:ml-3 sm:w-auto focus:outline-none">Envoyer l'invitation</button>
+              <button type="button" id="btn-close-member-modal" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto focus:outline-none">Annuler</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Modal Logic
+        const inviteModal = document.getElementById('invite-member-modal');
+        const btnOpenModal = document.getElementById('btn-invite-member');
+        const btnCloseModal = document.getElementById('btn-close-member-modal');
+        const btnSendInvite = document.getElementById('btn-send-member-invite');
+
+        btnOpenModal.addEventListener('click', () => {
+          inviteModal.classList.remove('hidden');
+        });
+
+        btnCloseModal.addEventListener('click', () => {
+          inviteModal.classList.add('hidden');
+        });
+
+        btnSendInvite.addEventListener('click', () => {
+          const emailInput = document.getElementById('member-email');
+          if (emailInput.value) {
+            alert('Invitation envoyée à ' + emailInput.value + ' !');
+            inviteModal.classList.add('hidden');
+            emailInput.value = '';
+          } else {
+            alert('Veuillez renseigner une adresse e-mail.');
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

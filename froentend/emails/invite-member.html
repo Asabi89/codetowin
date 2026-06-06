@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invitation à rejoindre l'équipe</title>
+  <style>
+    /* 
+      Note pour l'intégration backend : 
+      Pour un vrai envoi d'email, les styles ci-dessous devront être inlinés 
+      (via un outil comme MJML ou un inliner CSS) car beaucoup de clients mail 
+      ne supportent pas bien les balises <style> ou les classes externes.
+      Ici, on simule le rendu visuel.
+    */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #F8FAFC;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      color: #0F172A;
+    }
+    .email-wrapper {
+      width: 100%;
+      background-color: #F8FAFC;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+    .email-content {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      border: 1px solid #E2E8F0;
+    }
+    .header {
+      text-align: center;
+      padding: 30px 20px 20px;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .header img {
+      height: 40px;
+    }
+    .body-box {
+      padding: 40px 30px;
+    }
+    .greeting {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #0F172A;
+    }
+    .text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #475569;
+      margin-bottom: 25px;
+    }
+    .role-box {
+      background-color: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .role-title {
+      font-size: 13px;
+      color: #059669;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .role-value {
+      font-size: 16px;
+      color: #047857;
+      font-weight: bold;
+    }
+    .cta-container {
+      text-align: center;
+      margin: 35px 0;
+    }
+    .cta-button {
+      display: inline-block;
+      background-color: #047857;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 14px 30px;
+      border-radius: 6px;
+      transition: background-color 0.2s;
+    }
+    .cta-button:hover {
+      background-color: #065F46;
+    }
+    .fallback-link {
+      font-size: 13px;
+      color: #64748B;
+      word-break: break-all;
+      margin-top: 20px;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px 30px 30px;
+      font-size: 13px;
+      color: #94A3B8;
+    }
+    .footer a {
+      color: #047857;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="email-wrapper">
+    <div class="email-content">
+      
+      <!-- Header avec Logo -->
+      <div class="header">
+        <!-- Remplacer le src par le chemin absolu du logo sur votre serveur de prod -->
+        <img src="https://placehold.co/200x50/ffffff/047857?text=CodeToWin" alt="CodeToWin">
+      </div>
+
+      <!-- Corps de l'email -->
+      <div class="body-box">
+        <div class="greeting">Bonjour,</div>
+        
+        <div class="text">
+          L'organisation <strong>{{organizationName}}</strong> vous invite à rejoindre son espace d'administration sur CodeToWin.
+        </div>
+        
+        <div class="text">
+          En acceptant cette invitation, vous pourrez collaborer avec l'équipe et contribuer à la gestion de leurs événements et hackathons en cours.
+        </div>
+
+        <div class="role-box">
+          <div class="role-title">Le rôle qui vous a été assigné</div>
+          <div class="role-value">{{roleName}}</div>
+        </div>
+
+        <div class="cta-container">
+          <a href="{{inviteUrl}}" class="cta-button">Accepter l'invitation</a>
+        </div>
+
+        <div class="text" style="font-size: 14px;">
+          Si vous n'avez pas de compte CodeToWin, il vous sera demandé d'en créer un gratuitement avec cette adresse e-mail.
+        </div>
+
+        <div class="text fallback-link">
+          Si le bouton ci-dessus ne fonctionne pas, copiez-collez ce lien dans votre navigateur :<br>
+          <a href="{{inviteUrl}}" style="color: #047857;">{{inviteUrl}}</a>
+        </div>
+        
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>Cet e-mail a été envoyé par <strong>CodeToWin</strong> pour le compte de {{organizationName}}.</p>
+        <p>Vous ne connaissez pas cette organisation ? <a href="{{reportUrl}}">Signaler cette invitation</a></p>
+        <p>&copy; 2026 CodeToWin. Tous droits réservés.</p>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

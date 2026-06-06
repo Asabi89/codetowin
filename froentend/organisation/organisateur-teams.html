@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion des Équipes — Organisateur CodeToWin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Space Grotesk", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#ECFDF5",
+                100: "#D1FAE5",
+                200: "#A7F3D0",
+                300: "#6EE7B7",
+                400: "#34D399",
+                500: "#10B981",
+                600: "#059669",
+                700: "#047857",
+                800: "#065F46",
+                900: "#064E3B",
+                950: "#022C22",
+              },
+              navy: {
+                900: "#0F172A",
+              },
+              gold: {
+                400: "#FBBF24",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #F8FAFC;
+        color: #0F172A;
+      }
+    </style>
+  </head>
+  <body class="flex h-screen overflow-hidden bg-slate-50">
+    
+    <!-- Sidebar -->
+    <aside class="hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex">
+      <div class="flex h-16 items-center border-b border-slate-200 px-6">
+        <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" class="h-8" onerror="this.src='https://placehold.co/120x32/047857/white?text=CodeToWin'" />
+      </div>
+      <div class="flex-1 overflow-y-auto py-4">
+        <nav class="space-y-1 px-3">
+          <a href="organisateur-dashboard.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Dashboard
+          </a>
+          <a href="organisateur-hackathons.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium bg-brand-50 text-brand-700">
+            <svg class="mr-3 h-5 w-5 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Mes Hackathons
+          </a>
+          <div class="space-y-1">
+            <a href="organisateur-edit-hackathon.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Configuration</span>
+            </a>
+            <a href="organisateur-participants.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Participants</span>
+            </a>
+            <a href="organisateur-teams.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-brand-700 font-semibold">
+              <span class="truncate">Équipes</span>
+            </a>
+            <a href="organisateur-submissions.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Soumissions</span>
+            </a>
+            <a href="organisateur-evaluation.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Évaluations</span>
+            </a>
+            <a href="organisateur-results.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Résultats</span>
+            </a>
+            <a href="organisateur-mentors.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Mentors</span>
+            </a>
+            <a href="organisateur-announcements.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Annonces</span>
+            </a>
+          </div>
+          <a href="organisateur-create-hackathon.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Créer un hackathon
+          </a>
+          <a href="organisateur-equipe.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Équipe
+          </a>
+          <a href="organisateur-messages.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900 justify-between">
+            <div class="flex items-center">
+              <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+              Messages
+            </div>
+            <span class="inline-flex items-center justify-center rounded-full bg-brand-600 px-2 py-0.5 text-xs font-bold text-white">2</span>
+          </a>
+          <a href="organisateur-settings.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Paramètres
+          </a>
+        </nav>
+      </div>
+      <div class="border-t border-slate-200 p-4">
+        <a href="#" class="group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900">
+          <img src="https://ui-avatars.com/api/?name=TechHub+Senegal&background=047857&color=fff" alt="" class="mr-3 h-8 w-8 rounded-full" />
+          <span class="truncate">TechHub Sénégal</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex flex-1 flex-col overflow-hidden">
+      <!-- Topbar -->
+      <header class="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+        <div class="flex items-center">
+          <button class="text-slate-500 focus:outline-none sm:hidden">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div class="ml-4 flex items-center space-x-2 text-sm sm:ml-0">
+            <a href="organisateur-hackathons.html" class="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</a>
+            <svg class="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <span class="font-medium text-slate-900">Équipes</span>
+          </div>
+        </div>
+      </header>
+
+      
+
+
+      <!-- Main scrollable area -->
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        
+        <div class="sm:flex sm:items-center">
+          <div class="sm:flex-auto">
+            <h1 class="font-display text-2xl font-bold text-slate-900">Équipes formées (14)</h1>
+            <p class="mt-2 text-sm text-slate-700">Consultez les équipes, attribuez des mentors et vérifiez les soumissions de projets.</p>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="mt-6 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="relative rounded-md shadow-sm w-full sm:w-64">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <svg class="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <input type="text" class="block w-full rounded-md border-slate-300 pl-10 focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 border" placeholder="Chercher une équipe...">
+          </div>
+          <select class="block w-full sm:w-auto rounded-md border-slate-300 py-2 pl-3 pr-10 text-base focus:border-brand-500 focus:outline-none focus:ring-brand-500 sm:text-sm border">
+            <option>Tous les mentors</option>
+            <option>Sans mentor</option>
+            <option>Dr. Ousmane Diop</option>
+            <option>Marie Koné</option>
+          </select>
+        </div>
+
+        <!-- Grid of Teams -->
+        <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          
+          <!-- Team Card 1 -->
+          <div class="col-span-1 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
+            <div class="flex w-full items-center justify-between space-x-6 p-6">
+              <div class="flex-1 truncate">
+                <div class="flex items-center space-x-3">
+                  <a href="organisateur-team-details.html" class="hover:underline"><h3 class="truncate text-lg font-medium text-slate-900">AgriTech Innovators</h3></a>
+                  <span class="inline-block flex-shrink-0 rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-800">4 membres</span>
+                </div>
+                <p class="mt-1 truncate text-sm text-slate-500">Solution IoT pour optimisation d'irrigation</p>
+                <div class="mt-4">
+                  <!-- Members Avatars -->
+                  <div class="flex -space-x-2 overflow-hidden">
+                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026704e" alt="">
+                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026705e" alt="">
+                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026706e" alt="">
+                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026707e" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-slate-50 px-6 py-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <img class="h-6 w-6 rounded-full border border-slate-200" src="https://i.pravatar.cc/150?u=mentor1" alt="">
+                  <span class="ml-2 text-sm text-slate-600 font-medium">Dr. Ousmane Diop</span>
+                </div>
+                <div>
+                  <span class="inline-flex rounded-full bg-amber-100 px-2 text-xs font-semibold leading-5 text-amber-800">Soumission en cours</span>
+                </div>
+              </div>
+            </div>
+            <div class="-mt-px flex divide-x divide-slate-200">
+              <div class="flex w-0 flex-1">
+                <button class="relative -mr-px inline-flex w-0 flex-1 items-center justify-center rounded-bl-xl border border-transparent py-3 text-sm font-medium text-slate-700 hover:text-slate-500">
+                  <svg class="h-5 w-5 text-slate-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  Contacter
+                </button>
+              </div>
+              <div class="-ml-px flex w-0 flex-1">
+                <a href="organisateur-team-details.html" class="relative inline-flex w-0 flex-1 items-center justify-center rounded-br-xl border border-transparent py-3 text-sm font-medium text-slate-700 hover:text-slate-500">
+                  <svg class="h-5 w-5 text-slate-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                  Détails
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Team Card 2 (No Mentor) -->
+          <div class="col-span-1 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
+            <div class="flex w-full items-center justify-between space-x-6 p-6">
+              <div class="flex-1 truncate">
+                <div class="flex items-center space-x-3">
+                  <a href="organisateur-team-details.html" class="hover:underline"><h3 class="truncate text-lg font-medium text-slate-900">Green Data Squad</h3></a>
+                  <span class="inline-block flex-shrink-0 rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-800">3 membres</span>
+                </div>
+                <p class="mt-1 truncate text-sm text-slate-500">Analyse de données climatiques API</p>
+                <div class="mt-4">
+                  <!-- Members Avatars -->
+                  <div class="flex -space-x-2 overflow-hidden">
+                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026708e" alt="">
+                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026709e" alt="">
+                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026710e" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-slate-50 px-6 py-3">
+              <div class="flex items-center justify-between">
+                <button data-team-name="Green Data Squad" class="btn-assign-mentor-team text-sm font-medium text-brand-600 hover:text-brand-800 focus:outline-none">
+                  + Assigner un mentor
+                </button>
+                <div>
+                  <span class="inline-flex rounded-full bg-slate-100 px-2 text-xs font-semibold leading-5 text-slate-600">Pas encore de projet</span>
+                </div>
+              </div>
+            </div>
+            <div class="-mt-px flex divide-x divide-slate-200">
+              <div class="flex w-0 flex-1">
+                <button class="relative -mr-px inline-flex w-0 flex-1 items-center justify-center rounded-bl-xl border border-transparent py-3 text-sm font-medium text-slate-700 hover:text-slate-500">
+                  <svg class="h-5 w-5 text-slate-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  Contacter
+                </button>
+              </div>
+              <div class="-ml-px flex w-0 flex-1">
+                <a href="organisateur-team-details.html" class="relative inline-flex w-0 flex-1 items-center justify-center rounded-br-xl border border-transparent py-3 text-sm font-medium text-slate-700 hover:text-slate-500">
+                  <svg class="h-5 w-5 text-slate-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                  Détails
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+    </div>
+
+    <!-- Modal Assigner Mentor (Team Context) -->
+    <div id="assign-mentor-team-modal" class="relative z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity"></div>
+
+      <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          
+          <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg class="h-6 w-6 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                  <h3 class="text-lg font-semibold leading-6 text-slate-900" id="modal-title">Assigner un mentor à <span id="modal-team-name" class="text-brand-600">l'équipe</span></h3>
+                  <div class="mt-4 space-y-5">
+                    
+                    <!-- Choix du Mentor -->
+                    <div>
+                      <label for="mentor-select" class="block text-sm font-medium leading-6 text-slate-900">Sélectionner un mentor disponible</label>
+                      <select id="mentor-select" class="mt-2 block w-full rounded-md border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6">
+                        <option value="" disabled selected>Choisissez un expert...</option>
+                        <option value="ousmane">Dr. Ousmane Diop (Expert IA)</option>
+                        <option value="marie">Marie Koné (UX/UI Designer)</option>
+                        <option value="jean">Jean Dupont (DevOps)</option>
+                      </select>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+              <button type="button" id="btn-save-team-modal" class="inline-flex w-full justify-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 sm:ml-3 sm:w-auto focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2">Enregistrer</button>
+              <button type="button" id="btn-close-team-modal" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2">Annuler</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('assign-mentor-team-modal');
+        const closeModalBtn = document.getElementById('btn-close-team-modal');
+        const saveModalBtn = document.getElementById('btn-save-team-modal');
+        const assignBtns = document.querySelectorAll('.btn-assign-mentor-team');
+        const teamNameSpan = document.getElementById('modal-team-name');
+        
+        // Open modal
+        assignBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const teamName = btn.getAttribute('data-team-name');
+            teamNameSpan.textContent = teamName;
+            
+            modal.classList.remove('hidden');
+          });
+        });
+
+        // Close modal on Cancel
+        closeModalBtn.addEventListener('click', () => {
+          modal.classList.add('hidden');
+        });
+
+        // Close modal on Save (Simulate save)
+        saveModalBtn.addEventListener('click', () => {
+          modal.classList.add('hidden');
+          // In a real app, you would submit data here
+          alert('Assignation enregistrée avec succès !');
+        });
+      });
+    </script>
+  </body>
+</html>

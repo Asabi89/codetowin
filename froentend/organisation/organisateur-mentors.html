@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion des Mentors — Organisateur CodeToWin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Space Grotesk", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#ECFDF5",
+                100: "#D1FAE5",
+                200: "#A7F3D0",
+                300: "#6EE7B7",
+                400: "#34D399",
+                500: "#10B981",
+                600: "#059669",
+                700: "#047857",
+                800: "#065F46",
+                900: "#064E3B",
+                950: "#022C22",
+              },
+              navy: {
+                900: "#0F172A",
+              },
+              gold: {
+                400: "#FBBF24",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #F8FAFC;
+        color: #0F172A;
+      }
+    </style>
+  </head>
+  <body class="flex h-screen overflow-hidden bg-slate-50">
+    
+    <!-- Sidebar -->
+    <aside class="hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex">
+      <div class="flex h-16 items-center border-b border-slate-200 px-6">
+        <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" class="h-8" onerror="this.src='https://placehold.co/120x32/047857/white?text=CodeToWin'" />
+      </div>
+      <div class="flex-1 overflow-y-auto py-4">
+        <nav class="space-y-1 px-3">
+          <a href="organisateur-dashboard.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Dashboard
+          </a>
+          <a href="organisateur-hackathons.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium bg-brand-50 text-brand-700">
+            <svg class="mr-3 h-5 w-5 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Mes Hackathons
+          </a>
+          <div class="space-y-1">
+            <a href="organisateur-edit-hackathon.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Configuration</span>
+            </a>
+            <a href="organisateur-participants.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Participants</span>
+            </a>
+            <a href="organisateur-teams.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Équipes</span>
+            </a>
+            <a href="organisateur-submissions.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Soumissions</span>
+            </a>
+            <a href="organisateur-evaluation.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Évaluations</span>
+            </a>
+            <a href="organisateur-results.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Résultats</span>
+            </a>
+            <a href="organisateur-mentors.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-brand-700 font-semibold">
+              <span class="truncate">Mentors</span>
+            </a>
+            <a href="organisateur-announcements.html" class="group flex items-center pl-11 pr-3 py-2 text-sm rounded-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Annonces</span>
+            </a>
+          </div>
+          <a href="organisateur-create-hackathon.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Créer un hackathon
+          </a>
+          <a href="organisateur-equipe.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Équipe
+          </a>
+          <a href="organisateur-messages.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900 justify-between">
+            <div class="flex items-center">
+              <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+              Messages
+            </div>
+            <span class="inline-flex items-center justify-center rounded-full bg-brand-600 px-2 py-0.5 text-xs font-bold text-white">2</span>
+          </a>
+          <a href="organisateur-settings.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Paramètres
+          </a>
+        </nav>
+      </div>
+      <div class="border-t border-slate-200 p-4">
+        <a href="#" class="group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900">
+          <img src="https://ui-avatars.com/api/?name=TechHub+Senegal&background=047857&color=fff" alt="" class="mr-3 h-8 w-8 rounded-full" />
+          <span class="truncate">TechHub Sénégal</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex flex-1 flex-col overflow-hidden">
+      <!-- Topbar -->
+      <header class="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+        <div class="flex items-center">
+          <button class="text-slate-500 focus:outline-none sm:hidden">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div class="ml-4 flex items-center space-x-2 text-sm sm:ml-0">
+            <a href="organisateur-hackathons.html" class="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</a>
+            <svg class="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <span class="font-medium text-slate-900">Mentors</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <button type="button" id="btn-invite-new-mentor" class="inline-flex items-center rounded-md border border-transparent bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+            <svg class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+            </svg>
+            Inviter un mentor
+          </button>
+        </div>
+      </header>
+
+      
+
+
+      <!-- Main scrollable area -->
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        
+        <div class="sm:flex sm:items-center">
+          <div class="sm:flex-auto">
+            <h1 class="font-display text-2xl font-bold text-slate-900">Mentors (5)</h1>
+            <p class="mt-2 text-sm text-slate-700">Invitez des experts pour accompagner les équipes et donnez-leur accès aux soumissions pour l'évaluation.</p>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mt-6 border-b border-slate-200">
+          <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+            <button id="tab-accepted" class="tab-btn border-brand-500 text-brand-600 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium" aria-current="page">
+              Acceptés (2)
+            </button>
+            <button id="tab-pending" class="tab-btn border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+              En attente (3)
+            </button>
+            <button id="tab-network" class="tab-btn border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+              Disponibles dans le réseau
+            </button>
+          </nav>
+        </div>
+
+        <!-- Tab Content: Acceptés -->
+        <div id="content-accepted" class="tab-content mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          
+          <!-- Mentor 1 -->
+          <div class="col-span-1 flex flex-col divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white text-center shadow-sm">
+            <div class="flex flex-1 flex-col p-8">
+              <img class="mx-auto h-24 w-24 flex-shrink-0 rounded-full" src="https://i.pravatar.cc/150?u=mentor1" alt="">
+              <h3 class="mt-6 text-sm font-medium text-slate-900">Dr. Ousmane Diop</h3>
+              <dl class="mt-1 flex flex-grow flex-col justify-between">
+                <dt class="sr-only">Title</dt>
+                <dd class="text-sm text-slate-500">Expert Data Science & AI</dd>
+                <dt class="sr-only">Role</dt>
+                <dd class="mt-3">
+                  <span class="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold leading-5 text-green-800">Assigné à 2 équipes</span>
+                </dd>
+              </dl>
+            </div>
+            <div>
+              <div class="-mt-px flex divide-x divide-slate-200">
+                <div class="flex w-0 flex-1">
+                  <button class="relative -mr-px inline-flex w-0 flex-1 items-center justify-center rounded-bl-xl border border-transparent py-4 text-sm font-medium text-slate-700 hover:text-slate-500">
+                    <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    Email
+                  </button>
+                </div>
+                <div class="-ml-px flex w-0 flex-1">
+                  <button data-mentor-name="Dr. Ousmane Diop" class="btn-assign-mentor relative inline-flex w-0 flex-1 items-center justify-center rounded-br-xl border border-transparent py-4 text-sm font-medium text-slate-700 hover:text-slate-500 focus:outline-none">
+                    <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                    Assigner
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mentor 2 -->
+          <div class="col-span-1 flex flex-col divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white text-center shadow-sm">
+            <div class="flex flex-1 flex-col p-8">
+              <img class="mx-auto h-24 w-24 flex-shrink-0 rounded-full" src="https://i.pravatar.cc/150?u=mentor2" alt="">
+              <h3 class="mt-6 text-sm font-medium text-slate-900">Marie Koné</h3>
+              <dl class="mt-1 flex flex-grow flex-col justify-between">
+                <dt class="sr-only">Title</dt>
+                <dd class="text-sm text-slate-500">UX/UI Designer Lead</dd>
+                <dt class="sr-only">Role</dt>
+                <dd class="mt-3">
+                  <span class="inline-flex rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold leading-5 text-slate-600">Non assigné</span>
+                </dd>
+              </dl>
+            </div>
+            <div>
+              <div class="-mt-px flex divide-x divide-slate-200">
+                <div class="flex w-0 flex-1">
+                  <button class="relative -mr-px inline-flex w-0 flex-1 items-center justify-center rounded-bl-xl border border-transparent py-4 text-sm font-medium text-slate-700 hover:text-slate-500">
+                    <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    Email
+                  </button>
+                </div>
+                <div class="-ml-px flex w-0 flex-1">
+                  <button data-mentor-name="Marie Koné" class="btn-assign-mentor relative inline-flex w-0 flex-1 items-center justify-center rounded-br-xl border border-transparent py-4 text-sm font-medium text-slate-700 hover:text-slate-500 focus:outline-none">
+                    <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                    Assigner
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tab Content: En attente -->
+        <div id="content-pending" class="tab-content hidden mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <!-- Pending 1 -->
+          <div class="col-span-1 flex flex-col divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white text-center shadow-sm">
+            <div class="flex flex-1 flex-col p-8">
+              <div class="mx-auto flex h-24 w-24 flex-shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                <span class="text-xl font-bold">A</span>
+              </div>
+              <h3 class="mt-6 text-sm font-medium text-slate-900">amadiop@example.com</h3>
+              <dl class="mt-1 flex flex-grow flex-col justify-between">
+                <dd class="text-sm text-slate-500">Invitation envoyée hier</dd>
+                <dd class="mt-3">
+                  <span class="inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold leading-5 text-amber-800">En attente de réponse</span>
+                </dd>
+              </dl>
+            </div>
+            <div>
+              <div class="-mt-px flex divide-x divide-slate-200">
+                <div class="flex w-0 flex-1">
+                  <button class="relative -mr-px inline-flex w-0 flex-1 items-center justify-center rounded-bl-xl border border-transparent py-4 text-sm font-medium text-slate-700 hover:text-slate-500">
+                    Relancer
+                  </button>
+                </div>
+                <div class="-ml-px flex w-0 flex-1">
+                  <button class="relative inline-flex w-0 flex-1 items-center justify-center rounded-br-xl border border-transparent py-4 text-sm font-medium text-red-600 hover:text-red-500">
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Pending 2 -->
+          <div class="col-span-1 flex flex-col divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white text-center shadow-sm">
+            <div class="flex flex-1 flex-col p-8">
+              <img class="mx-auto h-24 w-24 flex-shrink-0 rounded-full" src="https://i.pravatar.cc/150?u=mentor3" alt="">
+              <h3 class="mt-6 text-sm font-medium text-slate-900">Paul Martin</h3>
+              <dl class="mt-1 flex flex-grow flex-col justify-between">
+                <dd class="text-sm text-slate-500">Invité depuis la plateforme</dd>
+                <dd class="mt-3">
+                  <span class="inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold leading-5 text-amber-800">En attente de réponse</span>
+                </dd>
+              </dl>
+            </div>
+            <div>
+              <div class="-mt-px flex divide-x divide-slate-200">
+                <div class="flex w-0 flex-1">
+                  <button class="relative -mr-px inline-flex w-0 flex-1 items-center justify-center rounded-bl-xl border border-transparent py-4 text-sm font-medium text-slate-700 hover:text-slate-500">
+                    Relancer
+                  </button>
+                </div>
+                <div class="-ml-px flex w-0 flex-1">
+                  <button class="relative inline-flex w-0 flex-1 items-center justify-center rounded-br-xl border border-transparent py-4 text-sm font-medium text-red-600 hover:text-red-500">
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Content: Réseau -->
+        <div id="content-network" class="tab-content hidden mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <!-- Network 1 -->
+          <div class="col-span-1 flex flex-col divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white text-center shadow-sm">
+            <div class="flex flex-1 flex-col p-8">
+              <img class="mx-auto h-24 w-24 flex-shrink-0 rounded-full" src="https://i.pravatar.cc/150?u=mentor_net1" alt="">
+              <h3 class="mt-6 text-sm font-medium text-slate-900">Sarah Connor</h3>
+              <dl class="mt-1 flex flex-grow flex-col justify-between">
+                <dd class="text-sm text-slate-500">CTO @ TechCorp</dd>
+                <dd class="mt-3">
+                  <span class="inline-flex items-center text-xs text-slate-500"><svg class="mr-1 h-4 w-4 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg> 4.9/5 (12 participations)</span>
+                </dd>
+              </dl>
+            </div>
+            <div>
+              <div class="-mt-px flex divide-x divide-slate-200">
+                <div class="flex w-0 flex-1">
+                  <button class="relative -mr-px inline-flex w-0 flex-1 items-center justify-center rounded-bl-xl border border-transparent py-4 text-sm font-medium text-slate-700 hover:text-slate-500">
+                    Profil
+                  </button>
+                </div>
+                <div class="-ml-px flex w-0 flex-1 bg-brand-50 rounded-br-xl hover:bg-brand-100">
+                  <button class="relative inline-flex w-0 flex-1 items-center justify-center border border-transparent py-4 text-sm font-medium text-brand-700">
+                    <svg class="mr-2 h-5 w-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                    Inviter
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Network 2 -->
+          <div class="col-span-1 flex flex-col divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white text-center shadow-sm">
+            <div class="flex flex-1 flex-col p-8">
+              <img class="mx-auto h-24 w-24 flex-shrink-0 rounded-full" src="https://i.pravatar.cc/150?u=mentor_net2" alt="">
+              <h3 class="mt-6 text-sm font-medium text-slate-900">David G.</h3>
+              <dl class="mt-1 flex flex-grow flex-col justify-between">
+                <dd class="text-sm text-slate-500">Lead Dev Blockchain</dd>
+                <dd class="mt-3">
+                  <span class="inline-flex items-center text-xs text-slate-500"><svg class="mr-1 h-4 w-4 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg> 4.5/5 (4 participations)</span>
+                </dd>
+              </dl>
+            </div>
+            <div>
+              <div class="-mt-px flex divide-x divide-slate-200">
+                <div class="flex w-0 flex-1">
+                  <button class="relative -mr-px inline-flex w-0 flex-1 items-center justify-center rounded-bl-xl border border-transparent py-4 text-sm font-medium text-slate-700 hover:text-slate-500">
+                    Profil
+                  </button>
+                </div>
+                <div class="-ml-px flex w-0 flex-1 bg-brand-50 rounded-br-xl hover:bg-brand-100">
+                  <button class="relative inline-flex w-0 flex-1 items-center justify-center border border-transparent py-4 text-sm font-medium text-brand-700">
+                    <svg class="mr-2 h-5 w-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                    Inviter
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- Modal Inviter Mentor Réseau -->
+    <div id="invite-network-modal" class="relative z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity"></div>
+
+      <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          
+          <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg class="h-6 w-6 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                  <h3 class="text-lg font-semibold leading-6 text-slate-900" id="modal-title">Inviter <span id="modal-invite-name" class="text-brand-600">Mentor</span></h3>
+                  <div class="mt-4 space-y-5">
+                    
+                    <!-- Choix du Hackathon -->
+                    <div>
+                      <label for="invite-hackathon-select" class="block text-sm font-medium leading-6 text-slate-900">Pour quel Hackathon ?</label>
+                      <select id="invite-hackathon-select" class="mt-2 block w-full rounded-md border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6">
+                        <option value="ai-climate" selected>AI for Climate Africa</option>
+                        <option value="fintech-dakar">FinTech Challenge Dakar</option>
+                      </select>
+                    </div>
+
+                    <!-- Message personnel -->
+                    <div>
+                      <label for="invite-message" class="block text-sm font-medium leading-6 text-slate-900">Message d'invitation (Optionnel)</label>
+                      <div class="mt-2">
+                        <textarea id="invite-message" name="invite-message" rows="3" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" placeholder="Bonjour, j'aimerais beaucoup vous avoir comme mentor pour notre prochain hackathon..."></textarea>
+                      </div>
+                      <p class="mt-2 text-sm text-slate-500">Un message personnalisé augmente les chances d'acceptation.</p>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+              <button type="button" id="btn-send-invite" class="inline-flex w-full justify-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 sm:ml-3 sm:w-auto focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2">Envoyer l'invitation</button>
+              <button type="button" id="btn-close-invite-modal" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2">Annuler</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Inviter Nouveau Mentor (Email) -->
+    <div id="invite-new-mentor-modal" class="relative z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity"></div>
+
+      <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          
+          <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg class="h-6 w-6 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                  <h3 class="text-lg font-semibold leading-6 text-slate-900" id="modal-title-new">Inviter un nouveau mentor</h3>
+                  <div class="mt-4 space-y-5">
+                    
+                    <!-- Email -->
+                    <div>
+                      <label for="new-mentor-email" class="block text-sm font-medium leading-6 text-slate-900">Adresse e-mail <span class="text-red-500">*</span></label>
+                      <div class="mt-2">
+                        <input type="email" id="new-mentor-email" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" placeholder="mentor@exemple.com" required>
+                      </div>
+                    </div>
+
+                    <!-- Expertise -->
+                    <div>
+                      <label for="new-mentor-role" class="block text-sm font-medium leading-6 text-slate-900">Domaine d'expertise</label>
+                      <div class="mt-2">
+                        <input type="text" id="new-mentor-role" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" placeholder="ex: Data Science, UX/UI, Marketing...">
+                      </div>
+                    </div>
+
+                    <!-- Choix du Hackathon -->
+                    <div>
+                      <label for="new-mentor-hackathon" class="block text-sm font-medium leading-6 text-slate-900">Pour quel Hackathon ?</label>
+                      <select id="new-mentor-hackathon" class="mt-2 block w-full rounded-md border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6">
+                        <option value="ai-climate" selected>AI for Climate Africa</option>
+                        <option value="fintech-dakar">FinTech Challenge Dakar</option>
+                      </select>
+                    </div>
+
+                    <!-- Message personnel -->
+                    <div>
+                      <label for="new-mentor-message" class="block text-sm font-medium leading-6 text-slate-900">Message personnalisé (Optionnel)</label>
+                      <div class="mt-2">
+                        <textarea id="new-mentor-message" rows="3" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" placeholder="Bonjour, j'aimerais vous inviter à devenir mentor..."></textarea>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+              <button type="button" id="btn-send-new-invite" class="inline-flex w-full justify-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 sm:ml-3 sm:w-auto focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2">Envoyer l'invitation</button>
+              <button type="button" id="btn-close-new-invite" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2">Annuler</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Assigner Mentor -->
+    <div id="assign-mentor-modal" class="relative z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity"></div>
+
+      <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          
+          <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg class="h-6 w-6 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
+                </div>
+                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                  <h3 class="text-lg font-semibold leading-6 text-slate-900" id="modal-title">Assigner <span id="modal-mentor-name" class="text-brand-600">Mentor</span></h3>
+                  <div class="mt-4 space-y-5">
+                    
+                    <!-- Choix du Hackathon -->
+                    <div>
+                      <label for="hackathon-select" class="block text-sm font-medium leading-6 text-slate-900">Sélectionner un Hackathon</label>
+                      <select id="hackathon-select" class="mt-2 block w-full rounded-md border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6">
+                        <option value="" disabled selected>Choisissez un hackathon...</option>
+                        <option value="ai-climate">AI for Climate Africa</option>
+                        <option value="fintech-dakar">FinTech Challenge Dakar</option>
+                      </select>
+                    </div>
+
+                    <!-- Choix des Équipes -->
+                    <div id="teams-container" class="hidden">
+                      <div class="flex items-center justify-between mb-2">
+                        <label class="block text-sm font-medium leading-6 text-slate-900">Sélectionner les équipes à assigner</label>
+                        <span class="text-xs font-medium text-slate-500" id="teams-count">0 équipe(s)</span>
+                      </div>
+                      
+                      <!-- Barre de recherche -->
+                      <div class="relative mb-3">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                          <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                          </svg>
+                        </div>
+                        <input type="text" id="team-search-input" class="block w-full rounded-md border-0 py-1.5 pl-9 pr-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" placeholder="Rechercher une équipe...">
+                      </div>
+
+                      <div class="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4 max-h-48 overflow-y-auto" id="teams-list">
+                        <!-- Injected by JS -->
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+              <button type="button" id="btn-save-modal" class="inline-flex w-full justify-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 sm:ml-3 sm:w-auto focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2">Enregistrer l'assignation</button>
+              <button type="button" id="btn-close-modal" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2">Annuler</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Tabs Logic
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            // Remove active state from all
+            tabBtns.forEach(b => {
+              b.classList.remove('border-brand-500', 'text-brand-600');
+              b.classList.add('border-transparent', 'text-slate-500', 'hover:border-slate-300', 'hover:text-slate-700');
+              b.removeAttribute('aria-current');
+            });
+            // Hide all contents
+            tabContents.forEach(c => c.classList.add('hidden'));
+
+            // Set active state to clicked
+            btn.classList.add('border-brand-500', 'text-brand-600');
+            btn.classList.remove('border-transparent', 'text-slate-500', 'hover:border-slate-300', 'hover:text-slate-700');
+            btn.setAttribute('aria-current', 'page');
+
+            // Show corresponding content
+            const targetId = btn.id.replace('tab-', 'content-');
+            document.getElementById(targetId).classList.remove('hidden');
+          });
+        });
+
+        // Modal Logic
+        const modal = document.getElementById('assign-mentor-modal');
+        const closeModalBtn = document.getElementById('btn-close-modal');
+        const saveModalBtn = document.getElementById('btn-save-modal');
+        const assignBtns = document.querySelectorAll('.btn-assign-mentor');
+        const mentorNameSpan = document.getElementById('modal-mentor-name');
+        
+        const hackathonSelect = document.getElementById('hackathon-select');
+        const teamsContainer = document.getElementById('teams-container');
+        const teamsList = document.getElementById('teams-list');
+
+        // Mock data : Équipes par hackathon
+        const hackathonTeams = {
+          'ai-climate': [
+            { id: 1, name: 'AgriTech Innovators', members: 4, hasMentor: true },
+            { id: 2, name: 'Green Data Squad', members: 3, hasMentor: false },
+            { id: 3, name: 'EcoPay Builders', members: 5, hasMentor: false }
+          ],
+          'fintech-dakar': [
+            { id: 4, name: 'Mobile Money Alpha', members: 2, hasMentor: true },
+            { id: 5, name: 'PayTech Solutions', members: 4, hasMentor: false }
+          ]
+        };
+
+        // Open modal
+        assignBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const mentorName = btn.getAttribute('data-mentor-name');
+            mentorNameSpan.textContent = mentorName;
+            
+            // Reset form
+            hackathonSelect.value = "";
+            teamsContainer.classList.add('hidden');
+            teamsList.innerHTML = "";
+            const searchInput = document.getElementById('team-search-input');
+            if(searchInput) searchInput.value = "";
+
+            modal.classList.remove('hidden');
+          });
+        });
+
+        // Close modal on cancel
+        closeModalBtn.addEventListener('click', () => {
+          modal.classList.add('hidden');
+        });
+
+        // Close modal on save (Simulate save)
+        saveModalBtn.addEventListener('click', () => {
+          modal.classList.add('hidden');
+          alert('Assignation enregistrée avec succès !');
+        });
+
+        // Handle hackathon change
+        hackathonSelect.addEventListener('change', (e) => {
+          const selectedHackathon = e.target.value;
+          const teams = hackathonTeams[selectedHackathon];
+          
+          let availableTeams = [];
+          if (teams) {
+            availableTeams = teams.filter(t => !t.hasMentor);
+          }
+          
+          teamsList.innerHTML = ""; // clear list
+
+          if (availableTeams.length > 0) {
+            document.getElementById('teams-count').textContent = `${availableTeams.length} équipe(s) sans mentor`;
+            availableTeams.forEach(team => {
+              const html = `
+                <div class="team-item relative flex items-start" data-team-name="${team.name.toLowerCase()}">
+                  <div class="flex h-6 items-center">
+                    <input id="team-${team.id}" name="teams[]" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600">
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="team-${team.id}" class="font-medium text-slate-900 cursor-pointer">${team.name}</label>
+                    <p class="text-slate-500">${team.members} membres</p>
+                  </div>
+                </div>
+              `;
+              teamsList.insertAdjacentHTML('beforeend', html);
+            });
+            teamsContainer.classList.remove('hidden');
+          } else {
+            teamsContainer.classList.add('hidden');
+          }
+        });
+
+        // Handle team search filtering
+        const searchInput = document.getElementById('team-search-input');
+        if (searchInput) {
+          searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const items = teamsList.querySelectorAll('.team-item');
+            let visibleCount = 0;
+            items.forEach(item => {
+              const teamName = item.getAttribute('data-team-name');
+              if (teamName.includes(searchTerm)) {
+                item.style.display = 'flex';
+                visibleCount++;
+              } else {
+                item.style.display = 'none';
+              }
+            });
+            document.getElementById('teams-count').textContent = `${visibleCount} équipe(s) sans mentor`;
+          });
+        }
+
+        // ==========================================
+        // Modal Logic: Inviter depuis le réseau
+        // ==========================================
+        const inviteModal = document.getElementById('invite-network-modal');
+        const closeInviteBtn = document.getElementById('btn-close-invite-modal');
+        const sendInviteBtn = document.getElementById('btn-send-invite');
+        const inviteBtns = document.querySelectorAll('.btn-invite-network');
+        const inviteNameSpan = document.getElementById('modal-invite-name');
+        const inviteMessage = document.getElementById('invite-message');
+
+        // Open Invite Modal
+        inviteBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const mentorName = btn.getAttribute('data-mentor-name');
+            inviteNameSpan.textContent = mentorName;
+            inviteMessage.value = ""; // reset message
+            inviteModal.classList.remove('hidden');
+          });
+        });
+
+        // Close Invite Modal
+        closeInviteBtn.addEventListener('click', () => {
+          inviteModal.classList.add('hidden');
+        });
+
+        // Send Invite
+        sendInviteBtn.addEventListener('click', () => {
+          inviteModal.classList.add('hidden');
+          alert('Invitation envoyée avec succès ! Le mentor recevra une notification.');
+        });
+
+        // ==========================================
+        // Modal Logic: Inviter un NOUVEAU mentor
+        // ==========================================
+        const newInviteModal = document.getElementById('invite-new-mentor-modal');
+        const openNewInviteBtn = document.getElementById('btn-invite-new-mentor');
+        const closeNewInviteBtn = document.getElementById('btn-close-new-invite');
+        const sendNewInviteBtn = document.getElementById('btn-send-new-invite');
+
+        if (openNewInviteBtn) {
+          openNewInviteBtn.addEventListener('click', () => {
+            newInviteModal.classList.remove('hidden');
+          });
+        }
+
+        if (closeNewInviteBtn) {
+          closeNewInviteBtn.addEventListener('click', () => {
+            newInviteModal.classList.add('hidden');
+          });
+        }
+
+        if (sendNewInviteBtn) {
+          sendNewInviteBtn.addEventListener('click', () => {
+            const emailInput = document.getElementById('new-mentor-email');
+            if (emailInput && emailInput.value) {
+              newInviteModal.classList.add('hidden');
+              alert('Invitation envoyée à ' + emailInput.value + ' !');
+              emailInput.value = ''; // reset
+            } else {
+              alert('Veuillez entrer une adresse e-mail valide.');
+            }
+          });
+        }
+
+      });
+    </script>
+  </body>
+</html>
