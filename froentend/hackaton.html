@@ -349,65 +349,171 @@
 
       .filter-tabs {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 10px;
         padding-bottom: 14px;
       }
 
-      .filter-tab {
+      .filter-chip-group {
         position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
-        border: 1px solid #dcefe6;
-        background: var(--filter-surface);
-        border-radius: 9999px;
-        padding: 0.9rem 1rem;
         min-width: 0;
       }
 
-      .filter-tab:focus-within {
-        border-color: var(--teal);
-        box-shadow: 0 0 0 4px rgba(38, 166, 154, 0.08);
+      .filter-chip {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.9rem;
+        border: 0;
+        border-radius: 9999px;
+        padding: 0.82rem 0.95rem;
+        background: #f4fbf7;
+        box-shadow: inset 0 0 0 1px rgba(4, 120, 87, 0.1);
+        color: var(--text);
+        cursor: pointer;
+        transition:
+          background-color 180ms ease,
+          box-shadow 180ms ease,
+          transform 180ms ease,
+          color 180ms ease;
       }
 
-      .filter-tab::after {
-        content: "⌄";
-        position: absolute;
-        right: 0.9rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #64748b;
-        pointer-events: none;
-        font-size: 1rem;
-        line-height: 1;
+      .filter-chip:hover {
+        background: #effaf4;
+        transform: translateY(-1px);
       }
 
-      .filter-tab span {
+      .filter-chip:focus-visible {
+        outline: none;
+        box-shadow:
+          inset 0 0 0 1px rgba(4, 120, 87, 0.18),
+          0 0 0 4px rgba(4, 120, 87, 0.08);
+      }
+
+      .filter-chip-group.is-open .filter-chip {
+        background: #ecfdf5;
+        box-shadow: inset 0 0 0 1px rgba(4, 120, 87, 0.2);
+        color: #065f46;
+      }
+
+      .filter-chip__text {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        min-width: 0;
+      }
+
+      .filter-chip__label {
         flex-shrink: 0;
         color: var(--teal-dark);
-        font-size: 0.72rem;
+        font-size: 0.68rem;
         font-weight: 800;
         letter-spacing: 0.14em;
         text-transform: uppercase;
       }
 
-      .filter-tab select {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        border: 0;
-        background: transparent;
-        color: var(--text);
-        cursor: pointer;
-        font: inherit;
+      .filter-chip__value {
+        min-width: 0;
+        overflow: hidden;
+        color: #0f172a;
         font-size: 0.95rem;
         font-weight: 700;
-        outline: none;
-        padding-right: 1.5rem;
-        text-align: right;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .filter-chip__chevron {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+        color: #0f766e;
+        transition: transform 180ms ease;
+      }
+
+      .filter-chip-group.is-open .filter-chip__chevron {
+        transform: rotate(180deg);
+      }
+
+      .filter-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        z-index: 20;
         width: 100%;
+        border: 1px solid #d9eadf;
+        border-radius: 1rem;
+        background: #ffffff;
+        box-shadow: 0 22px 45px rgba(15, 23, 42, 0.12);
+        max-height: 18rem;
+        overflow-y: auto;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-4px) scale(0.98);
+        transition:
+          opacity 180ms ease,
+          transform 180ms ease;
+        overflow: hidden;
+      }
+
+      .filter-menu.is-open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0) scale(1);
+      }
+
+      .filter-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        width: 100%;
+        border: 0;
+        background: transparent;
+        padding: 0.78rem 0.9rem;
+        color: #0f172a;
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.92rem;
+        font-weight: 600;
+        text-align: left;
+        transition: background-color 160ms ease, color 160ms ease;
+      }
+
+      .filter-option:hover,
+      .filter-option:focus-visible {
+        outline: none;
+        background: #f0fdf4;
+        color: #047857;
+      }
+
+      .filter-option.is-selected {
+        background: #dcfce7;
+        color: #065f46;
+      }
+
+      .filter-option__marker {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 9999px;
+        background: rgba(4, 120, 87, 0.08);
+        color: #047857;
+        font-size: 0.72rem;
+        font-weight: 800;
+        opacity: 0;
+        transform: scale(0.85);
+        transition:
+          opacity 160ms ease,
+          transform 160ms ease;
+      }
+
+      .filter-option.is-selected .filter-option__marker {
+        opacity: 1;
+        transform: scale(1);
       }
 
       .divider {
@@ -460,11 +566,11 @@
       }
 
       .card {
-        border: 1.5px solid #e0e0e0;
+        border: 1.5px solid #d8dce3;
         border-left: 4px solid var(--teal);
         border-radius: 8px;
         padding: 16px;
-        background: #fff;
+        background: #f5f7fa;
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -557,6 +663,24 @@
         display: inline-block;
       }
 
+      .participant-stat {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border-radius: 20px;
+        padding: 5px 12px;
+        background: #ecfdf5;
+        color: #065f46;
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .participant-stat strong {
+        color: #047857;
+        font-weight: 800;
+      }
+
       .date-range {
         font-size: 14px;
         color: #333;
@@ -589,13 +713,13 @@
           width: min(1240px, calc(100% - 1rem));
         }
 
-        .filter-tabs {
-          grid-template-columns: 1fr;
-        }
-
         .section-heading {
           align-items: flex-start;
           flex-direction: column;
+        }
+
+        .filter-menu {
+          width: 100%;
         }
       }
 
@@ -688,13 +812,12 @@
     </aside>
 
     <section class="hero-strip" aria-label="Hackathon highlight">
-      <p><strong>CodeToWin</strong> hackathons, all in one place.</p>
+      <p><strong>Les meilleurs hackatons tech</strong> ,Réjoins maitenant.</p>
     </section>
 
     <main class="page-shell">
 
       <form class="search-bar" id="searchForm" role="search" aria-label="Search hackathons">
-        <label class="search-input-wrap" for="searchInput">
           <input
             id="searchInput"
             name="search"
@@ -713,18 +836,63 @@
       </form>
 
       <section class="filter-tabs" aria-label="Filter hackathons">
-        <label class="filter-tab" for="statusFilter">
-          <span>All</span>
-          <select id="statusFilter" aria-label="Filter by status"></select>
-        </label>
-        <label class="filter-tab" for="locationFilter">
-          <span>Location</span>
-          <select id="locationFilter" aria-label="Filter by location"></select>
-        </label>
-        <label class="filter-tab" for="interestFilter">
-          <span>Interest</span>
-          <select id="interestFilter" aria-label="Filter by interest"></select>
-        </label>
+        <div class="filter-chip-group" data-filter-group="status">
+          <button
+            type="button"
+            class="filter-chip"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="statusFilterMenu"
+            data-filter-chip="status"
+          >
+            <span class="filter-chip__text">
+              <span class="filter-chip__label">Status</span>
+              <span class="filter-chip__value" data-filter-value="status">All</span>
+            </span>
+            <svg class="filter-chip__chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <div class="filter-menu" id="statusFilterMenu" role="listbox" aria-label="Filter by status"></div>
+        </div>
+        <div class="filter-chip-group" data-filter-group="location">
+          <button
+            type="button"
+            class="filter-chip"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="locationFilterMenu"
+            data-filter-chip="location"
+          >
+            <span class="filter-chip__text">
+              <span class="filter-chip__label">Location</span>
+              <span class="filter-chip__value" data-filter-value="location">All locations</span>
+            </span>
+            <svg class="filter-chip__chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <div class="filter-menu" id="locationFilterMenu" role="listbox" aria-label="Filter by location"></div>
+        </div>
+        <div class="filter-chip-group" data-filter-group="interest">
+          <button
+            type="button"
+            class="filter-chip"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="interestFilterMenu"
+            data-filter-chip="interest"
+          >
+            <span class="filter-chip__text">
+              <span class="filter-chip__label">Interest</span>
+              <span class="filter-chip__value" data-filter-value="interest">All interests</span>
+            </span>
+            <svg class="filter-chip__chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <div class="filter-menu" id="interestFilterMenu" role="listbox" aria-label="Filter by interest"></div>
+        </div>
       </section>
 
       <div class="divider" aria-hidden="true"></div>
@@ -737,13 +905,14 @@
       <section class="cards" id="cards">
         <article
           class="card"
-          data-start="2026-06-01"
-          data-end="2026-06-12"
-          data-location="Accra, Ghana"
-          data-interest="Developers"
-          data-prize="$8,000"
-          data-keywords="codetowin africa ai sprint online hybrid devs makers ai"
-        >
+        data-start="2026-06-01"
+        data-end="2026-06-12"
+        data-location="Accra, Ghana"
+        data-interest="Developers"
+        data-prize="$8,000"
+        data-participants="561"
+        data-keywords="codetowin africa ai sprint online hybrid devs makers ai"
+      >
           <div class="card-top">
             <div class="card-logo" aria-hidden="true"><span>CT</span></div>
             <div class="card-location">
@@ -754,6 +923,7 @@
           <h3>CodeToWin Africa AI Sprint</h3>
           <div class="card-meta">
             <span class="badge" data-status-badge>6 days left</span>
+            <span class="participant-stat"><strong>561</strong> participants</span>
             <span class="date-range">Jun 01 - Jun 12</span>
             <span class="prize"><strong>$8,000</strong> prize</span>
           </div>
@@ -761,13 +931,14 @@
 
         <article
           class="card"
-          data-start="2026-06-10"
-          data-end="2026-06-14"
-          data-location="Lagos, Nigeria"
-          data-interest="Designers"
-          data-prize="$5,000"
-          data-keywords="product design hack weekend online remote designers founders builders ui ux"
-        >
+        data-start="2026-06-10"
+        data-end="2026-06-14"
+        data-location="Lagos, Nigeria"
+        data-interest="Designers"
+        data-prize="$5,000"
+        data-participants="375"
+        data-keywords="product design hack weekend online remote designers founders builders ui ux"
+      >
           <div class="card-top">
             <div class="card-logo" aria-hidden="true"><span>PD</span></div>
             <div class="card-location">
@@ -778,6 +949,7 @@
           <h3>Product Design Hack Weekend</h3>
           <div class="card-meta">
             <span class="badge" data-status-badge>Upcoming</span>
+            <span class="participant-stat"><strong>375</strong> participants</span>
             <span class="date-range">Jun 10 - Jun 14</span>
             <span class="prize"><strong>$5,000</strong> prize</span>
           </div>
@@ -785,13 +957,14 @@
 
         <article
           class="card"
-          data-start="2026-05-15"
-          data-end="2026-05-20"
-          data-location="Nairobi, Kenya"
-          data-interest="Data Analysts"
-          data-prize="$6,000"
-          data-keywords="data for impact challenge online virtual data analysts builders researchers social impact"
-        >
+        data-start="2026-05-15"
+        data-end="2026-05-20"
+        data-location="Nairobi, Kenya"
+        data-interest="Data Analysts"
+        data-prize="$6,000"
+        data-participants="214"
+        data-keywords="data for impact challenge online virtual data analysts builders researchers social impact"
+      >
           <div class="card-top">
             <div class="card-logo" aria-hidden="true"><span>DA</span></div>
             <div class="card-location">
@@ -802,6 +975,7 @@
           <h3>Data for Impact Challenge</h3>
           <div class="card-meta">
             <span class="badge" data-status-badge>Ended</span>
+            <span class="participant-stat"><strong>214</strong> participants</span>
             <span class="date-range">May 15 - May 20</span>
             <span class="prize"><strong>$6,000</strong> prize</span>
           </div>
@@ -809,13 +983,14 @@
 
         <article
           class="card"
-          data-start="2026-06-06"
-          data-end="2026-06-08"
-          data-location="Dakar, Senegal"
-          data-interest="Makers"
-          data-prize="$7,500"
-          data-keywords="young innovators lab online makers submissions developers designers students"
-        >
+        data-start="2026-06-06"
+        data-end="2026-06-08"
+        data-location="Dakar, Senegal"
+        data-interest="Makers"
+        data-prize="$7,500"
+        data-participants="912"
+        data-keywords="young innovators lab online makers submissions developers designers students"
+      >
           <div class="card-top">
             <div class="card-logo" aria-hidden="true"><span>IN</span></div>
             <div class="card-location">
@@ -826,6 +1001,7 @@
           <h3>Young Innovators Lab</h3>
           <div class="card-meta">
             <span class="badge" data-status-badge>2 days left</span>
+            <span class="participant-stat"><strong>912</strong> participants</span>
             <span class="date-range">Jun 06 - Jun 08</span>
             <span class="prize"><strong>$7,500</strong> prize</span>
           </div>
@@ -833,13 +1009,14 @@
 
         <article
           class="card"
-          data-start="2026-06-18"
-          data-end="2026-06-22"
-          data-location="Kigali, Rwanda"
-          data-interest="Security"
-          data-prize="$9,000"
-          data-keywords="cloud and security open hack online builders devs makers engineers security cloud"
-        >
+        data-start="2026-06-18"
+        data-end="2026-06-22"
+        data-location="Kigali, Rwanda"
+        data-interest="Security"
+        data-prize="$9,000"
+        data-participants="184"
+        data-keywords="cloud and security open hack online builders devs makers engineers security cloud"
+      >
           <div class="card-top">
             <div class="card-logo" aria-hidden="true"><span>CS</span></div>
             <div class="card-location">
@@ -850,6 +1027,7 @@
           <h3>Cloud &amp; Security Open Hack</h3>
           <div class="card-meta">
             <span class="badge" data-status-badge>Upcoming</span>
+            <span class="participant-stat"><strong>184</strong> participants</span>
             <span class="date-range">Jun 18 - Jun 22</span>
             <span class="prize"><strong>$9,000</strong> prize</span>
           </div>
@@ -862,15 +1040,33 @@
     <script>
       const searchForm = document.getElementById("searchForm");
       const searchInput = document.getElementById("searchInput");
-      const statusFilter = document.getElementById("statusFilter");
-      const locationFilter = document.getElementById("locationFilter");
-      const interestFilter = document.getElementById("interestFilter");
+      const filterGroups = Array.from(document.querySelectorAll("[data-filter-group]"));
+      const filterMenus = {
+        status: document.getElementById("statusFilterMenu"),
+        location: document.getElementById("locationFilterMenu"),
+        interest: document.getElementById("interestFilterMenu"),
+      };
+      const filterButtons = {
+        status: document.querySelector('[data-filter-chip="status"]'),
+        location: document.querySelector('[data-filter-chip="location"]'),
+        interest: document.querySelector('[data-filter-chip="interest"]'),
+      };
+      const filterValueLabels = {
+        status: document.querySelector('[data-filter-value="status"]'),
+        location: document.querySelector('[data-filter-value="location"]'),
+        interest: document.querySelector('[data-filter-value="interest"]'),
+      };
       const cards = Array.from(document.querySelectorAll(".card"));
       const resultsCount = document.getElementById("resultsCount");
       const emptyState = document.getElementById("emptyState");
       const mobileNavToggle = document.getElementById("mobile-nav-toggle");
       const mobileNavBackdrop = document.getElementById("mobile-nav-backdrop");
       const mobileNavClose = document.getElementById("mobile-nav-close");
+      const filterState = {
+        status: "all",
+        location: "all",
+        interest: "all",
+      };
 
       function setMobileNavOpen(isOpen) {
         const sidebar = document.getElementById("mobile-nav-sidebar");
@@ -921,17 +1117,37 @@
           .join(" ");
       }
 
-      function addOption(select, value, label) {
-        const option = document.createElement("option");
-        option.value = value;
-        option.textContent = label;
-        select.appendChild(option);
+      function createFilterOption(value, label, isSelected = false) {
+        const option = document.createElement("button");
+        option.type = "button";
+        option.className = "filter-option";
+        option.setAttribute("role", "option");
+        option.dataset.filterValue = value;
+        option.setAttribute("aria-selected", String(isSelected));
+
+        const text = document.createElement("span");
+        text.textContent = label;
+
+        const marker = document.createElement("span");
+        marker.className = "filter-option__marker";
+        marker.setAttribute("aria-hidden", "true");
+        marker.textContent = "✓";
+
+        option.append(text, marker);
+
+        if (isSelected) {
+          option.classList.add("is-selected");
+        }
+
+        return option;
       }
 
-      function populateSelect(select, values, allLabel, formatter = (value) => value) {
-        select.innerHTML = "";
-        addOption(select, "all", allLabel);
-        values.forEach((value) => addOption(select, value, formatter(value)));
+      function populateFilterMenu(menu, values, allLabel, formatter = (value) => value) {
+        menu.innerHTML = "";
+        menu.appendChild(createFilterOption("all", allLabel, true));
+        values.forEach((value) => {
+          menu.appendChild(createFilterOption(value, formatter(value), false));
+        });
       }
 
       function getStatusFromDates(startValue, endValue) {
@@ -991,25 +1207,104 @@
       }
 
       function initializeFilters() {
-        populateSelect(statusFilter, ["live", "upcoming", "ended"], "All", titleCase);
+        populateFilterMenu(filterMenus.status, ["live", "upcoming", "ended"], "All", titleCase);
 
         const locations = [...new Set(cards.map((card) => card.dataset.location).filter(Boolean))];
         const interests = [...new Set(cards.map((card) => card.dataset.interest).filter(Boolean))];
 
-        populateSelect(locationFilter, locations, "All locations");
-        populateSelect(interestFilter, interests, "All interests", titleCase);
+        populateFilterMenu(filterMenus.location, locations, "All locations");
+        populateFilterMenu(filterMenus.interest, interests, "All interests", titleCase);
 
-        statusFilter.value = "all";
-        locationFilter.value = "all";
-        interestFilter.value = "all";
+        updateFilterUi("status");
+        updateFilterUi("location");
+        updateFilterUi("interest");
+      }
+
+      function getFilterLabel(filterName, value) {
+        if (value === "all") {
+          if (filterName === "status") return "All";
+          if (filterName === "location") return "All locations";
+          if (filterName === "interest") return "All interests";
+        }
+
+        if (filterName === "status") {
+          return titleCase(value);
+        }
+
+        return titleCase(value);
+      }
+
+      function updateFilterUi(filterName) {
+        const button = filterButtons[filterName];
+        const label = filterValueLabels[filterName];
+        const menu = filterMenus[filterName];
+        const currentValue = filterState[filterName];
+
+        if (!button || !label || !menu) {
+          return;
+        }
+
+        label.textContent = getFilterLabel(filterName, currentValue);
+        button.setAttribute("aria-expanded", String(menu.classList.contains("is-open")));
+
+        menu.querySelectorAll(".filter-option").forEach((option) => {
+          const isSelected = option.dataset.filterValue === currentValue;
+          option.classList.toggle("is-selected", isSelected);
+          option.setAttribute("aria-selected", String(isSelected));
+        });
+      }
+
+      function closeFilterMenu(filterName) {
+        const group = document.querySelector(`[data-filter-group="${filterName}"]`);
+        const button = filterButtons[filterName];
+        const menu = filterMenus[filterName];
+
+        if (!group || !button || !menu) {
+          return;
+        }
+
+        group.classList.remove("is-open");
+        menu.classList.remove("is-open");
+        button.setAttribute("aria-expanded", "false");
+      }
+
+      function closeAllFilterMenus() {
+        Object.keys(filterMenus).forEach(closeFilterMenu);
+      }
+
+      function openFilterMenu(filterName) {
+        const group = document.querySelector(`[data-filter-group="${filterName}"]`);
+        const button = filterButtons[filterName];
+        const menu = filterMenus[filterName];
+
+        if (!group || !button || !menu) {
+          return;
+        }
+
+        Object.keys(filterMenus).forEach((name) => {
+          if (name !== filterName) {
+            closeFilterMenu(name);
+          }
+        });
+
+        const isOpen = menu.classList.contains("is-open");
+        group.classList.toggle("is-open", !isOpen);
+        menu.classList.toggle("is-open", !isOpen);
+        button.setAttribute("aria-expanded", String(!isOpen));
+      }
+
+      function setFilterValue(filterName, value) {
+        filterState[filterName] = value;
+        updateFilterUi(filterName);
+        applyFilter();
       }
 
       function applyFilter() {
         const query = normalizeText(searchInput.value);
         const compactQuery = query.replace(/\s+/g, "");
-        const selectedStatus = statusFilter.value;
-        const selectedLocation = normalizeText(locationFilter.value);
-        const selectedInterest = normalizeText(interestFilter.value);
+        const selectedStatus = filterState.status;
+        const selectedLocation = normalizeText(filterState.location);
+        const selectedInterest = normalizeText(filterState.interest);
         let visibleCount = 0;
 
         cards.forEach((card) => {
@@ -1036,6 +1331,10 @@
         emptyState.classList.toggle("is-visible", visibleCount === 0);
       }
 
+      function handleFilterChipClick(filterName) {
+        openFilterMenu(filterName);
+      }
+
       searchForm.addEventListener("submit", (event) => {
         event.preventDefault();
         applyFilter();
@@ -1059,16 +1358,44 @@
         }
       });
 
+      searchInput.addEventListener("input", applyFilter);
+
+      filterGroups.forEach((group) => {
+        const filterName = group.dataset.filterGroup;
+        const button = filterButtons[filterName];
+        const menu = filterMenus[filterName];
+
+        if (!filterName || !button || !menu) {
+          return;
+        }
+
+        button.addEventListener("click", () => handleFilterChipClick(filterName));
+
+        menu.addEventListener("click", (event) => {
+          const option = event.target.closest(".filter-option");
+          if (!option) {
+            return;
+          }
+
+          setFilterValue(filterName, option.dataset.filterValue || "all");
+          closeFilterMenu(filterName);
+        });
+      });
+
+      document.addEventListener("click", (event) => {
+        if (event.target.closest("[data-filter-group]")) {
+          return;
+        }
+
+        closeAllFilterMenus();
+      });
+
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
+          closeAllFilterMenus();
           closeMobileNav();
         }
       });
-
-      searchInput.addEventListener("input", applyFilter);
-      statusFilter.addEventListener("change", applyFilter);
-      locationFilter.addEventListener("change", applyFilter);
-      interestFilter.addEventListener("change", applyFilter);
 
       initializeCards();
       initializeFilters();
