@@ -146,7 +146,7 @@
             
             <!-- Wizard Steps (Sidebar) -->
             <aside class="py-6 lg:col-span-3 lg:py-0">
-              <nav class="space-y-1" id="wizard-nav">
+                                          <nav class="space-y-1" id="wizard-nav">
                 <a href="#" data-step="1" class="wizard-nav-item group flex items-center rounded-md bg-white px-3 py-2 text-sm font-medium text-brand-700 shadow-sm ring-1 ring-slate-200">
                   <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-50 border border-brand-200 nav-icon">
                     <span class="text-brand-700 font-semibold nav-number">1</span>
@@ -158,21 +158,21 @@
                   <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-slate-300 nav-icon">
                     <span class="text-slate-500 font-semibold nav-number">2</span>
                   </span>
-                  <span class="ml-3 truncate">Dates et calendrier</span>
+                  <span class="ml-3 truncate">Contenu détaillé</span>
                 </a>
-                
+
                 <a href="#" data-step="3" class="wizard-nav-item group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
                   <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-slate-300 nav-icon">
                     <span class="text-slate-500 font-semibold nav-number">3</span>
                   </span>
-                  <span class="ml-3 truncate">Thèmes & Format</span>
+                  <span class="ml-3 truncate">Dates et calendrier</span>
                 </a>
-
+                
                 <a href="#" data-step="4" class="wizard-nav-item group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
                   <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-slate-300 nav-icon">
                     <span class="text-slate-500 font-semibold nav-number">4</span>
                   </span>
-                  <span class="ml-3 truncate">Prix & Récompenses</span>
+                  <span class="ml-3 truncate">Thèmes & Format</span>
                 </a>
 
                 <a href="#" data-step="5" class="wizard-nav-item group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
@@ -227,9 +227,16 @@
                         </div>
 
                         <div class="col-span-3">
-                          <label class="block text-sm font-medium text-slate-700">Description détaillée <span class="text-red-500">*</span></label>
-                          <div class="mt-1">
-                            <textarea rows="6" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border"></textarea>
+                          <label class="block text-sm font-medium text-slate-700 mb-2">Validation des inscriptions <span class="text-red-500">*</span></label>
+                          <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
+                            <div class="flex items-center">
+                              <input id="mode-public" name="registration_mode" type="radio" checked class="h-4 w-4 border-slate-300 text-brand-600 focus:ring-brand-600">
+                              <label for="mode-public" class="ml-3 block text-sm font-medium leading-6 text-slate-900">Ouvert à tous <span class="font-normal text-slate-500">- Inscription automatique</span></label>
+                            </div>
+                            <div class="flex items-center">
+                              <input id="mode-approval" name="registration_mode" type="radio" class="h-4 w-4 border-slate-300 text-brand-600 focus:ring-brand-600">
+                              <label for="mode-approval" class="ml-3 block text-sm font-medium leading-6 text-slate-900">Sur approbation <span class="font-normal text-slate-500">- Validation manuelle requise</span></label>
+                            </div>
                           </div>
                         </div>
 
@@ -257,8 +264,101 @@
                     </div>
                   </div>
 
-                  <!-- Step 2: Dates -->
+                  
+                  <!-- Step 2: Contenu détaillé -->
                   <div class="wizard-step step-hidden bg-white" id="step-2">
+                    <div class="space-y-6 py-6 px-4 sm:p-6">
+                      <div>
+                        <h3 class="text-lg font-medium leading-6 text-slate-900">Contenu détaillé</h3>
+                        <p class="mt-1 text-sm text-slate-500">Rédigez le contenu principal de votre hackathon. Utilisez l'éditeur pour mettre en forme.</p>
+                      </div>
+
+                      <div class="border border-slate-200 rounded-lg overflow-hidden">
+                        <!-- Content Tabs -->
+                        <div class="border-b border-slate-200 bg-slate-50 flex overflow-x-auto">
+                          <button type="button" class="content-tab active flex-1 py-3 px-4 text-sm font-medium text-brand-600 border-b-2 border-brand-500 whitespace-nowrap" data-content="overview">Vue d'ensemble</button>
+                          <button type="button" class="content-tab flex-1 py-3 px-4 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-100 whitespace-nowrap" data-content="resources">Ressources</button>
+                          <button type="button" class="content-tab flex-1 py-3 px-4 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-100 whitespace-nowrap" data-content="rules">Règles</button>
+                          <button type="button" class="content-tab flex-1 py-3 px-4 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-100 whitespace-nowrap" data-content="faq">FAQ</button>
+                        </div>
+                        
+                        <!-- Rich Text Toolbar (Mockup) -->
+                        <div id="rich-text-toolbar" class="border-b border-slate-200 bg-white p-2 flex items-center space-x-1 sm:space-x-2 text-slate-500 overflow-x-auto">
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Gras"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14h4.5c2.5 0 4.5-2 4.5-4.5 0-1.7-.9-3.2-2.3-4 1.1-.6 1.8-1.8 1.8-3.2C16.5 5.1 14.7 3.5 12.5 3.5H8zm2 2h2.5c1.1 0 2 .9 2 2s-.9 2-2 2H10V7zm0 6h3c1.1 0 2 .9 2 2s-.9 2-2 2h-3v-4z"/></svg></button>
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Italique"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M10 4v3h2.2l-3.4 10H6v3h8v-3h-2.2l3.4-10H18V4h-8z"/></svg></button>
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Souligné"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17c3.3 0 6-2.7 6-6V3h-2.5v8c0 1.9-1.6 3.5-3.5 3.5S8.5 12.9 8.5 11V3H6v8c0 3.3 2.7 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+                          <div class="w-px h-5 bg-slate-300 mx-1"></div>
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Liste à puces"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h2v2H4V6zm0 5h2v2H4v-2zm0 5h2v2H4v-2zm4-10h12v2H8V6zm0 5h12v2H8v-2zm0 5h12v2H8v-2z"/></svg></button>
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Liste numérotée"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M2 17h2v.5H3v1h1v.5H2v1h3v-4H2v1zm1-9h1V4H2v1h1v3zm-1 3h1.8L2 13.1v.9h3v-1H3.2L5 10.9V10H2v1zm5-6v2h14V5H7zm0 14h14v-2H7v2zm0-6h14v-2H7v2z"/></svg></button>
+                          <div class="w-px h-5 bg-slate-300 mx-1"></div>
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Lien"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3.9 12c0-1.7 1.4-3.1 3.1-3.1h4V7H7c-2.8 0-5 2.2-5 5s2.2 5 5 5h4v-1.9H7c-1.7 0-3.1-1.4-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.7 0 3.1 1.4 3.1 3.1s-1.4 3.1-3.1 3.1h-4V17h4c2.8 0 5-2.2 5-5s-2.2-5-5-5z"/></svg></button>
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Image"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></button>
+                          <div class="w-px h-5 bg-slate-300 mx-1"></div>
+                          <button type="button" class="flex items-center space-x-1 p-1.5 rounded bg-brand-50 text-brand-700 transition" title="Mode Markdown activé">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.56 18H3.44C2.65 18 2 17.37 2 16.59V7.41C2 6.63 2.65 6 3.44 6h17.12c.79 0 1.44.63 1.44 1.41v9.18c0 .78-.65 1.41-1.44 1.41zM6.81 15.19v-4.14L8.43 13l1.63-1.95v4.14h1.72V8.81h-1.63L8.43 11 6.72 8.81H5.09v6.38h1.72zm10.74-2.82h-1.89V8.81h-1.72v3.56h-1.88l2.75 3.32 2.74-3.32z"/></svg>
+                            <span class="text-xs font-semibold hidden sm:inline">Markdown actif</span>
+                          </button>
+                        </div>
+
+                        <!-- Editable Areas -->
+                        <div class="bg-white p-4">
+                          <div class="content-pane active block" id="pane-overview">
+                            <textarea rows="10" class="w-full h-64 border-0 focus:ring-0 p-0 text-slate-800 resize-none outline-none" placeholder="Présentez votre hackathon (contexte, objectifs, à qui s'adresse-t-il ?)...">Ce hackathon vise à résoudre les problèmes climatiques en Afrique grâce à l'IA...</textarea>
+                          </div>
+                          <div class="content-pane hidden" id="pane-resources">
+                            <textarea rows="10" class="w-full h-64 border-0 focus:ring-0 p-0 text-slate-800 resize-none outline-none" placeholder="Liens utiles, APIs fournies, datasets à utiliser..."></textarea>
+                          </div>
+                          <div class="content-pane hidden" id="pane-rules">
+                            <textarea rows="10" class="w-full h-64 border-0 focus:ring-0 p-0 text-slate-800 resize-none outline-none" placeholder="Règles de participation, conditions d'éligibilité, code de conduite..."></textarea>
+                          </div>
+                          <div class="content-pane hidden" id="pane-faq">
+                            <!-- Added FAQs List -->
+                            <div id="faq-list" class="space-y-4 mb-6">
+                              <!-- Example of an added FAQ -->
+                              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 relative group">
+                                <button type="button" class="absolute top-2 right-2 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" onclick="this.parentElement.remove()">
+                                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
+                                <h4 class="font-bold text-slate-900 text-sm">Les équipes peuvent-elles être formées avant l'événement ?</h4>
+                                <p class="text-sm text-slate-600 mt-2">Oui, vous pouvez former votre équipe avant ou utiliser le canal de discussion dédié pour trouver des coéquipiers le jour J.</p>
+                              </div>
+                            </div>
+
+                            <!-- FAQ Form -->
+                            <div class="bg-white border border-slate-200 shadow-sm rounded-lg p-4">
+                              <div class="grid grid-cols-1 gap-4">
+                                <div>
+                                  <label class="block text-sm font-medium text-slate-700">Question</label>
+                                  <input type="text" id="faq-question" placeholder="Ex: Qui peut participer ?" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border">
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-slate-700">Réponse</label>
+                                  <textarea id="faq-answer" rows="2" placeholder="Saisissez la réponse..." class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border"></textarea>
+                                </div>
+                                <div>
+                                  <button type="button" id="btn-add-faq" class="inline-flex items-center rounded-md border border-transparent bg-brand-50 text-brand-700 px-4 py-2 text-sm font-medium hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                                    <svg class="-ml-1 mr-2 h-5 w-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    Ajouter la question
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Markdown Info Banner -->
+                        <div id="markdown-info" class="bg-blue-50 border-t border-blue-100 px-4 py-2 flex items-start">
+                          <svg class="h-4 w-4 text-blue-400 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                          <p class="text-xs text-blue-700"><strong>Le mode Markdown est activé par défaut.</strong> Vous pouvez utiliser des astérisques pour le **gras**, des tirets pour les listes, ou saisir des balises Markdown standards. Le rendu final sera mis en forme automatiquement.</p>
+                        </div>
+                      </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Step 3: Dates -->
+                  <div class="wizard-step step-hidden bg-white" id="step-3">
                     <div class="space-y-6 py-6 px-4 sm:p-6">
                       <div>
                         <h3 class="text-lg font-medium leading-6 text-slate-900">Dates et calendrier</h3>
@@ -294,8 +394,8 @@
                     </div>
                   </div>
 
-                  <!-- Step 3: Thèmes -->
-                  <div class="wizard-step step-hidden bg-white" id="step-3">
+                  <!-- Step 4: Thèmes -->
+                  <div class="wizard-step step-hidden bg-white" id="step-4">
                     <div class="space-y-6 py-6 px-4 sm:p-6">
                       <div>
                         <h3 class="text-lg font-medium leading-6 text-slate-900">Thèmes & Format</h3>
@@ -323,48 +423,6 @@
                             <input type="text" placeholder="React, Python, AWS..." class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border">
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Step 4: Prix -->
-                  <div class="wizard-step step-hidden bg-white" id="step-4">
-                    <div class="space-y-6 py-6 px-4 sm:p-6">
-                      <div>
-                        <h3 class="text-lg font-medium leading-6 text-slate-900">Prix & Récompenses</h3>
-                        <p class="mt-1 text-sm text-slate-500">Qu'est-ce qu'il y a à gagner ?</p>
-                      </div>
-
-                      <div class="grid grid-cols-1 gap-6">
-                        <div class="border rounded-md p-4 bg-slate-50">
-                          <h4 class="font-medium text-slate-900 mb-2">1er Prix</h4>
-                          <div class="grid grid-cols-2 gap-4">
-                            <div class="col-span-2 sm:col-span-1">
-                              <label class="block text-xs font-medium text-slate-700">Montant (FCFA / USD)</label>
-                              <input type="text" class="mt-1 block w-full rounded-md border-slate-300 py-2 px-3 border sm:text-sm">
-                            </div>
-                            <div class="col-span-2 sm:col-span-1">
-                              <label class="block text-xs font-medium text-slate-700">Autres avantages</label>
-                              <input type="text" placeholder="ex: Incubation, Matériel..." class="mt-1 block w-full rounded-md border-slate-300 py-2 px-3 border sm:text-sm">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="border rounded-md p-4">
-                          <h4 class="font-medium text-slate-900 mb-2">2ème Prix</h4>
-                          <div class="grid grid-cols-2 gap-4">
-                            <div class="col-span-2 sm:col-span-1">
-                              <label class="block text-xs font-medium text-slate-700">Montant</label>
-                              <input type="text" class="mt-1 block w-full rounded-md border-slate-300 py-2 px-3 border sm:text-sm">
-                            </div>
-                            <div class="col-span-2 sm:col-span-1">
-                              <label class="block text-xs font-medium text-slate-700">Autres avantages</label>
-                              <input type="text" class="mt-1 block w-full rounded-md border-slate-300 py-2 px-3 border sm:text-sm">
-                            </div>
-                          </div>
-                        </div>
-                        <button type="button" class="text-sm font-medium text-brand-600 hover:text-brand-800 text-left">
-                          + Ajouter un autre prix
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -561,6 +619,84 @@
             updateWizardUI();
           }
         });
+
+        
+        // Internal Tabs Logic for Step 2
+        const contentTabs = document.querySelectorAll('.content-tab');
+        const contentPanes = document.querySelectorAll('.content-pane');
+
+        contentTabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            // Reset tabs
+            contentTabs.forEach(t => {
+              t.classList.remove('active', 'text-brand-600', 'border-brand-500');
+              t.classList.add('text-slate-500', 'border-transparent', 'hover:text-slate-700', 'hover:bg-slate-100');
+            });
+            // Set active tab
+            tab.classList.remove('text-slate-500', 'border-transparent', 'hover:text-slate-700', 'hover:bg-slate-100');
+            tab.classList.add('active', 'text-brand-600', 'border-brand-500');
+
+            // Hide all panes
+            contentPanes.forEach(p => {
+              p.classList.add('hidden');
+              p.classList.remove('block');
+            });
+            // Show target pane
+            const targetId = 'pane-' + tab.getAttribute('data-content');
+            const targetPane = document.getElementById(targetId);
+            if(targetPane) {
+              targetPane.classList.remove('hidden');
+              targetPane.classList.add('block');
+            }
+
+            // Hide toolbar and banner if FAQ tab is active
+            const toolbar = document.getElementById('rich-text-toolbar');
+            const markdownInfo = document.getElementById('markdown-info');
+            if(toolbar && markdownInfo) {
+              if (tab.getAttribute('data-content') === 'faq') {
+                toolbar.classList.add('hidden');
+                toolbar.classList.remove('flex');
+                markdownInfo.classList.add('hidden');
+                markdownInfo.classList.remove('flex');
+              } else {
+                toolbar.classList.remove('hidden');
+                toolbar.classList.add('flex');
+                markdownInfo.classList.remove('hidden');
+                markdownInfo.classList.add('flex');
+              }
+            }
+          });
+        });
+
+        // FAQ Logic
+        const btnAddFaq = document.getElementById('btn-add-faq');
+        const faqList = document.getElementById('faq-list');
+        const faqQuestionInput = document.getElementById('faq-question');
+        const faqAnswerInput = document.getElementById('faq-answer');
+
+        if(btnAddFaq) {
+          btnAddFaq.addEventListener('click', () => {
+            const question = faqQuestionInput.value.trim();
+            const answer = faqAnswerInput.value.trim();
+
+            if(question && answer) {
+              const newFaq = document.createElement('div');
+              newFaq.className = 'bg-slate-50 p-4 rounded-lg border border-slate-200 relative group';
+              newFaq.innerHTML = `
+                <button type="button" class="absolute top-2 right-2 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" onclick="this.parentElement.remove()">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+                <h4 class="font-bold text-slate-900 text-sm">${question}</h4>
+                <p class="text-sm text-slate-600 mt-2">${answer}</p>
+              `;
+              faqList.appendChild(newFaq);
+
+              // Clear inputs
+              faqQuestionInput.value = '';
+              faqAnswerInput.value = '';
+            }
+          });
+        }
 
         // Initialize UI
         updateWizardUI();
