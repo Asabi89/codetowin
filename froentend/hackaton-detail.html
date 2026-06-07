@@ -1,0 +1,3632 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Google Cloud Rapid Agent Hackathon - Build real-world AI agents using Gemini, Google Cloud Agent Builder, and partner MCP servers." />
+    <title>Google Cloud Rapid Agent Hackathon - CodeToWin</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23059669'/%3E%3Cpath d='M10 22V10h3v4h6v-4h3v12h-3v-5h-6v5z' fill='white'/%3E%3C/svg%3E"
+    />
+    <!-- Fontshare Satoshi and Google Font Inter -->
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,800,700,500,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- EasyMDE Markdown Editor -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <!-- Marked.js Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <style>
+      :root {
+        --green: #059669;
+        --green-dark: #065f46;
+        --green-light: #f0fdf4;
+        --green-bg-subtle: #f6fdfa;
+        --bg: #ffffff;
+        --bg-subtle: #f8fafc;
+        --text: #0f172a;
+        --text-muted: #64748b;
+        --line: #e2e8f0;
+        --font-sans: 'Inter', sans-serif;
+        --font-display: 'Satoshi', sans-serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        border: none;
+        outline: none;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        background-color: var(--bg);
+        scroll-padding-top: 150px;
+        overflow-x: clip;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: clip;
+      }
+
+      body.menu-open {
+        overflow: hidden;
+      }
+
+      /* Global Header - Borderless styling */
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(12px);
+      }
+
+      .header-inner {
+        width: min(1200px, calc(100% - 2rem));
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding: 1.25rem 0;
+      }
+
+      .brand-link {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        height: 2.25rem;
+        width: auto;
+        object-fit: contain;
+      }
+
+      .desktop-nav {
+        display: none;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .desktop-nav-link {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 180ms ease;
+      }
+
+      .desktop-nav-link:hover {
+        color: var(--green);
+      }
+
+      .desktop-nav-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background: var(--green);
+        color: #ffffff;
+        padding: 0.65rem 1.35rem;
+        font-size: 0.92rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background-color 180ms ease;
+      }
+
+      .desktop-nav-cta:hover {
+        background: var(--green-dark);
+      }
+
+      .mobile-nav-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      .mobile-nav-button svg {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      .mobile-nav-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        background: rgba(15, 23, 42, 0.25);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 220ms ease;
+      }
+
+      .mobile-nav-backdrop.is-open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .mobile-nav-sidebar {
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        height: 100vh;
+        width: min(20rem, 80vw);
+        flex-direction: column;
+        background: #ffffff;
+        transform: translateX(100%);
+        transition: transform 240ms ease;
+        overflow-y: auto;
+      }
+
+      .mobile-nav-sidebar.is-open {
+        transform: translateX(0);
+      }
+
+      .mobile-nav-sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 1rem;
+      }
+
+      .mobile-nav-label {
+        color: var(--green);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      .mobile-nav-sidebar-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1.5rem 1rem;
+      }
+
+      .mobile-nav-sidebar-link {
+        display: block;
+        border-radius: 0.5rem;
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text);
+        text-decoration: none;
+        transition: background-color 180ms ease;
+      }
+
+      .mobile-nav-sidebar-link:hover {
+        background: var(--green-light);
+        color: var(--green);
+      }
+
+      .mobile-nav-sidebar-actions {
+        margin-top: auto;
+        padding: 1.5rem 1rem;
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .mobile-nav-primary, .mobile-nav-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        padding: 0.8rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-decoration: none;
+        text-align: center;
+      }
+
+      .mobile-nav-primary {
+        background: var(--green);
+        color: #ffffff;
+      }
+
+      .mobile-nav-secondary {
+        background: var(--green-light);
+        color: var(--green);
+      }
+
+      /* Hero Section (Mini 15% Screen Height Banner) */
+      .hero {
+        background: linear-gradient(135deg, var(--green-dark) 0%, var(--green) 100%);
+        color: #ffffff;
+        height: 15vh;
+        min-height: 100px;
+        max-height: 130px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+      }
+
+      .hero h1 {
+        font-family: var(--font-display);
+        font-size: clamp(1.4rem, 2.5vw, 2.25rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin: 0;
+        color: #ffffff;
+      }
+
+      /* Page Sub-Header Details */
+      .detail-header {
+        width: min(1200px, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 3rem 0 0;
+      }
+
+      .detail-subtitle {
+        font-family: var(--font-display);
+        font-size: clamp(1.5rem, 2.5vw, 2rem);
+        font-weight: 800;
+        color: var(--text);
+        line-height: 1.2;
+        margin-bottom: 0.75rem;
+      }
+
+      .detail-description-text {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 80ch;
+        line-height: 1.6;
+      }
+
+      /* Quick Information Panel - Gray (Gris) background card style */
+      .quick-info-panel-container {
+        width: min(1200px, calc(100% - 2rem));
+        margin: 0 auto;
+        padding-top: 2.25rem;
+        margin-top: 1.5rem;
+      }
+
+      .quick-info-panel {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem 2.5rem;
+        background: #f1f5f9; /* Gris background */
+        border-radius: 1.25rem;
+        padding: 2rem;
+      }
+
+      @media (min-width: 768px) {
+        .quick-info-panel {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      .info-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .info-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--text-muted);
+        letter-spacing: 0.06em;
+      }
+
+      .info-value {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-top: 0.25rem;
+      }
+
+      /* Highlighted status tag styles */
+      .status-highlight {
+        background: var(--green);
+        color: #ffffff;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 0.2rem 0.65rem;
+        border-radius: 9999px;
+        display: inline-block;
+      }
+
+      /* Button Primary under the card */
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background: var(--green);
+        color: #ffffff;
+        padding: 0.85rem 2.2rem;
+        font-size: 1rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background-color 180ms ease;
+      }
+
+      .btn-primary:hover {
+        background: var(--green-dark);
+      }
+
+      /* Main Page Structure: Flat Full-Width Flow */
+      .layout-wrapper {
+        width: min(1200px, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 3.5rem 0 5rem;
+      }
+
+      .content-pane {
+        width: 100%;
+      }
+
+      /* Sticky Tab Navigation - Underline indicator Style, borderless */
+      .tab-nav {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+        margin-bottom: 2.5rem;
+        position: sticky;
+        top: 4.75rem;
+        z-index: 80;
+        background: #ffffff;
+        padding: 0.5rem 0;
+        border-bottom: 2px solid #e2e8f0;
+      }
+
+      .tab-nav::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab-link {
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.5rem 0;
+        margin-bottom: -2px;
+        white-space: nowrap;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: color 180ms ease, border-color 180ms ease;
+      }
+
+      .tab-link:hover {
+        color: var(--text);
+      }
+
+      .tab-link.active {
+        color: var(--green);
+        border-color: var(--green);
+      }
+
+      /* Tab Screens Containers */
+      .tab-screen {
+        display: none;
+      }
+
+      .tab-screen.active {
+        display: block;
+      }
+
+      /* Borderless Section Slices */
+      .section-slice {
+        margin-bottom: 3.5rem;
+      }
+
+      .section-slice:last-child {
+        margin-bottom: 0;
+      }
+
+      .slice-title {
+        font-family: var(--font-display);
+        font-size: 1.65rem;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 1.25rem;
+        letter-spacing: -0.01em;
+      }
+
+      /* Textarea Field Render Layout for Flat Text Pages (Overview, Rules, Resources) */
+      .textarea-render-body h2 {
+        font-family: var(--font-display);
+        font-size: 1.65rem;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 1.25rem;
+        margin-top: 2rem;
+      }
+
+      .textarea-render-body h2:first-child {
+        margin-top: 0;
+      }
+
+      .textarea-render-body h3 {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 0.75rem;
+        margin-top: 1.75rem;
+      }
+
+      .textarea-render-body p {
+        color: var(--text-muted);
+        font-size: 0.98rem;
+        margin-bottom: 1.25rem;
+        line-height: 1.6;
+      }
+
+      .textarea-render-body ul {
+        margin-left: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .textarea-render-body li {
+        color: var(--text-muted);
+        font-size: 0.98rem;
+        line-height: 1.5;
+      }
+
+      .textarea-render-body li strong {
+        color: var(--text);
+      }
+
+      .textarea-render-body a {
+        color: var(--green);
+        text-decoration: underline;
+        font-weight: 600;
+      }
+
+      .textarea-render-body a:hover {
+        color: var(--green-dark);
+      }
+
+      /* My Items / My Project Dashboard Elements */
+      .items-dashboard {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      .user-item-card {
+        background: var(--bg-subtle);
+        padding: 1.75rem;
+        border-radius: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      @media (min-width: 600px) {
+        .user-item-card {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+      }
+
+      .user-item-info {
+        min-width: 0;
+      }
+
+      .user-item-title {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text);
+      }
+
+      .user-item-status-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      .user-item-actions {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .btn-action-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background: var(--green);
+        color: #ffffff;
+        padding: 0.55rem 1.25rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 180ms ease;
+      }
+
+      .btn-action-primary:hover {
+        background: var(--green-dark);
+      }
+
+      .btn-action-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background: #ffffff;
+        border: 1px solid var(--line);
+        color: var(--text);
+        padding: 0.55rem 1.25rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 180ms ease;
+      }
+
+      .btn-action-secondary:hover {
+        background: #f1f5f9;
+      }
+
+      /* Users / Participants Screen - Search, filter, and profile grids */
+      .search-filter-row {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      @media (min-width: 600px) {
+        .search-filter-row {
+          flex-direction: row;
+          align-items: center;
+        }
+      }
+
+      .search-box-wrap {
+        flex: 1;
+        background: var(--bg-subtle);
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        padding: 0.65rem 1.25rem;
+      }
+
+      .search-box-wrap input {
+        background: transparent;
+        width: 100%;
+        font-size: 0.95rem;
+        color: var(--text);
+      }
+
+      .search-box-wrap input::placeholder {
+        color: var(--text-muted);
+      }
+
+      .filter-chips-list {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .filter-chip-item {
+        background: var(--bg-subtle);
+        color: var(--text-muted);
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 180ms ease, color 180ms ease;
+      }
+
+      .filter-chip-item:hover, .filter-chip-item.active {
+        background: var(--green-light);
+        color: var(--green-dark);
+      }
+
+      .users-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      @media (min-width: 600px) {
+        .users-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .user-profile-card {
+        background: var(--bg-subtle);
+        padding: 1.5rem;
+        border-radius: 1.25rem;
+        display: flex;
+        gap: 1.25rem;
+      }
+
+      .user-avatar-wrap {
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .profile-avatar {
+        width: 3.75rem;
+        height: 3.75rem;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #e2e8f0;
+      }
+
+      .user-status-dot {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #10b981;
+        border: 2px solid #ffffff;
+      }
+
+      .user-profile-details {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .profile-name {
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text);
+      }
+
+      .profile-role {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+      }
+
+      .profile-skills-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-top: 0.5rem;
+      }
+
+      .skill-tag {
+        background: #ffffff;
+        color: var(--text-muted);
+        font-size: 0.7rem;
+        font-weight: 800;
+        padding: 0.2rem 0.5rem;
+        border-radius: 9999px;
+      }
+
+
+      /* Updates Screen - timeline list */
+      .updates-timeline {
+        display: grid;
+        gap: 2rem;
+        position: relative;
+        padding-left: 1.5rem;
+      }
+
+      .updates-timeline::before {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 0.5rem;
+        bottom: 0.5rem;
+        width: 2px;
+        background: var(--line);
+      }
+
+      .update-item {
+        position: relative;
+      }
+
+      .update-node {
+        position: absolute;
+        left: -1.5rem;
+        top: 0.45rem;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+        border: 2px solid #ffffff;
+        box-shadow: 0 0 0 2px var(--green);
+      }
+
+      .update-date {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--green);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .update-title {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text);
+        margin-top: 0.2rem;
+      }
+
+      .update-author {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-top: 0.1rem;
+      }
+
+      .update-body-text {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        margin-top: 0.75rem;
+        line-height: 1.5;
+      }
+
+      /* Discussions Screen - community list */
+      .discussions-pane {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      .discussion-item-card {
+        background: var(--bg-subtle);
+        padding: 1.5rem;
+        border-radius: 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .discussion-info {
+        min-width: 0;
+      }
+
+      .discussion-topic {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      .discussion-topic:hover {
+        color: var(--green);
+      }
+
+      .discussion-meta {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+      }
+
+      .discussion-replies {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 700;
+        white-space: nowrap;
+        background: #ffffff;
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+      }
+
+      /* FAQ Screen - Accordions */
+      .faq-accordion-group {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .faq-collapsible {
+        background: var(--bg-subtle);
+        padding: 1rem 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .faq-collapsible:last-child {
+        margin-bottom: 0;
+      }
+
+      .faq-trigger {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: transparent;
+        text-align: left;
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text);
+        cursor: pointer;
+        padding: 0.5rem 0;
+      }
+
+      .faq-trigger::after {
+        content: "+";
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+
+      .faq-collapsible.is-open .faq-trigger::after {
+        content: "−";
+      }
+
+      .faq-details {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 220ms ease-out;
+      }
+
+      .faq-details-inner {
+        padding-top: 0.75rem;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      /* Prizes Table style */
+      .prizes-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+
+      .prizes-table thead tr {
+        background: var(--bg-subtle);
+      }
+
+      .prizes-table th {
+        padding: 0.75rem 1rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: var(--text);
+        letter-spacing: 0.04em;
+      }
+
+      .prizes-table td {
+        padding: 1rem;
+        font-size: 0.95rem;
+      }
+
+      .prize-place {
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .prize-amount {
+        font-weight: 800;
+        color: var(--green);
+      }
+
+      /* Judges grid */
+      .judges-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2.5rem;
+      }
+
+      @media (min-width: 768px) {
+        .judges-list {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      .judge-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .judge-name {
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .judge-role {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.15rem;
+      }
+
+      .judge-company {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--green);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-top: 0.25rem;
+      }
+
+      /* Criteria styles */
+      .criteria-list {
+        display: grid;
+        gap: 2rem;
+      }
+
+      .criteria-item {
+        display: grid;
+        gap: 0.5rem;
+      }
+
+      .criteria-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+
+      .criteria-name {
+        font-weight: 700;
+        color: var(--text);
+        font-size: 1.05rem;
+      }
+
+      .criteria-weight {
+        font-weight: 800;
+        color: var(--text);
+        font-size: 0.95rem;
+      }
+
+      .criteria-progress-bg {
+        height: 6px;
+        background: var(--line);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      .criteria-progress-fill {
+        height: 100%;
+        background: var(--green);
+        border-radius: 3px;
+      }
+
+      .criteria-description {
+        font-size: 0.92rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      /* Sponsors */
+      .sponsors-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 2.5rem;
+      }
+
+      .sponsor-logo {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #cbd5e1;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        user-select: none;
+      }
+
+
+      /* Footer */
+      .site-footer {
+        background: #ffffff;
+        color: var(--text-muted);
+        padding: 4rem 0 3rem;
+      }
+
+      .footer-inner {
+        width: min(1200px, calc(100% - 2rem));
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      @media (min-width: 768px) {
+        .footer-inner {
+          flex-direction: row;
+          justify-content: space-between;
+        }
+      }
+
+      .footer-brand {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      @media (min-width: 768px) {
+        .footer-brand {
+          align-items: flex-start;
+        }
+      }
+
+      .footer-brand img {
+        height: 2rem;
+        width: auto;
+      }
+
+      .footer-text {
+        font-size: 0.85rem;
+        text-align: center;
+      }
+
+      @media (min-width: 768px) {
+        .footer-text {
+          text-align: left;
+        }
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .footer-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.88rem;
+        transition: color 180ms ease;
+      }
+
+      .footer-link:hover {
+        color: var(--text);
+      }
+
+      /* Header Responsive Settings */
+      @media (max-width: 767px) {
+        .desktop-nav {
+          display: none;
+        }
+      }
+
+      /* Profile Onboarding Modal styles */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        opacity: 0;
+        transition: opacity 250ms ease;
+      }
+
+      .modal-overlay.is-active {
+        display: flex;
+        opacity: 1;
+      }
+
+      .modal-container {
+        background: #ffffff;
+        width: min(650px, 100%);
+        max-height: calc(100vh - 3rem);
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        overflow-y: auto;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        transform: translateY(20px);
+        transition: transform 250ms ease;
+      }
+
+      .modal-overlay.is-active .modal-container {
+        transform: translateY(0);
+      }
+
+      .modal-header h2 {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text);
+        letter-spacing: -0.010em;
+      }
+
+      .modal-header p {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+        margin-bottom: 2rem;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-row-2 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      @media (min-width: 600px) {
+        .form-row-2 {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .form-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .required-asterisk {
+        color: #ef4444;
+        margin-left: 2px;
+      }
+
+      .form-input, .form-textarea, .form-select {
+        width: 100%;
+        background: var(--bg-subtle);
+        color: var(--text);
+        padding: 0.85rem 1.25rem;
+        border-radius: 0.75rem;
+        font-family: var(--font-sans);
+        font-size: 0.95rem;
+        border: 1.5px solid #cbd5e1;
+        transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+      }
+
+      .form-input:focus, .form-textarea:focus, .form-select:focus {
+        background: #ffffff;
+        border-color: var(--green);
+        box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+      }
+
+      .form-textarea {
+        resize: vertical;
+        min-height: 5.5rem;
+      }
+
+      /* Image Upload Box */
+      .upload-trigger-box {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 1.25rem;
+        background: var(--bg-subtle);
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: background-color 180ms ease;
+      }
+
+      .upload-trigger-box:hover {
+        background: #f1f5f9;
+      }
+
+      .upload-preview {
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #e2e8f0;
+      }
+
+      .upload-info span {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .upload-info p {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-top: 0.15rem;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2.5rem;
+      }
+
+      /* Wizard styles inside #screen-my-project */
+      .workspace-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .workspace-header {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        background: var(--bg-subtle);
+        padding: 2rem;
+        border-radius: 1.25rem;
+      }
+
+      @media (min-width: 768px) {
+        .workspace-header {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+      }
+
+      .workspace-title-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      .workspace-title-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .workspace-title {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text);
+      }
+
+      .badge-draft {
+        background: #fef3c7;
+        color: #d97706;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+      }
+
+      .badge-submitted {
+        background: var(--green-light);
+        color: var(--green-dark);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+      }
+
+      .workspace-progress-text {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      .workspace-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      /* Step progress track indicator */
+      .steps-indicator-track {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.5rem;
+        background: #f1f5f9;
+        padding: 0.35rem;
+        border-radius: 9999px;
+        margin-bottom: 1rem;
+      }
+
+      .step-indicator-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.6rem 0.5rem;
+        border-radius: 9999px;
+        font-family: var(--font-display);
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        cursor: pointer;
+        text-align: center;
+        white-space: nowrap;
+        transition: background-color 180ms ease, color 180ms ease;
+      }
+
+      .step-indicator-item.is-completed {
+        background: var(--green-light);
+        color: var(--green-dark);
+      }
+
+      .step-indicator-item.is-active {
+        background: var(--green);
+        color: #ffffff;
+      }
+
+      .wizard-card {
+        background: #ffffff;
+        border-radius: 1.25rem;
+      }
+
+      .wizard-step-panel {
+        display: none;
+      }
+
+      .wizard-step-panel.is-active {
+        display: block;
+      }
+
+      .step-pane-header {
+        margin-bottom: 2rem;
+      }
+
+      .step-pane-title {
+        font-family: var(--font-display);
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: var(--text);
+      }
+
+      .step-pane-desc {
+        font-size: 0.92rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+      }
+
+      /* Custom invite link element box */
+      .invite-link-box {
+        display: flex;
+        align-items: center;
+        background: var(--bg-subtle);
+        border-radius: 0.75rem;
+        padding: 0.5rem 0.75rem 0.5rem 1rem;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        min-width: 0;
+        max-width: 100%;
+      }
+
+      .invite-link-text {
+        font-family: monospace;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        flex: 1 1 0;
+        width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+      }
+
+      .invite-link-box .btn-action-secondary {
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+
+      .invite-input-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        min-width: 0;
+      }
+
+      .invite-input-row .form-input {
+        flex: 1 1 0;
+        width: 0;
+        min-width: 0;
+      }
+
+      .invite-btn {
+        flex-shrink: 0;
+        white-space: nowrap;
+        padding: 0.55rem 1.25rem !important;
+        font-size: 0.85rem !important;
+        border-radius: 0.75rem !important;
+        width: auto !important;
+      }
+
+      /* Teammates listing */
+      .teammates-list {
+        display: grid;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .teammate-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        background: transparent;
+        border-radius: 0;
+        gap: 1.5rem;
+      }
+
+      .teammate-info {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+
+      .teammate-avatar {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        background: #cbd5e1;
+        object-fit: cover;
+      }
+
+      .teammate-identity {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .teammate-name {
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .teammate-role-badge {
+        font-size: 0.72rem;
+        color: var(--green);
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-top: 0.15rem;
+      }
+
+      .teammate-status-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.15rem 0.5rem;
+        border-radius: 9999px;
+      }
+
+      .teammate-status-badge.status-joined {
+        background: var(--green-light);
+        color: var(--green-dark);
+      }
+
+      .teammate-status-badge.status-pending {
+        background: #f1f5f9;
+        color: var(--text-muted);
+      }
+
+      /* Public preview section */
+      .preview-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+        background: #ffffff;
+        border-radius: 1.5rem;
+      }
+
+      .preview-cover {
+        height: 16rem;
+        background: linear-gradient(135deg, var(--green-light) 0%, #d1fae5 100%);
+        border-radius: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--green-dark);
+        text-align: center;
+        padding: 2rem;
+        user-select: none;
+      }
+
+      .preview-details-header {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      @media (min-width: 768px) {
+        .preview-details-header {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: flex-start;
+        }
+      }
+
+      .preview-title-block h1 {
+        font-family: var(--font-display);
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: var(--text);
+        letter-spacing: -0.015em;
+        line-height: 1.2;
+      }
+
+      .preview-pitch {
+        font-size: 1.15rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+        max-width: 75ch;
+      }
+
+      .preview-actions-block {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      .preview-main-body {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3.5rem;
+      }
+
+      @media (min-width: 992px) {
+        .preview-main-body {
+          grid-template-columns: 2.2fr 1fr;
+        }
+      }
+
+      .preview-story-pane {
+        min-width: 0;
+      }
+
+      .preview-sidebar-pane {
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+      }
+
+      .preview-sidebar-widget {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .preview-widget-title {
+        font-family: var(--font-display);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.08em;
+      }
+
+      .preview-tech-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .preview-tech-tag {
+        background: var(--bg-subtle);
+        color: var(--text);
+        font-size: 0.85rem;
+        font-weight: 800;
+        padding: 0.4rem 0.8rem;
+        border-radius: 9999px;
+      }
+
+      .preview-links-widget {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .preview-link-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--green);
+        text-decoration: underline;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      .preview-link-item:hover {
+        color: var(--green-dark);
+      }
+
+      .preview-teammates {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .preview-teammate-card {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .preview-teammate-avatar {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        background: #cbd5e1;
+        object-fit: cover;
+      }
+
+      .preview-teammate-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .preview-teammate-name {
+        font-family: var(--font-display);
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .preview-teammate-role {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .step-actions-footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #f1f5f9;
+      }
+
+      .step-actions-right {
+        display: flex;
+        gap: 0.75rem;
+      }
+      @media (min-width: 768px) {
+        .desktop-nav {
+          display: flex;
+        }
+        .mobile-nav-button {
+          display: none;
+        }
+      }
+
+      /* Workspace Onboarding & Submission Responsiveness */
+      @media (max-width: 768px) {
+        .workspace-header {
+          padding: 1.25rem;
+          border-radius: 0.75rem;
+          gap: 1.25rem;
+        }
+        .workspace-title {
+          font-size: 1.35rem;
+        }
+        .workspace-actions {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.5rem;
+        }
+        .workspace-actions button {
+          width: 100%;
+          padding: 0.65rem 0.5rem;
+          font-size: 0.82rem;
+          justify-content: center;
+        }
+        .steps-indicator-track {
+          display: flex;
+          overflow-x: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          gap: 0.35rem;
+          border-radius: 0.75rem;
+          padding: 0.25rem;
+          white-space: nowrap;
+        }
+        .steps-indicator-track::-webkit-scrollbar {
+          display: none;
+        }
+        .step-indicator-item {
+          flex: 1 0 auto;
+          min-width: 90px;
+          padding: 0.5rem 0.75rem;
+          font-size: 0.75rem;
+          border-radius: 0.5rem;
+        }
+        .step-actions-footer {
+          flex-direction: column-reverse;
+          gap: 1rem;
+          padding-top: 1.25rem;
+          margin-top: 2rem;
+        }
+        .step-actions-right {
+          flex-direction: column;
+          width: 100%;
+          gap: 0.75rem;
+        }
+        .step-actions-right button, .step-actions-footer button {
+          width: 100%;
+          padding: 0.75rem 1rem;
+        }
+        .step-actions-right span {
+          text-align: center;
+          margin-right: 0;
+        }
+        .preview-cover {
+          height: 12rem;
+          font-size: 1.75rem;
+          padding: 1rem;
+          border-radius: 0.75rem;
+        }
+        .preview-details-header {
+          gap: 1rem;
+        }
+        .preview-title-block h1 {
+          font-size: 1.75rem;
+        }
+        .preview-pitch {
+          font-size: 1rem;
+        }
+        .preview-main-body {
+          gap: 2rem;
+        }
+        .preview-actions-block {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.5rem;
+        }
+        .preview-actions-block button {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .workspace-title {
+          font-size: 1.15rem;
+        }
+        .workspace-actions {
+          grid-template-columns: 1fr;
+        }
+        .teammate-row {
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 0.5rem !important;
+          padding: 0.75rem 0 !important;
+          width: 100% !important;
+        }
+        .teammate-status-badge {
+          align-self: flex-start !important;
+        }
+        .invite-input-row {
+          flex-direction: row !important;
+          align-items: center !important;
+          gap: 0.5rem !important;
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+        .invite-input-row input {
+          flex: 1 1 0 !important;
+          width: 0 !important;
+          min-width: 0 !important;
+        }
+        .invite-input-row button {
+          width: auto !important;
+          flex-shrink: 0 !important;
+          white-space: nowrap !important;
+        }
+        .invite-link-box {
+          flex-direction: row !important;
+          align-items: center !important;
+          padding: 0.5rem 0.5rem 0.5rem 0.75rem !important;
+          gap: 0.5rem !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          min-width: 0 !important;
+        }
+        .invite-link-text {
+          text-align: left !important;
+          flex: 1 1 0 !important;
+          width: 0 !important;
+          min-width: 0 !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+          white-space: nowrap !important;
+        }
+        .invite-link-box button {
+          flex-shrink: 0 !important;
+          width: auto !important;
+          white-space: nowrap !important;
+        }
+      }
+
+      /* Interactive Tags Input Styles matching profile.html */
+      .tags-input-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.6rem;
+        background: var(--bg-subtle);
+        border-radius: 0.75rem;
+        min-height: 3.25rem;
+        align-items: center;
+        border: 1.5px solid #cbd5e1;
+        transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+      }
+
+      .tags-input-wrap:focus-within {
+        background: #ffffff;
+        border-color: var(--green);
+        box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+      }
+
+      .tags-input-text {
+        flex: 1;
+        min-width: 120px;
+        background: transparent;
+        color: var(--text);
+        padding: 0.35rem 0.5rem;
+        font-family: var(--font-sans);
+        font-size: 0.98rem;
+      }
+
+      .tag-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: var(--green-light);
+        color: var(--green-dark);
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        user-select: none;
+        animation: scaleIn 150ms ease-out;
+      }
+
+      .tag-remove-btn {
+        background: transparent;
+        color: var(--green-dark);
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        transition: background-color 120ms ease;
+      }
+
+      .tag-remove-btn:hover {
+        background: rgba(5, 150, 105, 0.15);
+      }
+
+      /* EasyMDE custom integration styles */
+      .editor-toolbar {
+        border-top-left-radius: 0.75rem;
+        border-top-right-radius: 0.75rem;
+        border: 1px solid var(--line);
+        background: #ffffff;
+      }
+      .CodeMirror {
+        border-bottom-left-radius: 0.75rem;
+        border-bottom-right-radius: 0.75rem;
+        border: 1px solid var(--line);
+        border-top: none;
+        background: var(--bg-subtle);
+        font-family: var(--font-sans);
+        font-size: 0.98rem;
+      }
+      .CodeMirror-focused {
+        background: #ffffff;
+        box-shadow: 0 0 0 2px var(--green);
+        border-color: transparent;
+      }
+      /* ===== AUTHENTICATED HEADER ===== */
+      .auth-header {
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        background: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--line);
+      }
+      .auth-header-inner {
+        width: min(1200px, calc(100% - 2rem));
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.75rem 0;
+      }
+      .auth-header-left {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+      .auth-nav-links {
+        display: none;
+        align-items: center;
+        gap: 0.25rem;
+      }
+      .auth-nav-link {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.5rem 0.85rem;
+        border-radius: 0.5rem;
+        transition: color 150ms ease, background-color 150ms ease;
+        white-space: nowrap;
+      }
+      .auth-nav-link:hover,
+      .auth-nav-link.active {
+        color: var(--green);
+        background: var(--green-light);
+      }
+      .auth-header-right {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .search-icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: background-color 150ms ease, color 150ms ease;
+      }
+      .search-icon-btn:hover {
+        background: var(--bg-subtle);
+        color: var(--text);
+      }
+      .search-icon-btn svg {
+        width: 1.15rem;
+        height: 1.15rem;
+      }
+      .avatar-pill-wrap {
+        position: relative;
+      }
+      .avatar-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.3rem 0.75rem 0.3rem 0.3rem;
+        background: var(--bg-subtle);
+        border: 1.5px solid var(--line);
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: background-color 150ms ease, border-color 150ms ease;
+        user-select: none;
+      }
+      .avatar-pill:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+      }
+      .avatar-pill-img {
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #e2e8f0;
+      }
+      .avatar-pill-name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text);
+        white-space: nowrap;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .avatar-pill-chevron {
+        width: 0.7rem;
+        height: 0.7rem;
+        color: var(--text-muted);
+        transition: transform 200ms ease;
+        flex-shrink: 0;
+      }
+      .avatar-pill.is-open .avatar-pill-chevron {
+        transform: rotate(180deg);
+      }
+      .avatar-dropdown {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        width: 220px;
+        background: #ffffff;
+        border: 1px solid var(--line);
+        border-radius: 0.75rem;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.04);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-6px);
+        transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+        z-index: 300;
+        overflow: hidden;
+      }
+      .avatar-dropdown.is-open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+      .dropdown-user-block {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        border-bottom: 1px solid var(--line);
+      }
+      .dropdown-user-avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #e2e8f0;
+        flex-shrink: 0;
+      }
+      .dropdown-user-info { min-width: 0; }
+      .dropdown-user-name {
+        font-family: var(--font-display);
+        font-size: 0.92rem;
+        font-weight: 800;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .dropdown-user-email {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .dropdown-links { padding: 0.5rem; }
+      .dropdown-link {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.6rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text);
+        text-decoration: none;
+        transition: background-color 150ms ease, color 150ms ease;
+      }
+      .dropdown-link:hover {
+        background: var(--green-light);
+        color: var(--green-dark);
+      }
+      .dropdown-link svg {
+        width: 1.1rem;
+        height: 1.1rem;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      .dropdown-link:hover svg { color: var(--green); }
+      .dropdown-divider {
+        height: 1px;
+        background: var(--line);
+        margin: 0.25rem 0.75rem;
+      }
+      .dropdown-link--danger { color: #dc2626; }
+      .dropdown-link--danger:hover { background: #fef2f2; color: #b91c1c; }
+      .dropdown-link--danger svg { color: #dc2626; }
+      @media (min-width: 768px) {
+        .auth-nav-links { display: flex; }
+        .avatar-pill-name { display: inline; }
+      }
+      @media (max-width: 767px) {
+        .avatar-pill-name { display: none; }
+        .avatar-pill { padding: 0.25rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Authenticated Header -->
+    <header class="auth-header" id="auth-header">
+      <div class="auth-header-inner">
+        <div class="auth-header-left">
+          <a href="home.html" class="brand-link" aria-label="CodeToWin Home">
+            <img src="../assets/brand/codetowin-brand.png" alt="CodeToWin" class="brand-mark" decoding="async" />
+          </a>
+          <nav class="auth-nav-links" aria-label="Main Navigation">
+            <a href="hackaton.html" class="auth-nav-link">Explorer</a>
+            <a href="hackaton-detail.html?tab=my-project" class="auth-nav-link active">Mes Projets</a>
+          </nav>
+        </div>
+        <div class="auth-header-right">
+          <button type="button" class="search-icon-btn" aria-label="Search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          </button>
+          <div class="avatar-pill-wrap">
+            <button type="button" class="avatar-pill" id="hd-avatar-pill" onclick="toggleHdAvatarDropdown()">
+              <img id="hd-header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" class="avatar-pill-img" />
+              <span class="avatar-pill-name" id="hd-header-name">User</span>
+              <svg class="avatar-pill-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5L6 7.5L9 4.5"></path></svg>
+            </button>
+            <div class="avatar-dropdown" id="hd-avatar-dropdown">
+              <div class="dropdown-user-block">
+                <img id="hd-dd-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" class="dropdown-user-avatar" />
+                <div class="dropdown-user-info">
+                  <div class="dropdown-user-name" id="hd-dd-name">User Name</div>
+                  <div class="dropdown-user-email" id="hd-dd-email">@username</div>
+                </div>
+              </div>
+              <div class="dropdown-links">
+                <a href="participant.html" class="dropdown-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"></path></svg>Mon Profil</a>
+                <a href="hackaton-detail.html?tab=my-project" class="dropdown-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg>Mes Projets</a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-link dropdown-link--danger" onclick="signOutHd()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16,17 21,12 16,7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>Déconnexion</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section (Mini 15% Screen Height Banner) -->
+    <section class="hero" id="hero" aria-label="Challenge Identity Banner">
+      <h1>Google Cloud Rapid Agent Hackathon</h1>
+    </section>
+
+    <!-- Detail Header -->
+    <header class="detail-header" aria-label="Hackathon Overview Identity">
+      <h2 class="detail-subtitle">Créez des Agents pour des Défis Réels !</h2>
+      <p class="detail-description-text">
+        C'est l'heure de bricoler des outils qui planifient, agissent et résolvent de vrais problèmes. Soumets ton projet, bosse en équipe et amuse-toi !
+      </p>
+    </header>
+
+    <!-- Quick Information Panel (Gris Card Style, Highlighted Status, Join Button Below) -->
+    <section class="quick-info-panel-container" aria-label="Hackathon Quick Info Panel Section">
+      <div class="quick-info-panel">
+        <div class="info-item">
+          <span class="info-label">Statut</span>
+          <span class="info-value"><span class="status-highlight">Ouvert</span></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Format</span>
+          <span class="info-value">En ligne</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Fin</span>
+          <span class="info-value">11 Juin 2026</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Prix</span>
+          <span class="info-value">60 000 $</span>
+        </div>
+      </div>
+      <div style="margin-top: 1.5rem; display: flex; justify-content: flex-start;">
+        <a href="#register" class="btn-primary">Rejoindre l'aventure !</a>
+      </div>
+    </section>
+
+    <!-- Main Content Area: Flat Single Column Flow -->
+    <div class="layout-wrapper">
+      
+      <main class="content-pane">
+        
+        <!-- Sticky Tab Navigation Menu (renamed labels, capsule active state) -->
+        <nav class="tab-nav" id="tab-nav" aria-label="Screen Tabs Navigation">
+          <a class="tab-link active" data-tab="overview">Aperçu</a>
+          <a class="tab-link" data-tab="my-project">Mon projet</a>
+          <a class="tab-link" data-tab="participants">Copains</a>
+          <a class="tab-link" data-tab="resources">Ressources</a>
+          <a class="tab-link" data-tab="rules">Règles</a>
+          <a class="tab-link" data-tab="updates">Actus</a>
+          <a class="tab-link" data-tab="discussions">Bla-bla</a>
+          <a class="tab-link" data-tab="faq">FAQ</a>
+        </nav>
+
+        <!-- Dynamic Screen Content Areas -->
+        <div class="screens-container">
+          
+          <!-- OVERVIEW SCREEN (Structured Textarea-Style Text Flow) -->
+          <div class="tab-screen active" id="screen-overview">
+            <div class="section-slice">
+              <div class="textarea-render-body">
+                <h2>C'est quoi ce défi ?</h2>
+                <p>Bienvenue au Google Cloud Rapid Agent Hackathon ! Fini les vieux chatbots ennuyeux, on passe aux vrais Agents IA : des trucs intelligents qui réfléchissent, planifient et utilisent des API pour de vrai.</p>
+                <p>Avec Gemini et les outils MCP, ton but est de créer un agent (presque) autonome qui fait le boulot à la place des humains dans l'une des catégories ci-dessous.</p>
+                <p>Que tu sois un pro du code, un as du design ou juste un débutant curieux, on a tout ce qu'il faut pour t'aider. Viens t'amuser avec nous !</p>
+                
+                <h2>Les Pistes (et les Prix !)</h2>
+                <p>Choisis ton camp et essaie de gagner le gros lot :</p>
+                <ul>
+                  <li><strong>Piste Arize (10 000 $ en jeu)</strong> : Fais des agents qui surveillent les erreurs et tracent tout. (1er: 5 000 $ | 2e: 3 000 $ | 3e: 2 000 $)</li>
+                  <li><strong>Piste Elastic (10 000 $ en jeu)</strong> : Utilise la recherche vectorielle pour rendre ton agent super malin. (1er: 5 000 $ | 2e: 3 000 $ | 3e: 2 000 $)</li>
+                  <li><strong>Piste Fivetran (10 000 $ en jeu)</strong> : Construis des pipelines de données et automatise tout le bazar. (1er: 5 000 $ | 2e: 3 000 $ | 3e: 2 000 $)</li>
+                  <li><strong>Piste MongoDB (10 000 $ en jeu)</strong> : Stocke et recherche des trucs avec MongoDB Atlas. (1er: 5 000 $ | 2e: 3 000 $ | 3e: 2 000 $)</li>
+                </ul>
+
+                <h2>Quelques idées pour t'inspirer 💡</h2>
+                <p>T'as pas d'idée ? Pas de panique, voici de quoi te lancer :</p>
+                <ul>
+                  <li><strong>Le Planificateur de la Coupe du Monde 2026</strong> : Aide les fans à trouver des hôtels, des billets et à s'organiser sans stress.</li>
+                  <li><strong>Le Chasseur de Fraudes</strong> : Un agent qui fouille dans les transactions pour attraper les méchants.</li>
+                  <li><strong>Le Superviseur de Magasin</strong> : Gère les stocks, les livraisons et crie au secours (poliment) quand il manque des trucs.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- MY PROJECT SCREEN (Formerly My Items) -->
+          <div class="tab-screen" id="screen-my-project">
+            <div class="section-slice">
+              
+              <!-- NOT REGISTERED ONBOARDING STATE -->
+              <div id="project-unregistered-state" style="display: block; text-align: center; padding: 4rem 2rem; background: var(--bg-subtle); border-radius: 1.5rem;">
+                <div style="width: 4rem; height: 4rem; border-radius: 50%; background: var(--green-light); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </div>
+                <h2 style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--text);">Allez, rejoins la fête !</h2>
+                <p style="color: var(--text-muted); max-width: 50ch; margin: 0.5rem auto 1.75rem; font-size: 0.98rem; line-height: 1.5;">
+                  Remplis ton profil et inscris-toi pour lancer ton projet et trouver tes coéquipiers géniaux.
+                </p>
+                <button type="button" class="btn-primary" onclick="openProfileModal()">Compléter mon profil &amp; Rejoindre</button>
+              </div>
+
+              <!-- REGISTERED ACTIVE WORKSPACE STATE -->
+              <div id="project-registered-state" class="workspace-wrapper" style="display: none;">
+                
+                <!-- Workspace Header -->
+                <div class="workspace-header">
+                  <div class="workspace-title-section">
+                    <div class="workspace-title-row" style="align-items: center;">
+                      <div id="project-title-display-container" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <h2 class="workspace-title" id="workspace-project-title-display">Untitled Project</h2>
+                        <button type="button" id="btn-edit-title" aria-label="Edit project title" style="background: transparent; color: var(--text-muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0.25rem; transition: color 150ms ease;" onclick="startEditingTitle()">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                          </svg>
+                        </button>
+                      </div>
+                      <div id="project-title-edit-container" style="display: none; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <input type="text" id="project-title-edit-input" style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: var(--text); border-bottom: 2px solid var(--green); background: transparent; padding: 0 0.25rem; width: min(250px, 60vw);" />
+                        <button type="button" class="btn-action-primary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 0.5rem;" onclick="saveTitleEdit()">Save</button>
+                        <button type="button" class="btn-action-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 0.5rem;" onclick="cancelTitleEdit()">Cancel</button>
+                      </div>
+                      <span id="project-status-badge" class="badge-draft">Draft</span>
+                    </div>
+                    <span class="workspace-progress-text" id="project-progress-text-display">Step 1/5 - 0% Completed</span>
+                  </div>
+                  <div class="workspace-actions">
+                    <button type="button" id="btn-project-preview-toggle" class="btn-action-secondary" onclick="toggleProjectPreview()">Preview Project</button>
+                    <button type="button" class="btn-action-secondary" style="border-color: #fca5a5; color: #dc2626;" onclick="resetProjectWorkspace()">Reset Workspace</button>
+                  </div>
+                </div>
+
+                <!-- Live Project Workspace Editor Flow -->
+                <div id="workspace-editor-flow">
+                  <!-- Steps Indicator Track -->
+                  <div class="steps-indicator-track" role="tablist">
+                    <button type="button" class="step-indicator-item is-active" id="step-indicator-1" onclick="jumpToWizardStep(1)">1. L'idée</button>
+                    <button type="button" class="step-indicator-item" id="step-indicator-2" onclick="jumpToWizardStep(2)">2. L'équipe</button>
+                    <button type="button" class="step-indicator-item" id="step-indicator-3" onclick="jumpToWizardStep(3)">3. Détails</button>
+                    <button type="button" class="step-indicator-item" id="step-indicator-4" onclick="jumpToWizardStep(4)">4. Questions</button>
+                    <button type="button" class="step-indicator-item" id="step-indicator-5" onclick="jumpToWizardStep(5)">5. Envoi</button>
+                  </div>
+
+                  <!-- Wizard Form Panels Card -->
+                  <div class="wizard-card">
+                    <form id="project-submission-form" onsubmit="event.preventDefault()">
+                      
+                      <!-- STEP 1: PROJECT OVERVIEW PANEL -->
+                      <div class="wizard-step-panel is-active" id="wizard-step-panel-1">
+                        <div class="step-pane-header">
+                          <h3 class="step-pane-title">Aperçu du projet</h3>
+                          <p class="step-pane-desc">Donne un titre cool à ton bébé.</p>
+                        </div>
+                        <div class="form-grid">
+                          <div class="form-group">
+                            <label for="project-name-input" class="form-label">Nom du projet<span class="required-asterisk">*</span></label>
+                            <input type="text" id="project-name-input" class="form-input" required placeholder="ex: Le Super Agent Magique" oninput="updateStateField('projectName', this.value)" />
+                          </div>
+                          <div class="form-group">
+                            <label for="project-pitch-input" class="form-label">Le pitch !<span class="required-asterisk">*</span> (Moins de 150 caractères)</label>
+                            <textarea id="project-pitch-input" class="form-textarea" required placeholder="Un truc accrocheur qui donne envie..." maxlength="150" oninput="updateStateField('projectPitch', this.value)"></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label class="form-label">Image sympa (Thumbnail)</label>
+                            <div class="upload-trigger-box" onclick="triggerThumbnailUpload()">
+                              <div style="width: 3.5rem; height: 3.5rem; border-radius: 0.5rem; background: var(--green-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5">
+                                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                  <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                              </div>
+                              <div class="upload-info">
+                                <span>Ajouter une image</span>
+                                <p>C'est plus joli !</p>
+                              </div>
+                              <input type="file" id="project-thumbnail-input" style="display: none;" accept="image/*" onchange="previewThumbnailPhoto(event)" />
+                            </div>
+                            <img id="project-thumbnail-preview-img" style="display: none; max-height: 10rem; border-radius: 0.75rem; object-fit: cover; margin-top: 0.75rem;" />
+                          </div>
+                        </div>
+                        <div class="step-actions-footer">
+                          <div></div>
+                          <button type="button" class="btn-action-primary" onclick="proceedToWizardStep(2)">Suivant !</button>
+                        </div>
+                      </div>
+
+                      <!-- STEP 2: MANAGE TEAM PANEL -->
+                      <div class="wizard-step-panel" id="wizard-step-panel-2">
+                        <div class="step-pane-header">
+                          <h3 class="step-pane-title">Gérer l'équipe</h3>
+                          <p class="step-pane-desc">Ajoute tes potes par email ou via un lien secret magique.</p>
+                        </div>
+                        <div class="form-grid">
+                          <div class="form-group">
+                            <label class="form-label">Inviter par email</label>
+                            <div class="invite-input-row">
+                              <input type="email" id="invite-email-input" class="form-input" placeholder="pote@superdev.com" />
+                              <button type="button" class="btn-action-primary invite-btn" onclick="sendTeammateInvite()">Inviter</button>
+                            </div>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label class="form-label">Le lien secret</label>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem;">Envoie ce lien à tes amis pour qu'ils rejoignent l'équipe.</p>
+                            <div class="invite-link-box">
+                              <span class="invite-link-text" id="workspace-invite-url">https://codetowin.org/hackathon/google-cloud-rapid-agent/invite/a29df83c</span>
+                              <button type="button" class="btn-action-secondary" style="border-radius: 9999px; padding: 0.35rem 1rem; font-size: 0.8rem;" onclick="copySecretInviteLink(this)">Copier le lien</button>
+                            </div>
+                          </div>
+
+                          <div class="form-group" style="margin-top: 1rem;">
+                            <label class="form-label">Team Members</label>
+                            <div class="teammates-list" id="teammates-list-container">
+                              <!-- Dynamic Teammate Rows -->
+                            </div>
+                          </div>
+                        </div>
+                        <div class="step-actions-footer">
+                          <button type="button" class="btn-action-secondary" onclick="proceedToWizardStep(1)">Retour</button>
+                          <button type="button" class="btn-action-primary" onclick="proceedToWizardStep(3)">Suivant !</button>
+                        </div>
+                      </div>
+
+                      <!-- STEP 3: PROJECT DETAILS PANEL -->
+                      <div class="wizard-step-panel" id="wizard-step-panel-3">
+                        <div class="step-pane-header">
+                          <h3 class="step-pane-title">Les trucs techniques</h3>
+                          <p class="step-pane-desc">Dis-nous comment t'as fait ton chef-d'œuvre !</p>
+                        </div>
+                        <div class="form-grid">
+                          <div class="form-group">
+                            <label for="project-about-input" class="form-label">Raconte-nous tout<span class="required-asterisk">*</span></label>
+                            <textarea id="project-about-input" class="form-textarea" placeholder="Bla bla bla... (sois créatif)"></textarea>
+                          </div>
+
+                          <!-- Technologies Used (Interactive Tag Input) -->
+                          <div class="form-group">
+                            <label class="form-label">Technologies utilisées<span class="required-asterisk">*</span></label>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem;">Tape et fais Entrée !</p>
+                            <div class="tags-input-wrap" id="tech-tags-input-wrap">
+                              <!-- Dynamic tag pills will be rendered here -->
+                              <input type="text" id="project-built-with-input" class="tags-input-text" placeholder="Ajouter une techno..." />
+                            </div>
+                            <input type="hidden" id="project-built-with" required />
+                          </div>
+
+                          <div class="form-row-2">
+                            <div class="form-group">
+                              <label for="project-repo-link" class="form-label">Lien GitHub (ton code)</label>
+                              <input type="url" id="project-repo-link" class="form-input" placeholder="https://github.com/myteam/agent-project" oninput="updateStateField('detailsRepo', this.value)" />
+                            </div>
+                            <div class="form-group">
+                              <label for="project-demo-link" class="form-label">Lien vers la démo en direct !</label>
+                              <input type="url" id="project-demo-link" class="form-input" placeholder="https://agent-demo.vercel.app" oninput="updateStateField('detailsDemo', this.value)" />
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label for="project-video-link" class="form-label">Lien YouTube/Vimeo de ta vidéo</label>
+                            <input type="url" id="project-video-link" class="form-input" placeholder="https://youtube.com/watch?v=demo" oninput="updateStateField('detailsVideo', this.value)" />
+                          </div>
+                        </div>
+                        <div class="step-actions-footer">
+                          <button type="button" class="btn-action-secondary" onclick="proceedToWizardStep(2)">Retour</button>
+                          <button type="button" class="btn-action-primary" onclick="proceedToWizardStep(4)">Suivant !</button>
+                        </div>
+                      </div>
+
+                      <!-- STEP 4: SUBMISSION QUESTIONS PANEL -->
+                      <div class="wizard-step-panel" id="wizard-step-panel-4">
+                        <div class="step-pane-header">
+                          <h3 class="step-pane-title">Questions du jury</h3>
+                          <p class="step-pane-desc">Réponds à ces quelques questions posées par les gentils organisateurs.</p>
+                        </div>
+                        <div class="form-grid">
+                          <div class="form-group">
+                            <label for="question-mcp-input" class="form-label">1. Décris les serveurs MCP de ton agent. Ils font quoi de beau ?<span class="required-asterisk">*</span></label>
+                            <textarea id="question-mcp-input" class="form-textarea" required placeholder="Je me suis connecté à..." oninput="updateStateField('questionMcp', this.value)"></textarea>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label for="question-security-input" class="form-label">2. As-tu sécurisé ton agent contre les méchants qui voudraient le hacker ?<span class="required-asterisk">*</span></label>
+                            <textarea id="question-security-input" class="form-textarea" required placeholder="Oui j'ai fait..." oninput="updateStateField('questionSecurity', this.value)"></textarea>
+                          </div>
+                        </div>
+                        <div class="step-actions-footer">
+                          <button type="button" class="btn-action-secondary" onclick="proceedToWizardStep(3)">Retour</button>
+                          <button type="button" class="btn-action-primary" onclick="proceedToWizardStep(5)">Suivant !</button>
+                        </div>
+                      </div>
+
+                      <!-- STEP 5: SUBMIT PROJECT PANEL -->
+                      <div class="wizard-step-panel" id="wizard-step-panel-5">
+                        <div class="step-pane-header">
+                          <h3 class="step-pane-title">Le Grand Saut !</h3>
+                          <p class="step-pane-desc">Vérifie bien tout avant d'envoyer.</p>
+                        </div>
+                        
+                        <div style="background: var(--bg-subtle); padding: 1.5rem; border-radius: 1rem; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1rem;">
+                           <h4 style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--text);">Résumé</h4>
+                           <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; font-size: 0.9rem;">
+                             <div>
+                               <span style="color: var(--text-muted); display: block;">Nom</span>
+                               <strong id="summary-project-name" style="color: var(--text);">Sans titre</strong>
+                             </div>
+                             <div>
+                               <span style="color: var(--text-muted); display: block;">Équipe</span>
+                               <strong id="summary-team-status" style="color: var(--text);">Solo (1 Bricoleur)</strong>
+                             </div>
+                             <div>
+                               <span style="color: var(--text-muted); display: block;">Statut</span>
+                               <strong id="summary-story-status" style="color: var(--text); color: var(--green);">Prêt !</strong>
+                             </div>
+                           </div>
+                         </div>
+
+                        <div class="form-grid">
+                          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                            <input type="checkbox" id="agree-guidelines" style="margin-top: 0.25rem; cursor: pointer;" required />
+                            <label for="agree-guidelines" style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; cursor: pointer;">
+                              Je promets que tout mon code a été fait pendant le concours (1-11 Juin) et que je respecte toutes les règles. Juré craché !
+                            </label>
+                          </div>
+                          
+                          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                            <input type="checkbox" id="agree-terms" style="margin-top: 0.25rem; cursor: pointer;" required />
+                            <label for="agree-terms" style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; cursor: pointer;">
+                              J'accepte que les juges regardent mon super code et mes fichiers.
+                            </label>
+                          </div>
+                        </div>
+
+                        <div class="step-actions-footer">
+                          <button type="button" class="btn-action-secondary" onclick="proceedToWizardStep(4)">Retour</button>
+                          <div class="step-actions-right">
+                            <span style="align-self: center; font-size: 0.82rem; color: var(--text-muted); margin-right: 0.5rem;">Tu pourras encore modifier avant la fin du chrono.</span>
+                            <button type="button" class="btn-action-primary" style="padding: 0.75rem 2rem;" onclick="submitProjectSubmission()">Soumettre !</button>
+                          </div>
+                        </div>
+                      </div>
+
+                    </form>
+                  </div>
+                </div>
+
+                <!-- Live Project Preview Pane -->
+                <div id="workspace-preview-pane" class="preview-container" style="display: none;">
+                  
+                  <div class="preview-cover" id="preview-cover-display">
+                    Project Cover Photo
+                  </div>
+
+                  <div class="preview-details-header">
+                    <div class="preview-title-block">
+                      <h1 id="preview-title-val">World Cup fan logistics planner</h1>
+                      <p class="preview-pitch" id="preview-pitch-val">Autonomous booking assistant that schedules hotels, transfers, and match alerts on external calendars using MCP integrations.</p>
+                    </div>
+                    <div class="preview-actions-block">
+                      <button type="button" class="btn-action-secondary" style="border-radius: 9999px; gap: 0.5rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-muted);">
+                          <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                        </svg>
+                        <span>Like</span>
+                      </button>
+                      <button type="button" class="btn-action-secondary" style="border-radius: 9999px;">Comment</button>
+                    </div>
+                  </div>
+
+                  <div class="preview-main-body">
+                    <div class="preview-story-pane">
+                      
+                      <!-- Flat Content Details Story slices -->
+                      <div class="textarea-render-body">
+                        <h2>About the Project</h2>
+                        <div id="preview-about-val" class="markdown-preview-body" style="color: var(--text-muted); font-size: 0.98rem; line-height: 1.6; margin-top: 0.5rem;">
+                          About details will render here.
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="preview-sidebar-pane">
+                      
+                      <!-- Technologies -->
+                      <div class="preview-sidebar-widget">
+                        <span class="preview-widget-title">Fait avec ❤️ et :</span>
+                        <div class="preview-tech-list" id="preview-tech-list-display">
+                          <!-- Tags dynamically added -->
+                        </div>
+                      </div>
+
+                      <!-- Links -->
+                      <div class="preview-sidebar-widget">
+                        <span class="preview-widget-title">Testez-le !</span>
+                        <div class="preview-links-widget">
+                          <a href="#" id="preview-repo-link-display" class="preview-link-item" target="_blank" style="display: none;">Le code source</a>
+                          <a href="#" id="preview-demo-link-display" class="preview-link-item" target="_blank" style="display: none;">La démo qui déchire</a>
+                          <a href="#" id="preview-video-link-display" class="preview-link-item" target="_blank" style="display: none;">La vidéo cool</a>
+                          <span id="preview-no-links-display" style="font-size: 0.88rem; color: var(--text-muted);">Pas de liens pour le moment.</span>
+                        </div>
+                      </div>
+
+                      <!-- Teammates -->
+                      <div class="preview-sidebar-widget">
+                        <span class="preview-widget-title">La Dream Team</span>
+                        <div class="preview-teammates" id="preview-teammates-display">
+                          <!-- Teammate profile cards -->
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+          <!-- PARTICIPANTS SCREEN (Formerly Users) -->
+          <div class="tab-screen" id="screen-participants">
+            <div class="section-slice">
+              <h2 class="slice-title">Les Génies Inscrits</h2>
+              
+              <div class="search-filter-row">
+                <div class="search-box-wrap">
+                  <input type="text" placeholder="Cherche des potes, des skills..." />
+                </div>
+                <div class="filter-chips-list">
+                  <span class="filter-chip-item active">Tous</span>
+                  <span class="filter-chip-item">Bricoleurs</span>
+                  <span class="filter-chip-item">Artistes</span>
+                  <span class="filter-chip-item">Chefs d'orchestre</span>
+                </div>
+              </div>
+
+              <div class="users-grid">
+                <div class="user-profile-card">
+                  <div class="user-avatar-wrap">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Sarah Chen" class="profile-avatar" />
+                    <span class="user-status-dot"></span>
+                  </div>
+                  <div class="user-profile-details">
+                    <span class="profile-name">Sarah Chen</span>
+                    <span class="profile-role">AI Developer • Montreal</span>
+                    <div class="profile-skills-tags">
+                      <span class="skill-tag">Python</span>
+                      <span class="skill-tag">Gemini API</span>
+                      <span class="skill-tag">LangChain</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="user-profile-card">
+                  <div class="user-avatar-wrap">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80" alt="Marcus Vance" class="profile-avatar" />
+                    <span class="user-status-dot"></span>
+                  </div>
+                  <div class="user-profile-details">
+                    <span class="profile-name">Marcus Vance</span>
+                    <span class="profile-role">Product Designer • SF</span>
+                    <div class="profile-skills-tags">
+                      <span class="skill-tag">Figma</span>
+                      <span class="skill-tag">UX Research</span>
+                      <span class="skill-tag">HTML/CSS</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="user-profile-card">
+                  <div class="user-avatar-wrap">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=80&h=80&q=80" alt="Elena Rostova" class="profile-avatar" />
+                    <span class="user-status-dot"></span>
+                  </div>
+                  <div class="user-profile-details">
+                    <span class="profile-name">Elena Rostova</span>
+                    <span class="profile-role">Data Scientist • Berlin</span>
+                    <div class="profile-skills-tags">
+                      <span class="skill-tag">PyTorch</span>
+                      <span class="skill-tag">MongoDB</span>
+                      <span class="skill-tag">Vector Search</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RESOURCES SCREEN (Structured Textarea-Style Text Flow) -->
+          <div class="tab-screen" id="screen-resources">
+            <div class="section-slice">
+              <div class="textarea-render-body">
+                <h2>La boîte à outils ! 🛠️</h2>
+                <p>Voici tous les trucs cool pour t'aider à construire ton projet :</p>
+
+                <h3>Les papiers officiels</h3>
+                <ul>
+                  <li><a href="#">La doc MCP</a> - Pour comprendre comment faire des outils magiques.</li>
+                  <li><a href="#">Les modèles Google Cloud</a> - Des petits bouts de code pour te lancer plus vite.</li>
+                </ul>
+
+                <h3>Les guides de nos amis</h3>
+                <ul>
+                  <li><a href="#">Le guide MongoDB</a> - Pour apprendre à stocker plein de trucs super facilement.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- RULES SCREEN (Structured Textarea-Style Text Flow) -->
+          <div class="tab-screen" id="screen-rules">
+            <div class="section-slice">
+              <div class="textarea-render-body">
+                <h2>Les Règles du Jeu 📜</h2>
+                
+                <h3>1. Qui peut jouer ?</h3>
+                <p>Tout le monde peut participer au Google Cloud Rapid Agent Hackathon ! Faut juste avoir 18 ans, parce qu'on fait les choses bien.</p>
+                <p>Par contre, si tu bosses chez Google ou nos partenaires, tu pourras pas gagner les prix (faut laisser la chance aux autres !).</p>
+
+                <h3>2. Comment ça marche ?</h3>
+                <p>Ton projet doit être tout frais, codé pendant le hackathon. Pas de recyclage d'anciens trucs ! Mais tu peux utiliser des librairies gratuites, évidemment.</p>
+                <p>Et devine quoi ? Vous pouvez être jusqu'à 4 dans l'équipe. Mélangez les talents, c'est encore plus rigolo !</p>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- UPDATES SCREEN -->
+          <div class="tab-screen" id="screen-updates">
+            <div class="section-slice">
+              <h2 class="slice-title">Les actus croustillantes 📰</h2>
+              <div class="updates-timeline">
+                <div class="update-item">
+                  <span class="update-node"></span>
+                  <div class="update-date">5 Juin 2026</div>
+                  <h3 class="update-title">Cadeaux Google Cloud distribués !</h3>
+                  <span class="update-author">par Sarah Chen • Organisatrice</span>
+                  <p class="update-body-text">Regarde tes emails ! On t'a envoyé un super code promo pour tester Vertex. Profites-en bien avant le 11 juin !</p>
+                </div>
+
+                <div class="update-item">
+                  <span class="update-node"></span>
+                  <div class="update-date">1 Juin 2026</div>
+                  <h3 class="update-title">Petits webinaires sympas</h3>
+                  <span class="update-author">par l'Équipe</span>
+                  <p class="update-body-text">On lance des vidéos en direct demain. Les pros de MongoDB, Arize et GitLab vont t'expliquer des trucs cools sur les serveurs MCP.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DISCUSSIONS SCREEN -->
+          <div class="tab-screen" id="screen-discussions">
+            <div class="section-slice">
+              <h2 class="slice-title">Le coin Bla-bla 🗣️</h2>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
+                <div class="search-box-wrap" style="flex:1;margin-right:1rem">
+                  <input type="text" placeholder="Cherche de quoi papoter..." />
+                </div>
+                <a href="#" class="btn-action-primary">Nouveau truc à dire</a>
+              </div>
+
+              <div class="discussions-pane">
+                <div class="discussion-item-card">
+                  <div class="discussion-info">
+                    <a href="#" class="discussion-topic">Au secours avec les erreurs Fivetran !</a>
+                    <div class="discussion-meta">
+                      <span>Lancé par Tariq Johnson • il y a 2 heures</span>
+                      <span>dans Aide Technique</span>
+                    </div>
+                  </div>
+                  <span class="discussion-replies">4 réponses</span>
+                </div>
+
+                <div class="discussion-item-card">
+                  <div class="discussion-info">
+                    <a href="#" class="discussion-topic">On cherche un artiste UX pour notre équipe !</a>
+                    <div class="discussion-meta">
+                      <span>Lancé par Sarah Chen • il y a 1 jour</span>
+                      <span>dans Recherche d'équipe</span>
+                    </div>
+                  </div>
+                  <span class="discussion-replies">8 replies</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ SCREEN -->
+          <div class="tab-screen" id="screen-faq">
+            <div class="section-slice">
+              <h2 class="slice-title">Questions Fréquentes (FAQ)</h2>
+              <div class="faq-accordion-group">
+                <div class="faq-collapsible">
+                  <button class="faq-trigger" type="button">Les débutants peuvent-ils jouer ?</button>
+                  <div class="faq-details">
+                    <div class="faq-details-inner">
+                      Carrément ! On adore les petits nouveaux. Google Cloud vous donne plein d'exemples et d'environnements bac à sable pour vous lancer facilement.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="faq-collapsible">
+                  <button class="faq-trigger" type="button">Je peux ramener mes potes ?</button>
+                  <div class="faq-details">
+                    <div class="faq-details-inner">
+                      Oui, vous pouvez être jusqu'à 4 dans une équipe. Mais tu peux aussi jouer les loups solitaires si tu préfères !
+                    </div>
+                  </div>
+                </div>
+
+                <div class="faq-collapsible">
+                  <button class="faq-trigger" type="button">Je peux utiliser un vieux projet ?</button>
+                  <div class="faq-details">
+                    <div class="faq-details-inner">
+                      Non, tricheur ! Tout doit être fait pendant les dates du hackathon. Mais t'as le droit d'utiliser des librairies existantes bien sûr.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="../assets/brand/codetowin-brand.png" alt="CodeToWin" />
+          <div class="footer-text">© 2026 CodeToWin. Tous droits réservés. Géré par Devpost.</div>
+        </div>
+        <div class="footer-links">
+          <a href="#" class="footer-link">Conditions</a>
+          <a href="#" class="footer-link">Politique</a>
+          <a href="#" class="footer-link">Aide</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript Navigation and Interactions -->
+    <script>
+
+      // Multi-screen tab switching engine
+      const tabLinks = Array.from(document.querySelectorAll(".tab-link"));
+      const tabScreens = Array.from(document.querySelectorAll(".tab-screen"));
+
+      tabLinks.forEach(link => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          const targetTab = link.dataset.tab;
+
+          // Update active links
+          tabLinks.forEach(l => l.classList.toggle("active", l === link));
+
+          // Toggle visibility of screen divisions
+          tabScreens.forEach(screen => {
+            const isTarget = screen.getAttribute("id") === `screen-${targetTab}`;
+            screen.classList.toggle("active", isTarget);
+          });
+
+          // Smooth scroll to tab bar if scrolled past
+          const navOffset = document.getElementById("tab-nav").getBoundingClientRect().top + window.scrollY - 100;
+          if (window.scrollY > navOffset) {
+            window.scrollTo({
+              top: navOffset,
+              behavior: "smooth"
+            });
+          }
+        });
+      });
+
+      // FAQ accordion toggle logic
+      const faqCollapsibles = Array.from(document.querySelectorAll(".faq-collapsible"));
+      faqCollapsibles.forEach(item => {
+        const trigger = item.querySelector(".faq-trigger");
+        const details = item.querySelector(".faq-details");
+
+        trigger.addEventListener("click", () => {
+          const isOpen = item.classList.contains("is-open");
+
+          // Close all FAQ items
+          faqCollapsibles.forEach(otherItem => {
+            otherItem.classList.remove("is-open");
+            otherItem.querySelector(".faq-details").style.maxHeight = null;
+          });
+
+          // Toggle clicked item
+          if (!isOpen) {
+            item.classList.add("is-open");
+            details.style.maxHeight = details.scrollHeight + "px";
+          }
+        });
+      });
+
+      // ==========================================
+      // PARTICIPANT WORKSPACE STATE CONTROLLER
+      // ==========================================
+      
+      const STORAGE_KEY = 'hack_agent_workspace_state';
+
+      let hackathonState = {
+        registered: false,
+        profile: null,
+        currentStep: 1,
+        projectName: "",
+        projectPitch: "",
+        thumbnailUrl: "",
+        teammates: [],
+        detailsAbout: "",
+        detailsBuiltWith: "",
+        detailsRepo: "",
+        detailsDemo: "",
+        detailsVideo: "",
+        questionMcp: "",
+        questionSecurity: "",
+        submitted: false,
+        previewActive: false
+      };
+
+      let easyMDEInstance = null;
+      let techList = [];
+
+      // Load initial state
+      function initWorkspace() {
+        // Initialize EasyMDE text editor on #project-about-input
+        const aboutEl = document.getElementById("project-about-input");
+        if (aboutEl) {
+          easyMDEInstance = new EasyMDE({
+            element: aboutEl,
+            spellChecker: false,
+            status: false,
+            autosave: {
+              enabled: false
+            },
+            placeholder: "Raconte-nous tout ce que tu as fait, comment ça marche...",
+            renderingConfig: {
+              singleLineBreaks: false
+            }
+          });
+
+          // Sync changes with state
+          easyMDEInstance.codemirror.on("change", () => {
+            updateStateField('detailsAbout', easyMDEInstance.value());
+          });
+        }
+
+        // Setup title edit key listeners
+        const titleEditInput = document.getElementById("project-title-edit-input");
+        if (titleEditInput) {
+          titleEditInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              saveTitleEdit();
+            } else if (e.key === "Escape") {
+              e.preventDefault();
+              cancelTitleEdit();
+            }
+          });
+        }
+
+        // Setup Technology interactive tag input
+        const techInput = document.getElementById("project-built-with-input");
+        if (techInput) {
+          techInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              const val = techInput.value;
+              if (val.trim()) {
+                addTech(val);
+                techInput.value = "";
+              }
+            }
+          });
+
+          techInput.addEventListener("blur", () => {
+            const val = techInput.value;
+            if (val.trim()) {
+              addTech(val);
+              techInput.value = "";
+            }
+          });
+        }
+
+        const techWrap = document.getElementById("tech-tags-input-wrap");
+        if (techWrap && techInput) {
+          techWrap.addEventListener("click", () => {
+            techInput.focus();
+          });
+        }
+
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          try {
+            hackathonState = JSON.parse(stored);
+          } catch(e) {
+            console.error("Error loading workspace state", e);
+          }
+        }
+        
+        applyRegistrationState();
+        renderWorkspace();
+
+        // Check if query parameter specifies a tab to auto-activate
+        const params = new URLSearchParams(window.location.search);
+        const urlTab = params.get("tab");
+        if (urlTab) {
+          const tabButton = document.querySelector(`.tab-link[data-tab='${urlTab}']`);
+          if (tabButton) {
+            tabButton.click();
+          }
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(hackathonState));
+      }
+
+      function resetProjectWorkspace() {
+        if (confirm("Are you sure you want to reset your project workspace? This will erase all draft details.")) {
+          localStorage.removeItem(STORAGE_KEY);
+          hackathonState = {
+            registered: hackathonState.registered, // Keep registration status
+            profile: hackathonState.profile,
+            currentStep: 1,
+            projectName: "",
+            projectPitch: "",
+            thumbnailUrl: "",
+            teammates: hackathonState.profile ? [{
+              name: `${hackathonState.profile.firstName} ${hackathonState.profile.lastName}`,
+              avatar: hackathonState.profile.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80",
+              role: "Team Leader",
+              status: "joined"
+            }] : [],
+            detailsAbout: "",
+            detailsBuiltWith: "",
+            detailsRepo: "",
+            detailsDemo: "",
+            detailsVideo: "",
+            questionMcp: "",
+            questionSecurity: "",
+            submitted: false,
+            previewActive: false
+          };
+          saveState();
+          
+          // Clear inputs on page
+          const form = document.getElementById("project-submission-form");
+          if (form) form.reset();
+          
+          const thumbImg = document.getElementById("project-thumbnail-preview-img");
+          if (thumbImg) thumbImg.style.display = "none";
+
+          if (easyMDEInstance) {
+            easyMDEInstance.value("");
+          }
+          techList = [];
+          renderTechTags();
+          
+          renderWorkspace();
+        }
+      }
+
+      function applyRegistrationState() {
+        const joinBtn = document.querySelector(".btn-primary[onclick='openProfileModal()']");
+        const quickInfoJoinBtn = document.querySelector(".btn-primary[href='#register']");
+        
+        if (hackathonState.registered) {
+          // Hide unregistered onboarding state
+          const unregBlock = document.getElementById("project-unregistered-state");
+          if (unregBlock) unregBlock.style.display = "none";
+          
+          // Show active workspace
+          const regBlock = document.getElementById("project-registered-state");
+          if (regBlock) regBlock.style.display = "flex";
+          
+          // Sync quick info buttons
+          if (quickInfoJoinBtn) {
+            quickInfoJoinBtn.innerText = "Enter Project Workspace";
+            quickInfoJoinBtn.removeAttribute("href");
+            quickInfoJoinBtn.onclick = (e) => {
+              e.preventDefault();
+              const projectTab = document.querySelector(".tab-link[data-tab='my-project']");
+              if (projectTab) projectTab.click();
+            };
+          }
+        } else {
+          // Show unregistered onboarding state
+          const unregBlock = document.getElementById("project-unregistered-state");
+          if (unregBlock) unregBlock.style.display = "block";
+          
+          // Hide active workspace
+          const regBlock = document.getElementById("project-registered-state");
+          if (regBlock) regBlock.style.display = "none";
+
+          if (quickInfoJoinBtn) {
+            quickInfoJoinBtn.innerText = "Join this hackaton";
+            quickInfoJoinBtn.setAttribute("href", "#register");
+            quickInfoJoinBtn.onclick = (e) => {
+              e.preventDefault();
+              openProfileModal();
+            };
+          }
+        }
+      }
+
+      // Profile Setup Onboarding redirection
+      function openProfileModal() {
+        window.location.href = "profile.html";
+      }
+
+      // Project Wizard Interactions
+      function triggerThumbnailUpload() {
+        document.getElementById("project-thumbnail-input").click();
+      }
+
+      function previewThumbnailPhoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const url = URL.createObjectURL(file);
+          const previewImg = document.getElementById("project-thumbnail-preview-img");
+          previewImg.src = url;
+          previewImg.style.display = "block";
+          
+          hackathonState.thumbnailUrl = url;
+          saveState();
+        }
+      }
+
+      function updateStateField(fieldName, value) {
+        hackathonState[fieldName] = value;
+        saveState();
+        
+        // Update live elements
+        if (fieldName === 'projectName') {
+          const display = document.getElementById("workspace-project-title-display");
+          if (display) display.innerText = value || "Untitled Project";
+        }
+      }
+
+      // Title Editing actions
+      function startEditingTitle() {
+        const displayContainer = document.getElementById("project-title-display-container");
+        const editContainer = document.getElementById("project-title-edit-container");
+        const editInput = document.getElementById("project-title-edit-input");
+
+        if (displayContainer && editContainer && editInput) {
+          editInput.value = hackathonState.projectName || "";
+          displayContainer.style.display = "none";
+          editContainer.style.display = "flex";
+          editInput.focus();
+        }
+      }
+
+      function saveTitleEdit() {
+        const displayContainer = document.getElementById("project-title-display-container");
+        const editContainer = document.getElementById("project-title-edit-container");
+        const editInput = document.getElementById("project-title-edit-input");
+
+        if (displayContainer && editContainer && editInput) {
+          const val = editInput.value.trim();
+          updateStateField('projectName', val);
+          
+          // Also sync with step 1 input if it exists
+          const nameInput = document.getElementById("project-name-input");
+          if (nameInput) {
+            nameInput.value = val;
+          }
+
+          displayContainer.style.display = "flex";
+          editContainer.style.display = "none";
+        }
+      }
+
+      function cancelTitleEdit() {
+        const displayContainer = document.getElementById("project-title-display-container");
+        const editContainer = document.getElementById("project-title-edit-container");
+
+        if (displayContainer && editContainer) {
+          displayContainer.style.display = "flex";
+          editContainer.style.display = "none";
+        }
+      }
+
+      // Technologies tags rendering & interactions
+      function renderTechTags() {
+        const wrap = document.getElementById("tech-tags-input-wrap");
+        const textInput = document.getElementById("project-built-with-input");
+        const hiddenInput = document.getElementById("project-built-with");
+        if (!wrap || !textInput || !hiddenInput) return;
+
+        // Clear existing tags
+        const existingTags = wrap.querySelectorAll(".tag-pill");
+        existingTags.forEach(t => t.remove());
+
+        techList.forEach((tech, index) => {
+          const pill = document.createElement("div");
+          pill.className = "tag-pill";
+          pill.innerHTML = `
+            <span>${escapeHTML(tech)}</span>
+            <button type="button" class="tag-remove-btn" onclick="removeTech(${index})">&times;</button>
+          `;
+          wrap.insertBefore(pill, textInput);
+        });
+
+        hiddenInput.value = techList.join(", ");
+        updateStateField('detailsBuiltWith', hiddenInput.value);
+      }
+
+      function addTech(techName) {
+        const cleaned = techName.trim().replace(/,+/g, "");
+        if (cleaned && !techList.includes(cleaned)) {
+          techList.push(cleaned);
+          renderTechTags();
+        }
+      }
+
+      function removeTech(index) {
+        techList.splice(index, 1);
+        renderTechTags();
+      }
+
+      function escapeHTML(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      }
+
+      function renderWorkspace() {
+        if (!hackathonState.registered) return;
+
+        // Restore input values
+        document.getElementById("project-name-input").value = hackathonState.projectName || "";
+        document.getElementById("project-pitch-input").value = hackathonState.projectPitch || "";
+        document.getElementById("project-built-with").value = hackathonState.detailsBuiltWith || "";
+        document.getElementById("project-repo-link").value = hackathonState.detailsRepo || "";
+        document.getElementById("project-demo-link").value = hackathonState.detailsDemo || "";
+        document.getElementById("project-video-link").value = hackathonState.detailsVideo || "";
+        document.getElementById("question-mcp-input").value = hackathonState.questionMcp || "";
+        document.getElementById("question-security-input").value = hackathonState.questionSecurity || "";
+
+        // Set title display
+        document.getElementById("workspace-project-title-display").innerText = hackathonState.projectName || "Untitled Project";
+
+        // Restore EasyMDE content
+        if (easyMDEInstance) {
+          easyMDEInstance.value(hackathonState.detailsAbout || "");
+        }
+
+        // Restore technology tags
+        if (hackathonState.detailsBuiltWith) {
+          techList = hackathonState.detailsBuiltWith.split(",").map(t => t.trim()).filter(Boolean);
+        } else {
+          techList = [];
+        }
+        renderTechTags();
+
+        // Restore thumbnail if exists
+        const previewImg = document.getElementById("project-thumbnail-preview-img");
+        if (hackathonState.thumbnailUrl) {
+          previewImg.src = hackathonState.thumbnailUrl;
+          previewImg.style.display = "block";
+        } else {
+          previewImg.style.display = "none";
+        }
+
+        // Render teammates
+        renderTeammatesList();
+
+        // Restore step
+        jumpToWizardStep(hackathonState.currentStep);
+
+        // Update status badge
+        const badge = document.getElementById("project-status-badge");
+        if (hackathonState.submitted) {
+          badge.innerText = "Submitted";
+          badge.className = "badge-submitted";
+        } else {
+          badge.innerText = "Draft";
+          badge.className = "badge-draft";
+        }
+      }
+
+      function jumpToWizardStep(stepNumber) {
+        if (!hackathonState.registered) return;
+        
+        hackathonState.currentStep = stepNumber;
+        saveState();
+
+        // Update step panels active state
+        for (let i = 1; i <= 5; i++) {
+          const panel = document.getElementById(`wizard-step-panel-${i}`);
+          const indicator = document.getElementById(`step-indicator-${i}`);
+          
+          if (panel) {
+            panel.classList.toggle("is-active", i === stepNumber);
+          }
+          if (indicator) {
+            indicator.classList.toggle("is-active", i === stepNumber);
+            indicator.classList.toggle("is-completed", i < stepNumber);
+          }
+        }
+
+        // Update header progress text
+        const progressPercent = (stepNumber - 1) * 20;
+        const statusText = hackathonState.submitted ? "Submitted - 100% Completed" : `Step ${stepNumber}/5 - ${progressPercent}% Completed`;
+        document.getElementById("project-progress-text-display").innerText = statusText;
+
+        // Render step 5 summaries
+        if (stepNumber === 5) {
+          document.getElementById("summary-project-name").innerText = hackathonState.projectName || "Untitled Project";
+          document.getElementById("summary-team-status").innerText = `${hackathonState.teammates.length} Builders`;
+          
+          const storyValid = hackathonState.detailsAbout && hackathonState.detailsAbout.trim().length > 0;
+          const summaryStory = document.getElementById("summary-story-status");
+          if (storyValid) {
+            summaryStory.innerText = "Complete";
+            summaryStory.style.color = "var(--green)";
+          } else {
+            summaryStory.innerText = "Incomplete Details";
+            summaryStory.style.color = "#dc2626";
+          }
+        }
+      }
+
+      function proceedToWizardStep(stepNumber) {
+        jumpToWizardStep(stepNumber);
+      }
+
+      // Teammates Invite & List Logic
+      function renderTeammatesList() {
+        const container = document.getElementById("teammates-list-container");
+        if (!container) return;
+        
+        container.innerHTML = "";
+
+        hackathonState.teammates.forEach(m => {
+          const row = document.createElement("div");
+          row.className = "teammate-row";
+          
+          const displayStatus = m.status === 'joined' ? 'Joined' : (m.status === 'pending' ? 'Pending' : 'Invited');
+          const statusClass = m.status === 'joined' ? 'status-joined' : 'status-pending';
+
+          row.innerHTML = `
+            <div class="teammate-info">
+              <img src="${m.avatar}" class="teammate-avatar" alt="${m.name}" />
+              <div class="teammate-identity">
+                <span class="teammate-name">${m.name}</span>
+                <span class="teammate-role-badge">${m.role}</span>
+              </div>
+            </div>
+            <span class="teammate-status-badge ${statusClass}">${displayStatus}</span>
+          `;
+          container.appendChild(row);
+        });
+      }
+
+      function sendTeammateInvite() {
+        const emailInput = document.getElementById("invite-email-input");
+        const email = emailInput.value.trim();
+        
+        if (email && email.includes("@")) {
+          // Extract name from email as mock
+          const name = email.split("@")[0].replace(/[._-]/g, ' ');
+          const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
+          
+          hackathonState.teammates.push({
+            name: formattedName,
+            avatar: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80`,
+            role: "Developer",
+            status: "pending"
+          });
+          
+          saveState();
+          renderTeammatesList();
+          emailInput.value = "";
+          alert(`Invitation email successfully sent to ${email}!`);
+        } else {
+          alert("Please enter a valid email address.");
+        }
+      }
+
+      // Copy Link helper with selection fallback
+      function copySecretInviteLink(btn) {
+        const urlText = document.getElementById("workspace-invite-url").innerText;
+        
+        function selectAndCopy() {
+          const input = document.createElement("input");
+          input.value = urlText;
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand("copy");
+          document.body.removeChild(input);
+          
+          const originalText = btn.innerText;
+          btn.innerText = "Copied!";
+          setTimeout(() => {
+            btn.innerText = originalText;
+          }, 2000);
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(urlText).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = "Copied!";
+            setTimeout(() => {
+              btn.innerText = originalText;
+            }, 2000);
+          }).catch(() => {
+            selectAndCopy();
+          });
+        } else {
+          selectAndCopy();
+        }
+      }
+
+      // Preview toggling & dynamic render bindings
+      function toggleProjectPreview() {
+        hackathonState.previewActive = !hackathonState.previewActive;
+        saveState();
+
+        const editorNode = document.getElementById("workspace-editor-flow");
+        const previewNode = document.getElementById("workspace-preview-pane");
+        const toggleBtn = document.getElementById("btn-project-preview-toggle");
+
+        if (hackathonState.previewActive) {
+          editorNode.style.display = "none";
+          previewNode.style.display = "flex";
+          toggleBtn.innerText = "Edit Project";
+          
+          // Populate live preview nodes
+          document.getElementById("preview-title-val").innerText = hackathonState.projectName || "Untitled Project";
+          document.getElementById("preview-pitch-val").innerText = hackathonState.projectPitch || "Short elevator pitch will render here.";
+          
+          // Render About the Project Markdown content
+          const aboutVal = document.getElementById("preview-about-val");
+          if (aboutVal) {
+            aboutVal.innerHTML = hackathonState.detailsAbout ? marked.parse(hackathonState.detailsAbout) : "No details provided yet.";
+          }
+
+          // Tech list display
+          const techListDisplay = document.getElementById("preview-tech-list-display");
+          techListDisplay.innerHTML = "";
+          if (hackathonState.detailsBuiltWith) {
+            hackathonState.detailsBuiltWith.split(",").forEach(t => {
+              const cleaned = t.trim();
+              if (cleaned) {
+                const span = document.createElement("span");
+                span.className = "preview-tech-tag";
+                span.innerText = cleaned;
+                techListDisplay.appendChild(span);
+              }
+            });
+          } else {
+            techListDisplay.innerHTML = `<span style="font-size:0.85rem; color:var(--text-muted);">No tech stack specified.</span>`;
+          }
+
+          // Links display
+          const repoLink = document.getElementById("preview-repo-link-display");
+          const demoLink = document.getElementById("preview-demo-link-display");
+          const videoLink = document.getElementById("preview-video-link-display");
+          const noLinks = document.getElementById("preview-no-links-display");
+
+          let hasLinks = false;
+          if (hackathonState.detailsRepo) {
+            repoLink.href = hackathonState.detailsRepo;
+            repoLink.style.display = "flex";
+            hasLinks = true;
+          } else {
+            repoLink.style.display = "none";
+          }
+
+          if (hackathonState.detailsDemo) {
+            demoLink.href = hackathonState.detailsDemo;
+            demoLink.style.display = "flex";
+            hasLinks = true;
+          } else {
+            demoLink.style.display = "none";
+          }
+
+          if (hackathonState.detailsVideo) {
+            videoLink.href = hackathonState.detailsVideo;
+            videoLink.style.display = "flex";
+            hasLinks = true;
+          } else {
+            videoLink.style.display = "none";
+          }
+
+          noLinks.style.display = hasLinks ? "none" : "block";
+
+          // Teammates sidebar display
+          const teammatesDisplay = document.getElementById("preview-teammates-display");
+          teammatesDisplay.innerHTML = "";
+          hackathonState.teammates.forEach(m => {
+            const card = document.createElement("div");
+            card.className = "preview-teammate-card";
+            card.innerHTML = `
+              <img src="${m.avatar}" class="preview-teammate-avatar" alt="${m.name}" />
+              <div class="preview-teammate-info">
+                <span class="preview-teammate-name">${m.name}</span>
+                <span class="preview-teammate-role">${m.role}</span>
+              </div>
+            `;
+            teammatesDisplay.appendChild(card);
+          });
+
+          // Cover Image Display
+          const cover = document.getElementById("preview-cover-display");
+          if (hackathonState.thumbnailUrl) {
+            cover.style.background = `url(${hackathonState.thumbnailUrl}) center/cover no-repeat`;
+            cover.style.color = "transparent";
+            cover.innerText = "";
+          } else {
+            cover.style.background = `linear-gradient(135deg, var(--green-light) 0%, #d1fae5 100%)`;
+            cover.style.color = "var(--green-dark)";
+            cover.innerText = hackathonState.projectName || "Project Draft";
+          }
+
+        } else {
+          editorNode.style.display = "block";
+          previewNode.style.display = "none";
+          toggleBtn.innerText = "Preview Project";
+        }
+      }
+
+      // Submit project action
+      function submitProjectSubmission() {
+        const agreeGuidelines = document.getElementById("agree-guidelines").checked;
+        const agreeTerms = document.getElementById("agree-terms").checked;
+
+        if (!agreeGuidelines || !agreeTerms) {
+          alert("Please check both checkboxes to agree to the code guidelines and terms of service before submitting.");
+          return;
+        }
+
+        hackathonState.submitted = true;
+        saveState();
+
+        const badge = document.getElementById("project-status-badge");
+        if (badge) {
+          badge.innerText = "Submitted";
+          badge.className = "badge-submitted";
+        }
+
+        // Update progress text
+        document.getElementById("project-progress-text-display").innerText = "Submitted - 100% Completed";
+
+        alert("Congratulations! Your project has been successfully submitted to the Google Cloud Rapid Agent Hackathon. You can still modify details until the deadline.");
+        
+        // Show project in preview mode after submit
+        if (!hackathonState.previewActive) {
+          toggleProjectPreview();
+        }
+      }
+
+      // ===== AUTH HEADER LOGIC =====
+      function loadHdAuthHeader() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (!stored) return;
+        try {
+          const state = JSON.parse(stored);
+          if (state.registered && state.profile) {
+            const p = state.profile;
+            const fullName = `${p.firstName || ''} ${p.lastName || ''}`.trim() || 'User';
+            const avatar = p.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80';
+            const username = `@${(p.firstName || 'user').toLowerCase()}${(p.lastName || '').toLowerCase()}`;
+            document.getElementById('hd-header-avatar').src = avatar;
+            document.getElementById('hd-header-name').textContent = p.firstName || 'User';
+            document.getElementById('hd-dd-avatar').src = avatar;
+            document.getElementById('hd-dd-name').textContent = fullName;
+            document.getElementById('hd-dd-email').textContent = username;
+          }
+        } catch(e) { console.error('Error loading auth header', e); }
+      }
+
+      function toggleHdAvatarDropdown() {
+        const pill = document.getElementById('hd-avatar-pill');
+        const dropdown = document.getElementById('hd-avatar-dropdown');
+        const isOpen = dropdown.classList.contains('is-open');
+        if (isOpen) {
+          dropdown.classList.remove('is-open');
+          pill.classList.remove('is-open');
+        } else {
+          dropdown.classList.add('is-open');
+          pill.classList.add('is-open');
+        }
+      }
+
+      document.addEventListener('click', (e) => {
+        const wrap = document.querySelector('.avatar-pill-wrap');
+        if (wrap && !wrap.contains(e.target)) {
+          const dd = document.getElementById('hd-avatar-dropdown');
+          const pill = document.getElementById('hd-avatar-pill');
+          if (dd) dd.classList.remove('is-open');
+          if (pill) pill.classList.remove('is-open');
+        }
+      });
+
+      function signOutHd() {
+        localStorage.removeItem(STORAGE_KEY);
+        window.location.href = 'home.html';
+      }
+
+      // Initialize
+      window.addEventListener("DOMContentLoaded", () => {
+        loadHdAuthHeader();
+        initWorkspace();
+      });
+    </script>
+  </body>
+</html>
