@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="CodeToWin hackathons with search, dropdown filters, prize details, and a responsive three-column desktop layout."
+    />
+    <title>CodeToWin - Hackathons</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2326a69a'/%3E%3Cpath d='M10 22V10h3v4h6v-4h3v12h-3v-5h-6v5z' fill='white'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="../css/hackaton.css">
+  </head>
+  <body>
+    <svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+      <symbol id="icon-close" viewBox="0 0 24 24">
+        <path
+          d="M6 6l12 12M18 6 6 18"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        ></path>
+      </symbol>
+      <symbol id="icon-menu" viewBox="0 0 24 24">
+        <path
+          d="M4 7h16M4 12h16M4 17h16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        ></path>
+      </symbol>
+    </svg>
+
+    <!-- Authenticated Header -->
+    <header class="auth-header" id="auth-header">
+      <div class="auth-header-inner">
+        <div class="auth-header-left">
+          <a href="home.html" class="brand-link" aria-label="CodeToWin">
+            <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" class="brand-mark brand-mark-header" decoding="async" />
+          </a>
+          <nav class="auth-nav-links" aria-label="Navigation">
+            <a href="hackaton.html" class="auth-nav-link active">Explorer</a>
+            <a href="hackaton-detail.html?tab=my-project" class="auth-nav-link">Mes Projets</a>
+          </nav>
+        </div>
+        <div class="auth-header-right">
+          <button type="button" class="search-icon-btn" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg></button>
+          <div class="avatar-pill-wrap">
+            <button type="button" class="avatar-pill" id="hk-avatar-pill" onclick="toggleHkDropdown()">
+              <img id="hk-header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" class="avatar-pill-img" />
+              <span class="avatar-pill-name" id="hk-header-name">User</span>
+              <svg class="avatar-pill-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5L6 7.5L9 4.5"></path></svg>
+            </button>
+            <div class="avatar-dropdown" id="hk-avatar-dropdown">
+              <div class="dropdown-user-block">
+                <img id="hk-dd-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" class="dropdown-user-avatar" />
+                <div class="dropdown-user-info">
+                  <div class="dropdown-user-name" id="hk-dd-name">User Name</div>
+                  <div class="dropdown-user-email" id="hk-dd-email">@username</div>
+                </div>
+              </div>
+              <div class="dropdown-links">
+                <a href="froentend/participant.html" class="dropdown-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"></path></svg>Mon Profil</a>
+                <a href="froentend/hackaton-detail.html?tab=my-project" class="dropdown-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg>Mes Projets</a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-link dropdown-link--danger" onclick="signOutHk()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16,17 21,12 16,7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>Déconnexion</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero-strip" aria-label="Hackathon highlight">
+      <p><strong>Les meilleurs hackatons tech</strong> ,Réjoins maitenant.</p>
+    </section>
+
+    <main class="page-shell">
+
+      <form class="search-bar" id="searchForm" role="search" aria-label="Search hackathons">
+        <div class="search-input-wrap">
+          <input
+            id="searchInput"
+            name="search"
+            type="search"
+            placeholder="Chercher un hackathon"
+            autocomplete="off"
+          />
+        </div>
+        <button class="search-btn" type="submit" aria-label="Search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Zm7.15 11.73 3.08 3.09a1 1 0 0 1-1.42 1.41l-3.08-3.08a1 1 0 0 1 1.42-1.42Z"
+            />
+          </svg>
+        </button>
+      </form>
+
+      <section class="filter-tabs" aria-label="Filter hackathons">
+        <div class="filter-chip-group" data-filter-group="status">
+          <button
+            type="button"
+            class="filter-chip"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="statusFilterMenu"
+            data-filter-chip="status"
+          >
+            <span class="filter-chip__text">
+              <span class="filter-chip__label">Statut</span>
+              <span class="filter-chip__value" data-filter-value="status">Tous</span>
+            </span>
+            <svg class="filter-chip__chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <div class="filter-menu" id="statusFilterMenu" role="listbox" aria-label="Filter by status"></div>
+        </div>
+        <div class="filter-chip-group" data-filter-group="location">
+          <button
+            type="button"
+            class="filter-chip"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="locationFilterMenu"
+            data-filter-chip="location"
+          >
+            <span class="filter-chip__text">
+              <span class="filter-chip__label">Lieu</span>
+              <span class="filter-chip__value" data-filter-value="location">Partout</span>
+            </span>
+            <svg class="filter-chip__chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <div class="filter-menu" id="locationFilterMenu" role="listbox" aria-label="Filter by location"></div>
+        </div>
+        <div class="filter-chip-group" data-filter-group="interest">
+          <button
+            type="button"
+            class="filter-chip"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="interestFilterMenu"
+            data-filter-chip="interest"
+          >
+            <span class="filter-chip__text">
+              <span class="filter-chip__label">Thème</span>
+              <span class="filter-chip__value" data-filter-value="interest">Tous</span>
+            </span>
+            <svg class="filter-chip__chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <div class="filter-menu" id="interestFilterMenu" role="listbox" aria-label="Filter by interest"></div>
+        </div>
+      </section>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <section class="section-heading" aria-labelledby="section-title">
+        <h2 id="section-title">Tous les hackathons</h2>
+        <span class="section-count" id="resultsCount">5 hackathons</span>
+      </section>
+
+      <section class="cards" id="cards">
+        <article
+          class="card"
+        data-start="2026-06-01"
+        data-end="2026-06-12"
+        data-location="Accra, Ghana"
+        data-interest="Developers"
+        data-prize="$8,000"
+        data-participants="561"
+        data-keywords="codetowin africa ai sprint online hybrid devs makers ai"
+      >
+          <div class="card-top">
+            <div class="card-logo" aria-hidden="true"><span>CT</span></div>
+            <div class="card-location">
+              <span class="card-location-status">Online</span>
+              <span class="card-location-place">Accra, Ghana</span>
+            </div>
+          </div>
+          <h3>CodeToWin Africa AI Sprint</h3>
+          <div class="card-meta">
+            <span class="badge" data-status-badge>6 days left</span>
+            <span class="participant-stat"><strong>561</strong> participants</span>
+            <span class="date-range">Jun 01 - Jun 12</span>
+            <span class="prize"><strong>$8,000</strong> prize</span>
+          </div>
+        </article>
+
+        <article
+          class="card"
+        data-start="2026-06-10"
+        data-end="2026-06-14"
+        data-location="Lagos, Nigeria"
+        data-interest="Designers"
+        data-prize="$5,000"
+        data-participants="375"
+        data-keywords="product design hack weekend online remote designers founders builders ui ux"
+      >
+          <div class="card-top">
+            <div class="card-logo" aria-hidden="true"><span>PD</span></div>
+            <div class="card-location">
+              <span class="card-location-status">Online</span>
+              <span class="card-location-place">Lagos, Nigeria</span>
+            </div>
+          </div>
+          <h3>Product Design Hack Weekend</h3>
+          <div class="card-meta">
+            <span class="badge" data-status-badge>Upcoming</span>
+            <span class="participant-stat"><strong>375</strong> participants</span>
+            <span class="date-range">Jun 10 - Jun 14</span>
+            <span class="prize"><strong>$5,000</strong> prize</span>
+          </div>
+        </article>
+
+        <article
+          class="card"
+        data-start="2026-05-15"
+        data-end="2026-05-20"
+        data-location="Nairobi, Kenya"
+        data-interest="Data Analysts"
+        data-prize="$6,000"
+        data-participants="214"
+        data-keywords="data for impact challenge in-person offline data analysts builders researchers social impact"
+      >
+          <div class="card-top">
+            <div class="card-logo" aria-hidden="true"><span>DA</span></div>
+            <div class="card-location">
+              <span class="card-location-status">In person</span>
+              <span class="card-location-place">Nairobi, Kenya</span>
+            </div>
+          </div>
+          <h3>Data for Impact Challenge</h3>
+          <div class="card-meta">
+            <span class="badge" data-status-badge>Ended</span>
+            <span class="participant-stat"><strong>214</strong> participants</span>
+            <span class="date-range">May 15 - May 20</span>
+            <span class="prize"><strong>$6,000</strong> prize</span>
+          </div>
+        </article>
+
+        <article
+          class="card"
+        data-start="2026-06-06"
+        data-end="2026-06-08"
+        data-location="Dakar, Senegal"
+        data-interest="Makers"
+        data-prize="$7,500"
+        data-participants="912"
+        data-keywords="young innovators lab online makers submissions developers designers students"
+      >
+          <div class="card-top">
+            <div class="card-logo" aria-hidden="true"><span>IN</span></div>
+            <div class="card-location">
+              <span class="card-location-status">Online</span>
+              <span class="card-location-place">Dakar, Senegal</span>
+            </div>
+          </div>
+          <h3>Young Innovators Lab</h3>
+          <div class="card-meta">
+            <span class="badge" data-status-badge>2 days left</span>
+            <span class="participant-stat"><strong>912</strong> participants</span>
+            <span class="date-range">Jun 06 - Jun 08</span>
+            <span class="prize"><strong>$7,500</strong> prize</span>
+          </div>
+        </article>
+
+        <article
+          class="card"
+        data-start="2026-06-18"
+        data-end="2026-06-22"
+        data-location="Kigali, Rwanda"
+        data-interest="Security"
+        data-prize="$9,000"
+        data-participants="184"
+        data-keywords="cloud and security open hack in-person offline builders devs makers engineers security cloud"
+      >
+          <div class="card-top">
+            <div class="card-logo" aria-hidden="true"><span>CS</span></div>
+            <div class="card-location">
+              <span class="card-location-status">In person</span>
+              <span class="card-location-place">Kigali, Rwanda</span>
+            </div>
+          </div>
+          <h3>Cloud &amp; Security Open Hack</h3>
+          <div class="card-meta">
+            <span class="badge" data-status-badge>Upcoming</span>
+            <span class="participant-stat"><strong>184</strong> participants</span>
+            <span class="date-range">Jun 18 - Jun 22</span>
+            <span class="prize"><strong>$9,000</strong> prize</span>
+          </div>
+        </article>
+      </section>
+
+      <p class="empty-state" id="emptyState">No hackathons match your search or filters.</p>
+    </main>
+
+    <script src="../js/hackaton.js"></script>
+  </body>
+</html>

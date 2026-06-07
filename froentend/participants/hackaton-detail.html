@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Google Cloud Rapid Agent Hackathon - Build real-world AI agents using Gemini, Google Cloud Agent Builder, and partner MCP servers." />
+    <title>Google Cloud Rapid Agent Hackathon - CodeToWin</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23059669'/%3E%3Cpath d='M10 22V10h3v4h6v-4h3v12h-3v-5h-6v5z' fill='white'/%3E%3C/svg%3E"
+    />
+    <!-- Fontshare Satoshi and Google Font Inter -->
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,800,700,500,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- EasyMDE Markdown Editor -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <!-- Marked.js Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <link rel="stylesheet" href="../css/hackaton-detail.css">
+  </head>
+  <body>
+    <!-- Authenticated Header -->
+    <header class="auth-header" id="auth-header">
+      <div class="auth-header-inner">
+        <div class="auth-header-left">
+          <a href="home.html" class="brand-link" aria-label="CodeToWin Home">
+            <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" class="brand-mark" decoding="async" />
+          </a>
+          <nav class="auth-nav-links" aria-label="Main Navigation">
+            <a href="hackaton.html" class="auth-nav-link">Explorer</a>
+            <a href="hackaton-detail.html?tab=my-project" class="auth-nav-link active">Mes Projets</a>
+          </nav>
+        </div>
+        <div class="auth-header-right">
+          <button type="button" class="search-icon-btn" aria-label="Search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          </button>
+          <div class="avatar-pill-wrap">
+            <button type="button" class="avatar-pill" id="hd-avatar-pill" onclick="toggleHdAvatarDropdown()">
+              <img id="hd-header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" class="avatar-pill-img" />
+              <span class="avatar-pill-name" id="hd-header-name">User</span>
+              <svg class="avatar-pill-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5L6 7.5L9 4.5"></path></svg>
+            </button>
+            <div class="avatar-dropdown" id="hd-avatar-dropdown">
+              <div class="dropdown-user-block">
+                <img id="hd-dd-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" class="dropdown-user-avatar" />
+                <div class="dropdown-user-info">
+                  <div class="dropdown-user-name" id="hd-dd-name">User Name</div>
+                  <div class="dropdown-user-email" id="hd-dd-email">@username</div>
+                </div>
+              </div>
+              <div class="dropdown-links">
+                <a href="participant.html" class="dropdown-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"></path></svg>Mon Profil</a>
+                <a href="hackaton-detail.html?tab=my-project" class="dropdown-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg>Mes Projets</a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-link dropdown-link--danger" onclick="signOutHd()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16,17 21,12 16,7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>Déconnexion</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section (Mini 15% Screen Height Banner) -->
+    <section class="hero" id="hero" aria-label="Challenge Identity Banner">
+      <h1>Google Cloud Rapid Agent Hackathon</h1>
+    </section>
+
+    <!-- Detail Header -->
+    <header class="detail-header" aria-label="Hackathon Overview Identity">
+      <h2 class="detail-subtitle">Créez des Agents pour des Défis Réels !</h2>
+      <p class="detail-description-text">
+        C'est l'heure de bricoler des outils qui planifient, agissent et résolvent de vrais problèmes. Soumets ton projet, bosse en équipe et amuse-toi !
+      </p>
+    </header>
+
+    <!-- Quick Information Panel (Gris Card Style, Highlighted Status, Join Button Below) -->
+    <section class="quick-info-panel-container" aria-label="Hackathon Quick Info Panel Section">
+      <div class="quick-info-panel">
+        <div class="info-item">
+          <span class="info-label">Statut</span>
+          <span class="info-value"><span class="status-highlight">Ouvert</span></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Format</span>
+          <span class="info-value">En ligne</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Fin</span>
+          <span class="info-value">11 Juin 2026</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Prix</span>
+          <span class="info-value">60 000 $</span>
+        </div>
+      </div>
+      <div style="margin-top: 1.5rem; display: flex; justify-content: flex-start;">
+        <a href="#register" class="btn-primary">Rejoindre l'aventure !</a>
+      </div>
+    </section>
+
+    <!-- Main Content Area: Flat Single Column Flow -->
+    <div class="layout-wrapper">
+      
+      <main class="content-pane">
+        
+        <!-- Sticky Tab Navigation Menu (renamed labels, capsule active state) -->
+        <nav class="tab-nav" id="tab-nav" aria-label="Screen Tabs Navigation">
+          <a class="tab-link active" data-tab="overview">Aperçu</a>
+          <a class="tab-link" data-tab="my-project">Mon projet</a>
+          <a class="tab-link" data-tab="participants">Copains</a>
+          <a class="tab-link" data-tab="resources">Ressources</a>
+          <a class="tab-link" data-tab="rules">Règles</a>
+          <a class="tab-link" data-tab="updates">Actus</a>
+          <a class="tab-link" data-tab="discussions">Bla-bla</a>
+          <a class="tab-link" data-tab="faq">FAQ</a>
+        </nav>
+
+        <!-- Dynamic Screen Content Areas -->
+        <div class="screens-container">
+          
+          <!-- OVERVIEW SCREEN (Structured Textarea-Style Text Flow) -->
+          <div class="tab-screen active" id="screen-overview">
+            <div class="section-slice">
+              <div class="textarea-render-body">
+                <h2>C'est quoi ce défi ?</h2>
+                <p>Bienvenue au Google Cloud Rapid Agent Hackathon ! Fini les vieux chatbots ennuyeux, on passe aux vrais Agents IA : des trucs intelligents qui réfléchissent, planifient et utilisent des API pour de vrai.</p>
+                <p>Avec Gemini et les outils MCP, ton but est de créer un agent (presque) autonome qui fait le boulot à la place des humains dans l'une des catégories ci-dessous.</p>
+                <p>Que tu sois un pro du code, un as du design ou juste un débutant curieux, on a tout ce qu'il faut pour t'aider. Viens t'amuser avec nous !</p>
+                
+                <h2>Les Pistes (et les Prix !)</h2>
+                <p>Choisis ton camp et essaie de gagner le gros lot :</p>
+                <ul>
+                  <li><strong>Piste Arize (10 000 $ en jeu)</strong> : Fais des agents qui surveillent les erreurs et tracent tout. (1er: 5 000 $ | 2e: 3 000 $ | 3e: 2 000 $)</li>
+                  <li><strong>Piste Elastic (10 000 $ en jeu)</strong> : Utilise la recherche vectorielle pour rendre ton agent super malin. (1er: 5 000 $ | 2e: 3 000 $ | 3e: 2 000 $)</li>
+                  <li><strong>Piste Fivetran (10 000 $ en jeu)</strong> : Construis des pipelines de données et automatise tout le bazar. (1er: 5 000 $ | 2e: 3 000 $ | 3e: 2 000 $)</li>
+                  <li><strong>Piste MongoDB (10 000 $ en jeu)</strong> : Stocke et recherche des trucs avec MongoDB Atlas. (1er: 5 000 $ | 2e: 3 000 $ | 3e: 2 000 $)</li>
+                </ul>
+
+                <h2>Quelques idées pour t'inspirer 💡</h2>
+                <p>T'as pas d'idée ? Pas de panique, voici de quoi te lancer :</p>
+                <ul>
+                  <li><strong>Le Planificateur de la Coupe du Monde 2026</strong> : Aide les fans à trouver des hôtels, des billets et à s'organiser sans stress.</li>
+                  <li><strong>Le Chasseur de Fraudes</strong> : Un agent qui fouille dans les transactions pour attraper les méchants.</li>
+                  <li><strong>Le Superviseur de Magasin</strong> : Gère les stocks, les livraisons et crie au secours (poliment) quand il manque des trucs.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- MY PROJECT SCREEN (Formerly My Items) -->
+          <div class="tab-screen" id="screen-my-project">
+            <div class="section-slice">
+              
+              <!-- NOT REGISTERED ONBOARDING STATE -->
+              <div id="project-unregistered-state" style="display: block; text-align: center; padding: 4rem 2rem; background: var(--bg-subtle); border-radius: 1.5rem;">
+                <div style="width: 4rem; height: 4rem; border-radius: 50%; background: var(--green-light); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </div>
+                <h2 style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--text);">Allez, rejoins la fête !</h2>
+                <p style="color: var(--text-muted); max-width: 50ch; margin: 0.5rem auto 1.75rem; font-size: 0.98rem; line-height: 1.5;">
+                  Remplis ton profil et inscris-toi pour lancer ton projet et trouver tes coéquipiers géniaux.
+                </p>
+                <button type="button" class="btn-primary" onclick="openProfileModal()">Compléter mon profil &amp; Rejoindre</button>
+              </div>
+
+              <!-- REGISTERED ACTIVE WORKSPACE STATE -->
+              <div id="project-registered-state" class="workspace-wrapper" style="display: none;">
+                
+                <!-- Workspace Header -->
+                <div class="workspace-header">
+                  <div class="workspace-title-section">
+                    <div class="workspace-title-row" style="align-items: center;">
+                      <div id="project-title-display-container" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <h2 class="workspace-title" id="workspace-project-title-display">Untitled Project</h2>
+                        <button type="button" id="btn-edit-title" aria-label="Edit project title" style="background: transparent; color: var(--text-muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0.25rem; transition: color 150ms ease;" onclick="startEditingTitle()">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                          </svg>
+                        </button>
+                      </div>
+                      <div id="project-title-edit-container" style="display: none; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <input type="text" id="project-title-edit-input" style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: var(--text); border-bottom: 2px solid var(--green); background: transparent; padding: 0 0.25rem; width: min(250px, 60vw);" />
+                        <button type="button" class="btn-action-primary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 0.5rem;" onclick="saveTitleEdit()">Save</button>
+                        <button type="button" class="btn-action-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 0.5rem;" onclick="cancelTitleEdit()">Cancel</button>
+                      </div>
+                      <span id="project-status-badge" class="badge-draft">Draft</span>
+                    </div>
+                    <span class="workspace-progress-text" id="project-progress-text-display">Step 1/5 - 0% Completed</span>
+                  </div>
+                  <div class="workspace-actions">
+                    <button type="button" id="btn-project-preview-toggle" class="btn-action-secondary" onclick="toggleProjectPreview()">Preview Project</button>
+                    <button type="button" class="btn-action-secondary" style="border-color: #fca5a5; color: #dc2626;" onclick="resetProjectWorkspace()">Reset Workspace</button>
+                  </div>
+                </div>
+
+                <!-- Live Project Workspace Editor Flow -->
+                <div id="workspace-editor-flow">
+                  <!-- Steps Indicator Track -->
+                  <div class="steps-indicator-track" role="tablist">
+                    <button type="button" class="step-indicator-item is-active" id="step-indicator-1" onclick="jumpToWizardStep(1)">1. L'idée</button>
+                    <button type="button" class="step-indicator-item" id="step-indicator-2" onclick="jumpToWizardStep(2)">2. L'équipe</button>
+                    <button type="button" class="step-indicator-item" id="step-indicator-3" onclick="jumpToWizardStep(3)">3. Détails</button>
+                    <button type="button" class="step-indicator-item" id="step-indicator-4" onclick="jumpToWizardStep(4)">4. Questions</button>
+                    <button type="button" class="step-indicator-item" id="step-indicator-5" onclick="jumpToWizardStep(5)">5. Envoi</button>
+                  </div>
+
+                  <!-- Wizard Form Panels Card -->
+                  <div class="wizard-card">
+                    <form id="project-submission-form" onsubmit="event.preventDefault()">
+                      
+                      <!-- STEP 1: PROJECT OVERVIEW PANEL -->
+                      <div class="wizard-step-panel is-active" id="wizard-step-panel-1">
+                        <div class="step-pane-header">
+                          <h3 class="step-pane-title">Aperçu du projet</h3>
+                          <p class="step-pane-desc">Donne un titre cool à ton bébé.</p>
+                        </div>
+                        <div class="form-grid">
+                          <div class="form-group">
+                            <label for="project-name-input" class="form-label">Nom du projet<span class="required-asterisk">*</span></label>
+                            <input type="text" id="project-name-input" class="form-input" required placeholder="ex: Le Super Agent Magique" oninput="updateStateField('projectName', this.value)" />
+                          </div>
+                          <div class="form-group">
+                            <label for="project-pitch-input" class="form-label">Le pitch !<span class="required-asterisk">*</span> (Moins de 150 caractères)</label>
+                            <textarea id="project-pitch-input" class="form-textarea" required placeholder="Un truc accrocheur qui donne envie..." maxlength="150" oninput="updateStateField('projectPitch', this.value)"></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label class="form-label">Image sympa (Thumbnail)</label>
+                            <div class="upload-trigger-box" onclick="triggerThumbnailUpload()">
+                              <div style="width: 3.5rem; height: 3.5rem; border-radius: 0.5rem; background: var(--green-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5">
+                                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                  <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                              </div>
+                              <div class="upload-info">
+                                <span>Ajouter une image</span>
+                                <p>C'est plus joli !</p>
+                              </div>
+                              <input type="file" id="project-thumbnail-input" style="display: none;" accept="image/*" onchange="previewThumbnailPhoto(event)" />
+                            </div>
+                            <img id="project-thumbnail-preview-img" style="display: none; max-height: 10rem; border-radius: 0.75rem; object-fit: cover; margin-top: 0.75rem;" />
+                          </div>
+                        </div>
+                        <div class="step-actions-footer">
+                          <div></div>
+                          <button type="button" class="btn-action-primary" onclick="proceedToWizardStep(2)">Suivant !</button>
+                        </div>
+                      </div>
+
+                      <!-- STEP 2: MANAGE TEAM PANEL -->
+                      <div class="wizard-step-panel" id="wizard-step-panel-2">
+                        <div class="step-pane-header">
+                          <h3 class="step-pane-title">Gérer l'équipe</h3>
+                          <p class="step-pane-desc">Ajoute tes potes par email ou via un lien secret magique.</p>
+                        </div>
+                        <div class="form-grid">
+                          <div class="form-group">
+                            <label class="form-label">Inviter par email</label>
+                            <div class="invite-input-row">
+                              <input type="email" id="invite-email-input" class="form-input" placeholder="pote@superdev.com" />
+                              <button type="button" class="btn-action-primary invite-btn" onclick="sendTeammateInvite()">Inviter</button>
+                            </div>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label class="form-label">Le lien secret</label>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem;">Envoie ce lien à tes amis pour qu'ils rejoignent l'équipe.</p>
+                            <div class="invite-link-box">
+                              <span class="invite-link-text" id="workspace-invite-url">https://codetowin.org/hackathon/google-cloud-rapid-agent/invite/a29df83c</span>
+                              <button type="button" class="btn-action-secondary" style="border-radius: 9999px; padding: 0.35rem 1rem; font-size: 0.8rem;" onclick="copySecretInviteLink(this)">Copier le lien</button>
+                            </div>
+                          </div>
+
+                          <div class="form-group" style="margin-top: 1rem;">
+                            <label class="form-label">Team Members</label>
+                            <div class="teammates-list" id="teammates-list-container">
+                              <!-- Dynamic Teammate Rows -->
+                            </div>
+                          </div>
+                        </div>
+                        <div class="step-actions-footer">
+                          <button type="button" class="btn-action-secondary" onclick="proceedToWizardStep(1)">Retour</button>
+                          <button type="button" class="btn-action-primary" onclick="proceedToWizardStep(3)">Suivant !</button>
+                        </div>
+                      </div>
+
+                      <!-- STEP 3: PROJECT DETAILS PANEL -->
+                      <div class="wizard-step-panel" id="wizard-step-panel-3">
+                        <div class="step-pane-header">
+                          <h3 class="step-pane-title">Les trucs techniques</h3>
+                          <p class="step-pane-desc">Dis-nous comment t'as fait ton chef-d'œuvre !</p>
+                        </div>
+                        <div class="form-grid">
+                          <div class="form-group">
+                            <label for="project-about-input" class="form-label">Raconte-nous tout<span class="required-asterisk">*</span></label>
+                            <textarea id="project-about-input" class="form-textarea" placeholder="Bla bla bla... (sois créatif)"></textarea>
+                          </div>
+
+                          <!-- Technologies Used (Interactive Tag Input) -->
+                          <div class="form-group">
+                            <label class="form-label">Technologies utilisées<span class="required-asterisk">*</span></label>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem;">Tape et fais Entrée !</p>
+                            <div class="tags-input-wrap" id="tech-tags-input-wrap">
+                              <!-- Dynamic tag pills will be rendered here -->
+                              <input type="text" id="project-built-with-input" class="tags-input-text" placeholder="Ajouter une techno..." />
+                            </div>
+                            <input type="hidden" id="project-built-with" required />
+                          </div>
+
+                          <div class="form-row-2">
+                            <div class="form-group">
+                              <label for="project-repo-link" class="form-label">Lien GitHub (ton code)</label>
+                              <input type="url" id="project-repo-link" class="form-input" placeholder="https://github.com/myteam/agent-project" oninput="updateStateField('detailsRepo', this.value)" />
+                            </div>
+                            <div class="form-group">
+                              <label for="project-demo-link" class="form-label">Lien vers la démo en direct !</label>
+                              <input type="url" id="project-demo-link" class="form-input" placeholder="https://agent-demo.vercel.app" oninput="updateStateField('detailsDemo', this.value)" />
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label for="project-video-link" class="form-label">Lien YouTube/Vimeo de ta vidéo</label>
+                            <input type="url" id="project-video-link" class="form-input" placeholder="https://youtube.com/watch?v=demo" oninput="updateStateField('detailsVideo', this.value)" />
+                          </div>
+                        </div>
+                        <div class="step-actions-footer">
+                          <button type="button" class="btn-action-secondary" onclick="proceedToWizardStep(2)">Retour</button>
+                          <button type="button" class="btn-action-primary" onclick="proceedToWizardStep(4)">Suivant !</button>
+                        </div>
+                      </div>
+
+                      <!-- STEP 4: SUBMISSION QUESTIONS PANEL -->
+                      <div class="wizard-step-panel" id="wizard-step-panel-4">
+                        <div class="step-pane-header">
+                          <h3 class="step-pane-title">Questions du jury</h3>
+                          <p class="step-pane-desc">Réponds à ces quelques questions posées par les gentils organisateurs.</p>
+                        </div>
+                        <div class="form-grid">
+                          <div class="form-group">
+                            <label for="question-mcp-input" class="form-label">1. Décris les serveurs MCP de ton agent. Ils font quoi de beau ?<span class="required-asterisk">*</span></label>
+                            <textarea id="question-mcp-input" class="form-textarea" required placeholder="Je me suis connecté à..." oninput="updateStateField('questionMcp', this.value)"></textarea>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label for="question-security-input" class="form-label">2. As-tu sécurisé ton agent contre les méchants qui voudraient le hacker ?<span class="required-asterisk">*</span></label>
+                            <textarea id="question-security-input" class="form-textarea" required placeholder="Oui j'ai fait..." oninput="updateStateField('questionSecurity', this.value)"></textarea>
+                          </div>
+                        </div>
+                        <div class="step-actions-footer">
+                          <button type="button" class="btn-action-secondary" onclick="proceedToWizardStep(3)">Retour</button>
+                          <button type="button" class="btn-action-primary" onclick="proceedToWizardStep(5)">Suivant !</button>
+                        </div>
+                      </div>
+
+                      <!-- STEP 5: SUBMIT PROJECT PANEL -->
+                      <div class="wizard-step-panel" id="wizard-step-panel-5">
+                        <div class="step-pane-header">
+                          <h3 class="step-pane-title">Le Grand Saut !</h3>
+                          <p class="step-pane-desc">Vérifie bien tout avant d'envoyer.</p>
+                        </div>
+                        
+                        <div style="background: var(--bg-subtle); padding: 1.5rem; border-radius: 1rem; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1rem;">
+                           <h4 style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--text);">Résumé</h4>
+                           <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; font-size: 0.9rem;">
+                             <div>
+                               <span style="color: var(--text-muted); display: block;">Nom</span>
+                               <strong id="summary-project-name" style="color: var(--text);">Sans titre</strong>
+                             </div>
+                             <div>
+                               <span style="color: var(--text-muted); display: block;">Équipe</span>
+                               <strong id="summary-team-status" style="color: var(--text);">Solo (1 Bricoleur)</strong>
+                             </div>
+                             <div>
+                               <span style="color: var(--text-muted); display: block;">Statut</span>
+                               <strong id="summary-story-status" style="color: var(--text); color: var(--green);">Prêt !</strong>
+                             </div>
+                           </div>
+                         </div>
+
+                        <div class="form-grid">
+                          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                            <input type="checkbox" id="agree-guidelines" style="margin-top: 0.25rem; cursor: pointer;" required />
+                            <label for="agree-guidelines" style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; cursor: pointer;">
+                              Je promets que tout mon code a été fait pendant le concours (1-11 Juin) et que je respecte toutes les règles. Juré craché !
+                            </label>
+                          </div>
+                          
+                          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                            <input type="checkbox" id="agree-terms" style="margin-top: 0.25rem; cursor: pointer;" required />
+                            <label for="agree-terms" style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; cursor: pointer;">
+                              J'accepte que les juges regardent mon super code et mes fichiers.
+                            </label>
+                          </div>
+                        </div>
+
+                        <div class="step-actions-footer">
+                          <button type="button" class="btn-action-secondary" onclick="proceedToWizardStep(4)">Retour</button>
+                          <div class="step-actions-right">
+                            <span style="align-self: center; font-size: 0.82rem; color: var(--text-muted); margin-right: 0.5rem;">Tu pourras encore modifier avant la fin du chrono.</span>
+                            <button type="button" class="btn-action-primary" style="padding: 0.75rem 2rem;" onclick="submitProjectSubmission()">Soumettre !</button>
+                          </div>
+                        </div>
+                      </div>
+
+                    </form>
+                  </div>
+                </div>
+
+                <!-- Live Project Preview Pane -->
+                <div id="workspace-preview-pane" class="preview-container" style="display: none;">
+                  
+                  <div class="preview-cover" id="preview-cover-display">
+                    Project Cover Photo
+                  </div>
+
+                  <div class="preview-details-header">
+                    <div class="preview-title-block">
+                      <h1 id="preview-title-val">World Cup fan logistics planner</h1>
+                      <p class="preview-pitch" id="preview-pitch-val">Autonomous booking assistant that schedules hotels, transfers, and match alerts on external calendars using MCP integrations.</p>
+                    </div>
+                    <div class="preview-actions-block">
+                      <button type="button" class="btn-action-secondary" style="border-radius: 9999px; gap: 0.5rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-muted);">
+                          <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                        </svg>
+                        <span>Like</span>
+                      </button>
+                      <button type="button" class="btn-action-secondary" style="border-radius: 9999px;">Comment</button>
+                    </div>
+                  </div>
+
+                  <div class="preview-main-body">
+                    <div class="preview-story-pane">
+                      
+                      <!-- Flat Content Details Story slices -->
+                      <div class="textarea-render-body">
+                        <h2>About the Project</h2>
+                        <div id="preview-about-val" class="markdown-preview-body" style="color: var(--text-muted); font-size: 0.98rem; line-height: 1.6; margin-top: 0.5rem;">
+                          About details will render here.
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="preview-sidebar-pane">
+                      
+                      <!-- Technologies -->
+                      <div class="preview-sidebar-widget">
+                        <span class="preview-widget-title">Fait avec ❤️ et :</span>
+                        <div class="preview-tech-list" id="preview-tech-list-display">
+                          <!-- Tags dynamically added -->
+                        </div>
+                      </div>
+
+                      <!-- Links -->
+                      <div class="preview-sidebar-widget">
+                        <span class="preview-widget-title">Testez-le !</span>
+                        <div class="preview-links-widget">
+                          <a href="#" id="preview-repo-link-display" class="preview-link-item" target="_blank" style="display: none;">Le code source</a>
+                          <a href="#" id="preview-demo-link-display" class="preview-link-item" target="_blank" style="display: none;">La démo qui déchire</a>
+                          <a href="#" id="preview-video-link-display" class="preview-link-item" target="_blank" style="display: none;">La vidéo cool</a>
+                          <span id="preview-no-links-display" style="font-size: 0.88rem; color: var(--text-muted);">Pas de liens pour le moment.</span>
+                        </div>
+                      </div>
+
+                      <!-- Teammates -->
+                      <div class="preview-sidebar-widget">
+                        <span class="preview-widget-title">La Dream Team</span>
+                        <div class="preview-teammates" id="preview-teammates-display">
+                          <!-- Teammate profile cards -->
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+          <!-- PARTICIPANTS SCREEN (Formerly Users) -->
+          <div class="tab-screen" id="screen-participants">
+            <div class="section-slice">
+              <h2 class="slice-title">Les Génies Inscrits</h2>
+              
+              <div class="search-filter-row">
+                <div class="search-box-wrap">
+                  <input type="text" placeholder="Cherche des potes, des skills..." />
+                </div>
+                <div class="filter-chips-list">
+                  <span class="filter-chip-item active">Tous</span>
+                  <span class="filter-chip-item">Bricoleurs</span>
+                  <span class="filter-chip-item">Artistes</span>
+                  <span class="filter-chip-item">Chefs d'orchestre</span>
+                </div>
+              </div>
+
+              <div class="users-grid">
+                <div class="user-profile-card">
+                  <div class="user-avatar-wrap">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Sarah Chen" class="profile-avatar" />
+                    <span class="user-status-dot"></span>
+                  </div>
+                  <div class="user-profile-details">
+                    <span class="profile-name">Sarah Chen</span>
+                    <span class="profile-role">AI Developer • Montreal</span>
+                    <div class="profile-skills-tags">
+                      <span class="skill-tag">Python</span>
+                      <span class="skill-tag">Gemini API</span>
+                      <span class="skill-tag">LangChain</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="user-profile-card">
+                  <div class="user-avatar-wrap">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80" alt="Marcus Vance" class="profile-avatar" />
+                    <span class="user-status-dot"></span>
+                  </div>
+                  <div class="user-profile-details">
+                    <span class="profile-name">Marcus Vance</span>
+                    <span class="profile-role">Product Designer • SF</span>
+                    <div class="profile-skills-tags">
+                      <span class="skill-tag">Figma</span>
+                      <span class="skill-tag">UX Research</span>
+                      <span class="skill-tag">HTML/CSS</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="user-profile-card">
+                  <div class="user-avatar-wrap">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=80&h=80&q=80" alt="Elena Rostova" class="profile-avatar" />
+                    <span class="user-status-dot"></span>
+                  </div>
+                  <div class="user-profile-details">
+                    <span class="profile-name">Elena Rostova</span>
+                    <span class="profile-role">Data Scientist • Berlin</span>
+                    <div class="profile-skills-tags">
+                      <span class="skill-tag">PyTorch</span>
+                      <span class="skill-tag">MongoDB</span>
+                      <span class="skill-tag">Vector Search</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RESOURCES SCREEN (Structured Textarea-Style Text Flow) -->
+          <div class="tab-screen" id="screen-resources">
+            <div class="section-slice">
+              <div class="textarea-render-body">
+                <h2>La boîte à outils ! 🛠️</h2>
+                <p>Voici tous les trucs cool pour t'aider à construire ton projet :</p>
+
+                <h3>Les papiers officiels</h3>
+                <ul>
+                  <li><a href="#">La doc MCP</a> - Pour comprendre comment faire des outils magiques.</li>
+                  <li><a href="#">Les modèles Google Cloud</a> - Des petits bouts de code pour te lancer plus vite.</li>
+                </ul>
+
+                <h3>Les guides de nos amis</h3>
+                <ul>
+                  <li><a href="#">Le guide MongoDB</a> - Pour apprendre à stocker plein de trucs super facilement.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- RULES SCREEN (Structured Textarea-Style Text Flow) -->
+          <div class="tab-screen" id="screen-rules">
+            <div class="section-slice">
+              <div class="textarea-render-body">
+                <h2>Les Règles du Jeu 📜</h2>
+                
+                <h3>1. Qui peut jouer ?</h3>
+                <p>Tout le monde peut participer au Google Cloud Rapid Agent Hackathon ! Faut juste avoir 18 ans, parce qu'on fait les choses bien.</p>
+                <p>Par contre, si tu bosses chez Google ou nos partenaires, tu pourras pas gagner les prix (faut laisser la chance aux autres !).</p>
+
+                <h3>2. Comment ça marche ?</h3>
+                <p>Ton projet doit être tout frais, codé pendant le hackathon. Pas de recyclage d'anciens trucs ! Mais tu peux utiliser des librairies gratuites, évidemment.</p>
+                <p>Et devine quoi ? Vous pouvez être jusqu'à 4 dans l'équipe. Mélangez les talents, c'est encore plus rigolo !</p>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- UPDATES SCREEN -->
+          <div class="tab-screen" id="screen-updates">
+            <div class="section-slice">
+              <h2 class="slice-title">Les actus croustillantes 📰</h2>
+              <div class="updates-timeline">
+                <div class="update-item">
+                  <span class="update-node"></span>
+                  <div class="update-date">5 Juin 2026</div>
+                  <h3 class="update-title">Cadeaux Google Cloud distribués !</h3>
+                  <span class="update-author">par Sarah Chen • Organisatrice</span>
+                  <p class="update-body-text">Regarde tes emails ! On t'a envoyé un super code promo pour tester Vertex. Profites-en bien avant le 11 juin !</p>
+                </div>
+
+                <div class="update-item">
+                  <span class="update-node"></span>
+                  <div class="update-date">1 Juin 2026</div>
+                  <h3 class="update-title">Petits webinaires sympas</h3>
+                  <span class="update-author">par l'Équipe</span>
+                  <p class="update-body-text">On lance des vidéos en direct demain. Les pros de MongoDB, Arize et GitLab vont t'expliquer des trucs cools sur les serveurs MCP.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DISCUSSIONS SCREEN -->
+          <div class="tab-screen" id="screen-discussions">
+            <div class="section-slice">
+              <h2 class="slice-title">Le coin Bla-bla 🗣️</h2>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
+                <div class="search-box-wrap" style="flex:1;margin-right:1rem">
+                  <input type="text" placeholder="Cherche de quoi papoter..." />
+                </div>
+                <a href="#" class="btn-action-primary">Nouveau truc à dire</a>
+              </div>
+
+              <div class="discussions-pane">
+                <div class="discussion-item-card">
+                  <div class="discussion-info">
+                    <a href="#" class="discussion-topic">Au secours avec les erreurs Fivetran !</a>
+                    <div class="discussion-meta">
+                      <span>Lancé par Tariq Johnson • il y a 2 heures</span>
+                      <span>dans Aide Technique</span>
+                    </div>
+                  </div>
+                  <span class="discussion-replies">4 réponses</span>
+                </div>
+
+                <div class="discussion-item-card">
+                  <div class="discussion-info">
+                    <a href="#" class="discussion-topic">On cherche un artiste UX pour notre équipe !</a>
+                    <div class="discussion-meta">
+                      <span>Lancé par Sarah Chen • il y a 1 jour</span>
+                      <span>dans Recherche d'équipe</span>
+                    </div>
+                  </div>
+                  <span class="discussion-replies">8 replies</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ SCREEN -->
+          <div class="tab-screen" id="screen-faq">
+            <div class="section-slice">
+              <h2 class="slice-title">Questions Fréquentes (FAQ)</h2>
+              <div class="faq-accordion-group">
+                <div class="faq-collapsible">
+                  <button class="faq-trigger" type="button">Les débutants peuvent-ils jouer ?</button>
+                  <div class="faq-details">
+                    <div class="faq-details-inner">
+                      Carrément ! On adore les petits nouveaux. Google Cloud vous donne plein d'exemples et d'environnements bac à sable pour vous lancer facilement.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="faq-collapsible">
+                  <button class="faq-trigger" type="button">Je peux ramener mes potes ?</button>
+                  <div class="faq-details">
+                    <div class="faq-details-inner">
+                      Oui, vous pouvez être jusqu'à 4 dans une équipe. Mais tu peux aussi jouer les loups solitaires si tu préfères !
+                    </div>
+                  </div>
+                </div>
+
+                <div class="faq-collapsible">
+                  <button class="faq-trigger" type="button">Je peux utiliser un vieux projet ?</button>
+                  <div class="faq-details">
+                    <div class="faq-details-inner">
+                      Non, tricheur ! Tout doit être fait pendant les dates du hackathon. Mais t'as le droit d'utiliser des librairies existantes bien sûr.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" />
+          <div class="footer-text">© 2026 CodeToWin. Tous droits réservés. Géré par Devpost.</div>
+        </div>
+        <div class="footer-links">
+          <a href="#" class="footer-link">Conditions</a>
+          <a href="#" class="footer-link">Politique</a>
+          <a href="#" class="footer-link">Aide</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript Navigation and Interactions -->
+    <script src="../js/hackaton-detail.js"></script>
+  </body>
+</html>

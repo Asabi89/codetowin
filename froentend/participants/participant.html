@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Participant profile on CodeToWin — Portfolio, hackathons, badges, and achievements." />
+    <title>Participant Profile - CodeToWin</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23059669'/%3E%3Cpath d='M10 22V10h3v4h6v-4h3v12h-3v-5h-6v5z' fill='white'/%3E%3C/svg%3E"
+    />
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,800,700,500,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/participant.css">
+  </head>
+  <body>
+
+    <!-- ===== AUTHENTICATED HEADER ===== -->
+    <header class="auth-header" id="auth-header">
+      <div class="auth-header-inner">
+        <div class="auth-header-left">
+          <a href="home.html" class="brand-link" aria-label="CodeToWin Home">
+            <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" class="brand-mark" />
+          </a>
+          <nav class="auth-nav-links" aria-label="Main Navigation">
+            <a href="hackaton.html" class="auth-nav-link">Explorer</a>
+            <a href="hackaton-detail.html?tab=my-project" class="auth-nav-link">Mes Projets</a>
+          </nav>
+        </div>
+
+        <div class="auth-header-right">
+          <!-- Search Icon -->
+          <button type="button" class="search-icon-btn" aria-label="Search" onclick="openSearch()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </svg>
+          </button>
+
+          <!-- Avatar Pill with Dropdown -->
+          <div class="avatar-pill-wrap">
+            <button type="button" class="avatar-pill" id="avatar-pill-toggle" onclick="toggleAvatarDropdown()">
+              <img id="header-avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" class="avatar-pill-img" />
+              <span class="avatar-pill-name" id="header-avatar-name">User</span>
+              <svg class="avatar-pill-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 4.5L6 7.5L9 4.5"></path>
+              </svg>
+            </button>
+
+            <div class="avatar-dropdown" id="avatar-dropdown">
+              <div class="dropdown-user-block">
+                <img id="dropdown-avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" class="dropdown-user-avatar" />
+                <div class="dropdown-user-info">
+                  <div class="dropdown-user-name" id="dropdown-user-name">User Name</div>
+                  <div class="dropdown-user-email" id="dropdown-user-email">@username</div>
+                </div>
+              </div>
+              <div class="dropdown-links">
+                <a href="participant.html" class="dropdown-link">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"></path></svg>
+                  Mon Profil
+                </a>
+                <a href="hackaton-detail.html?tab=my-project" class="dropdown-link">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg>
+                  Mes Projets
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-link dropdown-link--danger" onclick="signOut()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16,17 21,12 16,7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                  Déconnexion
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Cover Banner Removed -->
+
+    <!-- ===== PROFILE IDENTITY ===== -->
+    <div class="profile-identity-wrap">
+      <div class="profile-avatar-block">
+        <div class="profile-avatar-frame">
+          <img id="profile-page-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80" alt="Profile photo" class="profile-avatar-img" />
+          <button type="button" class="profile-avatar-edit-btn owner-only" aria-label="Change photo" onclick="document.getElementById('cover-photo-input').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          </button>
+          <input type="file" id="cover-photo-input" style="display:none" accept="image/*" />
+        </div>
+
+        <div class="profile-identity-info">
+          <h1 class="profile-fullname" id="profile-fullname">Participant Name</h1>
+          <div class="profile-username" id="profile-username">@username</div>
+          <span class="profile-role-badge" id="profile-role-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-5 6 5 6"></path><path d="m15 6 5 6-5 6"></path></svg>
+            Full-stack Developer
+          </span>
+        </div>
+      </div>
+
+      <div class="profile-owner-actions owner-only">
+        <a href="profile.html" class="btn-profile-action btn-profile-secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          Modifier le profil
+        </a>
+      </div>
+    </div>
+
+    <!-- ===== MAIN PROFILE CONTENT ===== -->
+    <main class="profile-main">
+
+      <!-- Location & Social Links -->
+      <div class="profile-meta-row" id="profile-meta-row">
+        <span class="meta-item" id="meta-location">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0116 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span id="meta-location-text">City, Country</span>
+        </span>
+        <span class="meta-separator"></span>
+        <a href="#" class="meta-link" id="meta-github" style="display:none">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="#" class="meta-link" id="meta-linkedin" style="display:none">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+        <a href="#" class="meta-link" id="meta-website" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>
+          Website
+        </a>
+      </div>
+
+      <!-- Bio -->
+      <div class="profile-bio-section">
+        <div class="section-label">À propos</div>
+        <p class="profile-bio-text" id="profile-bio-text">
+          <span class="bio-placeholder owner-only" onclick="window.location='profile.html'">Ajoute ta bio ici.</span>
+        </p>
+      </div>
+
+      <!-- Skills & Interests -->
+      <div class="profile-tags-section">
+        <div class="tag-group">
+          <div class="section-label">Compétences</div>
+          <div class="tags-list" id="profile-skills-list">
+            <!-- Dynamic skill pills -->
+          </div>
+        </div>
+        <div class="tag-group">
+          <div class="section-label">Intérêts</div>
+          <div class="tags-list" id="profile-interests-list">
+            <span class="interest-pill">AI</span>
+            <span class="interest-pill">Fintech</span>
+            <span class="interest-pill">Education</span>
+            <span class="interest-pill">Mobile</span>
+            <span class="interest-pill">Web</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="profile-stats-bar">
+        <div class="stat-block">
+          <div class="stat-number" id="stat-projects">0</div>
+          <div class="stat-label">Projets</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-number" id="stat-hackathons">1</div>
+          <div class="stat-label">Hackathons</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-number" id="stat-badges">1</div>
+          <div class="stat-label">Badges</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-number" id="stat-certs">0</div>
+          <div class="stat-label">Certificats</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-number" id="stat-likes">0</div>
+          <div class="stat-label">Likes</div>
+        </div>
+      </div>
+
+      <!-- Tabs Navigation -->
+      <div class="profile-tabs-nav" role="tablist">
+        <button type="button" class="profile-tab-btn active" data-tab="portfolio" role="tab" onclick="switchProfileTab('portfolio')">Portfolio</button>
+        <button type="button" class="profile-tab-btn" data-tab="hackathons" role="tab" onclick="switchProfileTab('hackathons')">Hackathons</button>
+        <button type="button" class="profile-tab-btn" data-tab="badges" role="tab" onclick="switchProfileTab('badges')">Badges</button>
+        <button type="button" class="profile-tab-btn" data-tab="certificates" role="tab" onclick="switchProfileTab('certificates')">Certificats</button>
+        <button type="button" class="profile-tab-btn" data-tab="activity" role="tab" onclick="switchProfileTab('activity')">Activité</button>
+      </div>
+
+      <!-- TAB: Portfolio -->
+      <div class="profile-tab-panel active" id="tab-portfolio">
+        <!-- In-Progress (Owner Only) -->
+        <div class="owner-only" id="in-progress-section">
+          <div class="in-progress-notice">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
+            Tes projets en cours (juste pour tes yeux)
+          </div>
+          <div class="projects-grid" id="in-progress-projects-grid">
+            <!-- Dynamic -->
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top: 2rem;">Ton Portfolio Public</div>
+        <div class="projects-grid" id="portfolio-projects-grid">
+          <!-- Dynamic or empty state -->
+        </div>
+      </div>
+
+      <!-- TAB: Hackathons -->
+      <div class="profile-tab-panel" id="tab-hackathons">
+        <div class="hackathons-list" id="hackathons-list">
+          <!-- Dynamic -->
+        </div>
+      </div>
+
+      <!-- TAB: Badges -->
+      <div class="profile-tab-panel" id="tab-badges">
+        <div class="badges-grid" id="badges-grid">
+          <!-- Dynamic -->
+        </div>
+      </div>
+
+      <!-- TAB: Certificates -->
+      <div class="profile-tab-panel" id="tab-certificates">
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="11" height="16" rx="2"></rect><path d="M7 8h5M7 11h5M7 14h4"></path><circle cx="17.2" cy="15.2" r="2.3"></circle><path d="m16.3 17.1-1 2.9 1.8-1 1.8 1-1-2.9"></path></svg>
+          </div>
+          <h3>Pas encore de certificats</h3>
+          <p>Tes certifs de hackathons terminés s'afficheront ici.</p>
+        </div>
+      </div>
+
+      <!-- TAB: Activity -->
+      <div class="profile-tab-panel" id="tab-activity">
+        <div class="activity-timeline" id="activity-timeline">
+          <!-- Dynamic -->
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" />
+          <div class="footer-text">© 2026 CodeToWin. Tous droits réservés.</div>
+        </div>
+        <div class="footer-links">
+          <a href="#" class="footer-link">Conditions</a>
+          <a href="#" class="footer-link">Politique</a>
+          <a href="#" class="footer-link">Aide</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="../js/participant.js"></script>
+  </body>
+</html>
