@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Espace Annonces sur CodeToWin. Gérez, suivez et optimisez votre expérience de hackathon en Afrique." />
+    <meta name="keywords" content="CodeToWin, Hackathon, Afrique, Innovation, Annonces, Tableau de bord" />
+    <meta name="author" content="CodeToWin" />
+    <title>Annonces — Organisateur CodeToWin</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23059669'/%3E%3Cpath d='M10 22V10h3v4h6v-4h3v12h-3v-5h-6v5z' fill='white'/%3E%3C/svg%3E" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fontshare Satoshi and Google Font Inter -->
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,800,700,500,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Satoshi", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#ECFDF5",
+                100: "#D1FAE5",
+                200: "#A7F3D0",
+                300: "#6EE7B7",
+                400: "#34D399",
+                500: "#10B981",
+                600: "#059669",
+                700: "#047857",
+                800: "#065F46",
+                900: "#064E3B",
+                950: "#022C22",
+              },
+              navy: {
+                900: "#0F172A",
+              },
+              gold: {
+                400: "#FBBF24",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #F8FAFC;
+        color: #0F172A;
+      }
+    </style>
+  </head>
+  <body class="flex h-screen overflow-hidden bg-slate-50">
+    
+    <!-- Sidebar -->
+    <aside class="hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex">
+      <div class="flex h-16 items-center border-b border-slate-200 px-6">
+        <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" class="h-8" onerror="this.src='https://placehold.co/120x32/047857/white?text=CodeToWin'" />
+        <span class="ml-2 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">Organisateur</span>
+      </div>
+      <div class="flex-1 overflow-y-auto py-4">
+        <nav class="space-y-1 px-3">
+          <a href="organisateur-dashboard.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Dashboard
+          </a>
+          <a href="organisateur-hackathons.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium bg-brand-50 text-brand-700">
+            <svg class="mr-3 h-5 w-5 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Mes Hackathons
+          </a>
+          <div class="mt-1 space-y-1 border-l-2 border-slate-200 ml-[22px]">
+            <a href="organisateur-edit-hackathon.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Configuration</span>
+            </a>
+            <a href="organisateur-participants.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Participants</span>
+            </a>
+            <a href="organisateur-teams.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Équipes</span>
+            </a>
+            <a href="organisateur-submissions.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Soumissions</span>
+            </a>
+            <a href="organisateur-results.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Résultats</span>
+            </a>
+            <a href="organisateur-mentors.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+              <span class="truncate">Mentors</span>
+            </a>
+            <a href="organisateur-announcements.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-brand-700 font-semibold">
+              <span class="truncate">Annonces</span>
+            </a>
+          </div>
+          <a href="organisateur-create-hackathon.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Créer un hackathon
+          </a>
+          <a href="organisateur-membres.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Membres
+          </a>
+          <a href="organisateur-messages.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900 justify-between">
+            <div class="flex items-center">
+              <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+              Messages
+            </div>
+            <span class="inline-flex items-center justify-center rounded-full bg-brand-600 px-2 py-0.5 text-xs font-bold text-white">2</span>
+          </a>
+          <a href="organisateur-settings.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Paramètres
+          </a>
+        </nav>
+      </div>
+      <div class="border-t border-slate-200 p-4">
+        <a href="#" class="group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900">
+          <img src="https://ui-avatars.com/api/?name=TechHub+Senegal&background=047857&color=fff" alt="" class="mr-3 h-8 w-8 rounded-full" />
+          <span class="truncate">TechHub Sénégal</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex flex-1 flex-col overflow-hidden">
+      <!-- Topbar -->
+      <header class="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+        <div class="flex items-center">
+          <button class="text-slate-500 focus:outline-none sm:hidden">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div class="ml-4 flex items-center space-x-2 text-sm sm:ml-0">
+            <a href="organisateur-hackathons.html" class="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</a>
+            <svg class="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <span class="font-medium text-slate-900">Annonces</span>
+          </div>
+        </div>
+      </header>
+
+      
+
+
+      <!-- Main scrollable area -->
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        
+        <div class="sm:flex sm:items-center sm:justify-between">
+          <div class="sm:flex-auto">
+            <h1 class="font-display text-2xl font-bold text-slate-900">Annonces</h1>
+            <p class="mt-2 text-sm text-slate-700">Communiquez avec les participants, équipes et mentors de votre événement.</p>
+          </div>
+          <div class="mt-4 sm:mt-0">
+            <a href="organisateur-new-announcement.html" class="inline-flex items-center rounded-md border border-transparent bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+              <svg class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+              </svg>
+              Nouvelle Annonce
+            </a>
+          </div>
+        </div>
+
+        <div class="mt-8 max-w-4xl mx-auto">
+          
+          <!-- Filters and Search -->
+          <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="relative max-w-sm flex-1">
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input type="text" id="search-announcement" class="block w-full rounded-md border-0 py-2 pl-10 pr-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" placeholder="Rechercher une annonce...">
+            </div>
+            <div class="flex items-center gap-2">
+              <select id="filter-status" class="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6">
+                <option value="all">Tous les statuts</option>
+                <option value="sent">Envoyées</option>
+                <option value="draft">Brouillons</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- History List -->
+          <div>
+            <h2 class="text-lg font-medium text-slate-900 mb-4">Historique</h2>
+            <div id="announcements-list" class="flex flex-col gap-4">
+              
+              <!-- Sent Announcement -->
+              <a href="organisateur-announcement-details.html" class="announcement-item block rounded-lg border border-slate-200 bg-white p-4 shadow-sm relative overflow-hidden ring-1 ring-brand-500 hover:shadow-md transition-shadow" data-status="sent" data-title="Rappel : Plus que 3 jours !">
+                <div class="absolute top-0 left-0 w-1 h-full bg-brand-500"></div>
+                <div class="flex justify-between items-start">
+                  <h3 class="font-medium text-slate-900">Rappel : Plus que 3 jours !</h3>
+                  <span class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">Envoyée</span>
+                </div>
+                <p class="mt-1 text-sm text-slate-500">À : Toutes les équipes</p>
+                <div class="mt-2 text-xs text-slate-400">Envoyé hier à 14h30 via Email et In-app</div>
+              </a>
+
+              <!-- Draft Announcement -->
+              <a href="organisateur-new-announcement.html" class="announcement-item block rounded-lg border border-slate-200 bg-white p-4 shadow-sm relative overflow-hidden hover:border-slate-300 transition-colors cursor-pointer" data-status="draft" data-title="Cérémonie de clôture">
+                <div class="flex justify-between items-start">
+                  <h3 class="font-medium text-slate-900">Cérémonie de clôture</h3>
+                  <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-800">Brouillon</span>
+                </div>
+                <p class="mt-1 text-sm text-slate-500">À : Tous les participants</p>
+                <div class="mt-2 text-xs text-slate-400">Modifié il y a 2 jours</div>
+              </a>
+
+              <!-- Empty State (hidden by default) -->
+              <div id="empty-state" class="hidden text-center py-12 bg-white rounded-lg border border-slate-200 border-dashed">
+                <svg class="mx-auto h-12 w-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                <h3 class="mt-2 text-sm font-semibold text-slate-900">Aucune annonce trouvée</h3>
+                <p class="mt-1 text-sm text-slate-500">Essayez de modifier vos filtres de recherche.</p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-announcement');
+            const statusFilter = document.getElementById('filter-status');
+            const items = document.querySelectorAll('.announcement-item');
+            const emptyState = document.getElementById('empty-state');
+
+            function filterAnnouncements() {
+              const searchTerm = searchInput.value.toLowerCase();
+              const statusValue = statusFilter.value;
+              let visibleCount = 0;
+
+              items.forEach(item => {
+                const title = item.getAttribute('data-title').toLowerCase();
+                const status = item.getAttribute('data-status');
+                
+                const matchesSearch = title.includes(searchTerm);
+                const matchesStatus = statusValue === 'all' || status === statusValue;
+
+                if (matchesSearch && matchesStatus) {
+                  item.style.display = 'block';
+                  visibleCount++;
+                } else {
+                  item.style.display = 'none';
+                }
+              });
+
+              if (visibleCount === 0) {
+                emptyState.classList.remove('hidden');
+              } else {
+                emptyState.classList.add('hidden');
+              }
+            }
+
+            searchInput.addEventListener('input', filterAnnouncements);
+            statusFilter.addEventListener('change', filterAnnouncements);
+          });
+        </script>
+
+      </main>
+    </div>
+  </body>
+</html>

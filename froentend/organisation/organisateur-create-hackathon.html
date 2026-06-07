@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Espace Créer un Hackathon sur CodeToWin. Gérez, suivez et optimisez votre expérience de hackathon en Afrique." />
+    <meta name="keywords" content="CodeToWin, Hackathon, Afrique, Innovation, Créer un Hackathon, Tableau de bord" />
+    <meta name="author" content="CodeToWin" />
+    <title>Créer un Hackathon — Organisateur CodeToWin</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23059669'/%3E%3Cpath d='M10 22V10h3v4h6v-4h3v12h-3v-5h-6v5z' fill='white'/%3E%3C/svg%3E" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fontshare Satoshi and Google Font Inter -->
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,800,700,500,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Satoshi", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#ECFDF5",
+                100: "#D1FAE5",
+                200: "#A7F3D0",
+                300: "#6EE7B7",
+                400: "#34D399",
+                500: "#10B981",
+                600: "#059669",
+                700: "#047857",
+                800: "#065F46",
+                900: "#064E3B",
+                950: "#022C22",
+              },
+              navy: {
+                900: "#0F172A",
+              },
+              gold: {
+                400: "#FBBF24",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #F8FAFC;
+        color: #0F172A;
+      }
+      .step-hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="flex h-screen overflow-hidden bg-slate-50">
+    
+    <!-- Sidebar -->
+    <aside class="hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex">
+      <div class="flex h-16 items-center border-b border-slate-200 px-6">
+        <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" class="h-8" onerror="this.src='https://placehold.co/120x32/047857/white?text=CodeToWin'" />
+        <span class="ml-2 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">Organisateur</span>
+      </div>
+      <div class="flex-1 overflow-y-auto py-4">
+        <nav class="space-y-1 px-3">
+          <a href="organisateur-dashboard.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Dashboard
+          </a>
+          <a href="organisateur-hackathons.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Mes Hackathons
+          </a>
+          <a href="organisateur-create-hackathon.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium bg-brand-50 text-brand-700">
+            <svg class="mr-3 h-5 w-5 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Créer un hackathon
+          </a>
+          <a href="organisateur-membres.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Membres
+          </a>
+          <a href="organisateur-messages.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900 justify-between">
+            <div class="flex items-center">
+              <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+              Messages
+            </div>
+            <span class="inline-flex items-center justify-center rounded-full bg-brand-600 px-2 py-0.5 text-xs font-bold text-white">2</span>
+          </a>
+          <a href="organisateur-settings.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Paramètres
+          </a>
+        </nav>
+      </div>
+      <div class="border-t border-slate-200 p-4">
+        <a href="#" class="group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900">
+          <img src="https://ui-avatars.com/api/?name=TechHub+Senegal&background=047857&color=fff" alt="" class="mr-3 h-8 w-8 rounded-full" />
+          <span class="truncate">TechHub Sénégal</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex flex-1 flex-col overflow-hidden">
+      <!-- Topbar -->
+      <header class="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+        <div class="flex items-center">
+          <button class="text-slate-500 focus:outline-none sm:hidden">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div class="ml-4 flex items-center space-x-2 text-sm sm:ml-0">
+            <a href="organisateur-dashboard.html" class="font-medium text-slate-500 hover:text-slate-900">Accueil</a>
+            <svg class="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <span class="font-medium text-slate-900">Créer un hackathon</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="organisateur-notifications.html" class="relative block text-slate-400 hover:text-slate-500">
+            <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">3</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </a>
+          <button type="button" class="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+            Sauvegarder en brouillon
+          </button>
+        </div>
+      </header>
+
+      <!-- Main scrollable area -->
+      <main class="flex-1 overflow-y-auto bg-slate-50">
+        
+        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+          <div class="lg:grid lg:grid-cols-12 lg:gap-x-8">
+            
+            <!-- Wizard Steps (Sidebar) -->
+            <aside class="py-6 lg:col-span-3 lg:py-0">
+                                          <nav class="space-y-1" id="wizard-nav">
+                <a href="#" data-step="1" class="wizard-nav-item group flex items-center rounded-md bg-white px-3 py-2 text-sm font-medium text-brand-700 shadow-sm ring-1 ring-slate-200">
+                  <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-50 border border-brand-200 nav-icon">
+                    <span class="text-brand-700 font-semibold nav-number">1</span>
+                  </span>
+                  <span class="ml-3 truncate">Informations générales</span>
+                </a>
+
+                <a href="#" data-step="2" class="wizard-nav-item group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                  <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-slate-300 nav-icon">
+                    <span class="text-slate-500 font-semibold nav-number">2</span>
+                  </span>
+                  <span class="ml-3 truncate">Contenu détaillé</span>
+                </a>
+
+                <a href="#" data-step="3" class="wizard-nav-item group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                  <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-slate-300 nav-icon">
+                    <span class="text-slate-500 font-semibold nav-number">3</span>
+                  </span>
+                  <span class="ml-3 truncate">Dates et calendrier</span>
+                </a>
+                
+                <a href="#" data-step="4" class="wizard-nav-item group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                  <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-slate-300 nav-icon">
+                    <span class="text-slate-500 font-semibold nav-number">4</span>
+                  </span>
+                  <span class="ml-3 truncate">Thèmes & Format</span>
+                </a>
+
+                <a href="#" data-step="5" class="wizard-nav-item group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                  <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-slate-300 nav-icon">
+                    <span class="text-slate-500 font-semibold nav-number">5</span>
+                  </span>
+                  <span class="ml-3 truncate">Mentors</span>
+                </a>
+
+                <a href="#" data-step="6" class="wizard-nav-item group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                  <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-slate-300 nav-icon">
+                    <span class="text-slate-500 font-semibold nav-number">6</span>
+                  </span>
+                  <span class="ml-3 truncate">Branding</span>
+                </a>
+
+                <a href="#" data-step="7" class="wizard-nav-item group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                  <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-slate-300 nav-icon">
+                    <span class="text-slate-500 font-semibold nav-number">7</span>
+                  </span>
+                  <span class="ml-3 truncate">Preview & Soumission</span>
+                </a>
+              </nav>
+            </aside>
+
+            <!-- Form Content -->
+            <div class="space-y-6 sm:px-6 lg:col-span-9 lg:px-0">
+              <form action="#" method="POST" id="hackathon-form">
+                <div class="shadow sm:overflow-hidden sm:rounded-xl">
+                  
+                  <!-- Step 1: Informations Générales -->
+                  <div class="wizard-step block bg-white" id="step-1">
+                    <div class="space-y-6 py-6 px-4 sm:p-6">
+                      <div>
+                        <h3 class="text-lg font-medium leading-6 text-slate-900">Informations générales</h3>
+                        <p class="mt-1 text-sm text-slate-500">Commencez par les détails basiques de votre hackathon.</p>
+                      </div>
+
+                      <div class="grid grid-cols-3 gap-6">
+                        <div class="col-span-3">
+                          <label class="block text-sm font-medium text-slate-700">Titre du hackathon <span class="text-red-500">*</span></label>
+                          <div class="mt-1">
+                            <input type="text" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border" placeholder="ex: AI for Climate Africa 2026">
+                          </div>
+                        </div>
+
+                        <div class="col-span-3">
+                          <label class="block text-sm font-medium text-slate-700">Description courte <span class="text-red-500">*</span></label>
+                          <div class="mt-1">
+                            <textarea rows="2" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border"></textarea>
+                          </div>
+                        </div>
+
+                        <div class="col-span-3">
+                          <label class="block text-sm font-medium text-slate-700 mb-2">Validation des inscriptions <span class="text-red-500">*</span></label>
+                          <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
+                            <div class="flex items-center">
+                              <input id="mode-public" name="registration_mode" type="radio" checked class="h-4 w-4 border-slate-300 text-brand-600 focus:ring-brand-600">
+                              <label for="mode-public" class="ml-3 block text-sm font-medium leading-6 text-slate-900">Ouvert à tous <span class="font-normal text-slate-500">- Inscription automatique</span></label>
+                            </div>
+                            <div class="flex items-center">
+                              <input id="mode-approval" name="registration_mode" type="radio" class="h-4 w-4 border-slate-300 text-brand-600 focus:ring-brand-600">
+                              <label for="mode-approval" class="ml-3 block text-sm font-medium leading-6 text-slate-900">Sur approbation <span class="font-normal text-slate-500">- Validation manuelle requise</span></label>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-span-3 sm:col-span-1">
+                          <label class="block text-sm font-medium text-slate-700">Limite de participants</label>
+                          <div class="mt-1">
+                            <input type="number" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border" placeholder="ex: 200">
+                          </div>
+                        </div>
+                        
+                        <div class="col-span-3 sm:col-span-1">
+                          <label class="block text-sm font-medium text-slate-700">Taille min équipe</label>
+                          <div class="mt-1">
+                            <input type="number" value="1" min="1" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border">
+                          </div>
+                        </div>
+
+                        <div class="col-span-3 sm:col-span-1">
+                          <label class="block text-sm font-medium text-slate-700">Taille max équipe</label>
+                          <div class="mt-1">
+                            <input type="number" value="4" min="1" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  
+                  <!-- Step 2: Contenu détaillé -->
+                  <div class="wizard-step step-hidden bg-white" id="step-2">
+                    <div class="space-y-6 py-6 px-4 sm:p-6">
+                      <div>
+                        <h3 class="text-lg font-medium leading-6 text-slate-900">Contenu détaillé</h3>
+                        <p class="mt-1 text-sm text-slate-500">Rédigez le contenu principal de votre hackathon. Utilisez l'éditeur pour mettre en forme.</p>
+                      </div>
+
+                      <div class="border border-slate-200 rounded-lg overflow-hidden">
+                        <!-- Content Tabs -->
+                        <div class="border-b border-slate-200 bg-slate-50 flex overflow-x-auto">
+                          <button type="button" class="content-tab active flex-1 py-3 px-4 text-sm font-medium text-brand-600 border-b-2 border-brand-500 whitespace-nowrap" data-content="overview">Vue d'ensemble</button>
+                          <button type="button" class="content-tab flex-1 py-3 px-4 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-100 whitespace-nowrap" data-content="resources">Ressources</button>
+                          <button type="button" class="content-tab flex-1 py-3 px-4 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-100 whitespace-nowrap" data-content="rules">Règles</button>
+                          <button type="button" class="content-tab flex-1 py-3 px-4 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-100 whitespace-nowrap" data-content="faq">FAQ</button>
+                        </div>
+                        
+                        <!-- Rich Text Toolbar (Mockup) -->
+                        <div id="rich-text-toolbar" class="border-b border-slate-200 bg-white p-2 flex items-center space-x-1 sm:space-x-2 text-slate-500 overflow-x-auto">
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Gras"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14h4.5c2.5 0 4.5-2 4.5-4.5 0-1.7-.9-3.2-2.3-4 1.1-.6 1.8-1.8 1.8-3.2C16.5 5.1 14.7 3.5 12.5 3.5H8zm2 2h2.5c1.1 0 2 .9 2 2s-.9 2-2 2H10V7zm0 6h3c1.1 0 2 .9 2 2s-.9 2-2 2h-3v-4z"/></svg></button>
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Italique"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M10 4v3h2.2l-3.4 10H6v3h8v-3h-2.2l3.4-10H18V4h-8z"/></svg></button>
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Souligné"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17c3.3 0 6-2.7 6-6V3h-2.5v8c0 1.9-1.6 3.5-3.5 3.5S8.5 12.9 8.5 11V3H6v8c0 3.3 2.7 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+                          <div class="w-px h-5 bg-slate-300 mx-1"></div>
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Liste à puces"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h2v2H4V6zm0 5h2v2H4v-2zm0 5h2v2H4v-2zm4-10h12v2H8V6zm0 5h12v2H8v-2zm0 5h12v2H8v-2z"/></svg></button>
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Liste numérotée"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M2 17h2v.5H3v1h1v.5H2v1h3v-4H2v1zm1-9h1V4H2v1h1v3zm-1 3h1.8L2 13.1v.9h3v-1H3.2L5 10.9V10H2v1zm5-6v2h14V5H7zm0 14h14v-2H7v2zm0-6h14v-2H7v2z"/></svg></button>
+                          <div class="w-px h-5 bg-slate-300 mx-1"></div>
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Lien"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3.9 12c0-1.7 1.4-3.1 3.1-3.1h4V7H7c-2.8 0-5 2.2-5 5s2.2 5 5 5h4v-1.9H7c-1.7 0-3.1-1.4-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.7 0 3.1 1.4 3.1 3.1s-1.4 3.1-3.1 3.1h-4V17h4c2.8 0 5-2.2 5-5s-2.2-5-5-5z"/></svg></button>
+                          <button type="button" class="p-1.5 rounded hover:bg-slate-100" title="Image"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></button>
+                          <div class="w-px h-5 bg-slate-300 mx-1"></div>
+                          <button type="button" class="flex items-center space-x-1 p-1.5 rounded bg-brand-50 text-brand-700 transition" title="Mode Markdown activé">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.56 18H3.44C2.65 18 2 17.37 2 16.59V7.41C2 6.63 2.65 6 3.44 6h17.12c.79 0 1.44.63 1.44 1.41v9.18c0 .78-.65 1.41-1.44 1.41zM6.81 15.19v-4.14L8.43 13l1.63-1.95v4.14h1.72V8.81h-1.63L8.43 11 6.72 8.81H5.09v6.38h1.72zm10.74-2.82h-1.89V8.81h-1.72v3.56h-1.88l2.75 3.32 2.74-3.32z"/></svg>
+                            <span class="text-xs font-semibold hidden sm:inline">Markdown actif</span>
+                          </button>
+                        </div>
+
+                        <!-- Editable Areas -->
+                        <div class="bg-white p-4">
+                          <div class="content-pane active block" id="pane-overview">
+                            <textarea rows="10" class="w-full h-64 border-0 focus:ring-0 p-0 text-slate-800 resize-none outline-none" placeholder="Présentez votre hackathon (contexte, objectifs, à qui s'adresse-t-il ?)...">Ce hackathon vise à résoudre les problèmes climatiques en Afrique grâce à l'IA...</textarea>
+                          </div>
+                          <div class="content-pane hidden" id="pane-resources">
+                            <textarea rows="10" class="w-full h-64 border-0 focus:ring-0 p-0 text-slate-800 resize-none outline-none" placeholder="Liens utiles, APIs fournies, datasets à utiliser..."></textarea>
+                          </div>
+                          <div class="content-pane hidden" id="pane-rules">
+                            <textarea rows="10" class="w-full h-64 border-0 focus:ring-0 p-0 text-slate-800 resize-none outline-none" placeholder="Règles de participation, conditions d'éligibilité, code de conduite..."></textarea>
+                          </div>
+                          <div class="content-pane hidden" id="pane-faq">
+                            <!-- Added FAQs List -->
+                            <div id="faq-list" class="space-y-4 mb-6">
+                              <!-- Example of an added FAQ -->
+                              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 relative group">
+                                <button type="button" class="absolute top-2 right-2 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" onclick="this.parentElement.remove()">
+                                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
+                                <h4 class="font-bold text-slate-900 text-sm">Les équipes peuvent-elles être formées avant l'événement ?</h4>
+                                <p class="text-sm text-slate-600 mt-2">Oui, vous pouvez former votre équipe avant ou utiliser le canal de discussion dédié pour trouver des coéquipiers le jour J.</p>
+                              </div>
+                            </div>
+
+                            <!-- FAQ Form -->
+                            <div class="bg-white border border-slate-200 shadow-sm rounded-lg p-4">
+                              <div class="grid grid-cols-1 gap-4">
+                                <div>
+                                  <label class="block text-sm font-medium text-slate-700">Question</label>
+                                  <input type="text" id="faq-question" placeholder="Ex: Qui peut participer ?" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border">
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-slate-700">Réponse</label>
+                                  <textarea id="faq-answer" rows="2" placeholder="Saisissez la réponse..." class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border"></textarea>
+                                </div>
+                                <div>
+                                  <button type="button" id="btn-add-faq" class="inline-flex items-center rounded-md border border-transparent bg-brand-50 text-brand-700 px-4 py-2 text-sm font-medium hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                                    <svg class="-ml-1 mr-2 h-5 w-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    Ajouter la question
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Markdown Info Banner -->
+                        <div id="markdown-info" class="bg-blue-50 border-t border-blue-100 px-4 py-2 flex items-start">
+                          <svg class="h-4 w-4 text-blue-400 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                          <p class="text-xs text-blue-700"><strong>Le mode Markdown est activé par défaut.</strong> Vous pouvez utiliser des astérisques pour le **gras**, des tirets pour les listes, ou saisir des balises Markdown standards. Le rendu final sera mis en forme automatiquement.</p>
+                        </div>
+                      </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Step 3: Dates -->
+                  <div class="wizard-step step-hidden bg-white" id="step-3">
+                    <div class="space-y-6 py-6 px-4 sm:p-6">
+                      <div>
+                        <h3 class="text-lg font-medium leading-6 text-slate-900">Dates et calendrier</h3>
+                        <p class="mt-1 text-sm text-slate-500">Définissez la timeline de votre événement.</p>
+                      </div>
+
+                      <div class="grid grid-cols-2 gap-6">
+                        <div class="col-span-2 sm:col-span-1">
+                          <label class="block text-sm font-medium text-slate-700">Ouverture des inscriptions</label>
+                          <div class="mt-1">
+                            <input type="datetime-local" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border">
+                          </div>
+                        </div>
+                        <div class="col-span-2 sm:col-span-1">
+                          <label class="block text-sm font-medium text-slate-700">Clôture des inscriptions</label>
+                          <div class="mt-1">
+                            <input type="datetime-local" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border">
+                          </div>
+                        </div>
+                        <div class="col-span-2 sm:col-span-1">
+                          <label class="block text-sm font-medium text-slate-700">Début du Hackathon</label>
+                          <div class="mt-1">
+                            <input type="datetime-local" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border">
+                          </div>
+                        </div>
+                        <div class="col-span-2 sm:col-span-1">
+                          <label class="block text-sm font-medium text-slate-700">Date limite des soumissions</label>
+                          <div class="mt-1">
+                            <input type="datetime-local" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Step 4: Thèmes -->
+                  <div class="wizard-step step-hidden bg-white" id="step-4">
+                    <div class="space-y-6 py-6 px-4 sm:p-6">
+                      <div>
+                        <h3 class="text-lg font-medium leading-6 text-slate-900">Thèmes & Format</h3>
+                        <p class="mt-1 text-sm text-slate-500">Sur quoi les participants vont-ils travailler ?</p>
+                      </div>
+
+                      <div class="grid grid-cols-1 gap-6">
+                        <div>
+                          <label class="block text-sm font-medium text-slate-700">Format de l'événement</label>
+                          <select class="mt-1 block w-full rounded-md border-slate-300 py-2 pl-3 pr-10 text-base focus:border-brand-500 focus:outline-none focus:ring-brand-500 sm:text-sm border">
+                            <option>100% en ligne</option>
+                            <option>Hybride (En ligne + Présentiel)</option>
+                            <option>Présentiel uniquement</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label class="block text-sm font-medium text-slate-700">Thèmes principaux (tags)</label>
+                          <div class="mt-1">
+                            <input type="text" placeholder="IA, FinTech, GreenTech (séparés par des virgules)" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border">
+                          </div>
+                        </div>
+                        <div>
+                          <label class="block text-sm font-medium text-slate-700">Technologies imposées ou recommandées</label>
+                          <div class="mt-1">
+                            <input type="text" placeholder="React, Python, AWS..." class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Step 5: Mentors -->
+                  <div class="wizard-step step-hidden bg-white" id="step-5">
+                    <div class="space-y-6 py-6 px-4 sm:p-6">
+                      <div>
+                        <h3 class="text-lg font-medium leading-6 text-slate-900">Mentors</h3>
+                        <p class="mt-1 text-sm text-slate-500">Ajoutez des mentors qui accompagneront les équipes.</p>
+                      </div>
+
+                      <div class="grid grid-cols-1 gap-6">
+                        <div>
+                          <label class="block text-sm font-medium text-slate-700">Rechercher des mentors inscrits</label>
+                          <div class="mt-1 flex gap-2">
+                            <input type="email" placeholder="Email du mentor" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border">
+                            <button type="button" class="inline-flex items-center rounded-md border border-transparent bg-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-300">Ajouter</button>
+                          </div>
+                        </div>
+                        <div class="mt-4">
+                          <h4 class="text-sm font-medium text-slate-700 mb-2">Mentors sélectionnés</h4>
+                          <p class="text-sm text-slate-500 italic">Aucun mentor ajouté pour le moment.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Step 6: Branding -->
+                  <div class="wizard-step step-hidden bg-white" id="step-6">
+                    <div class="space-y-6 py-6 px-4 sm:p-6">
+                      <div>
+                        <h3 class="text-lg font-medium leading-6 text-slate-900">Branding</h3>
+                        <p class="mt-1 text-sm text-slate-500">Personnalisez l'apparence visuelle de la page du hackathon.</p>
+                      </div>
+
+                      <div class="grid grid-cols-1 gap-6">
+                        <div>
+                          <label class="block text-sm font-medium text-slate-700">Logo de l'événement</label>
+                          <div class="mt-2 flex justify-center rounded-md border-2 border-dashed border-slate-300 px-6 pt-5 pb-6">
+                            <div class="space-y-1 text-center">
+                              <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                              <div class="flex text-sm text-slate-600 justify-center">
+                                <label for="file-upload" class="relative cursor-pointer rounded-md bg-white font-medium text-brand-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-brand-500 focus-within:ring-offset-2 hover:text-brand-500">
+                                  <span>Télécharger un fichier</span>
+                                  <input id="file-upload" name="file-upload" type="file" class="sr-only">
+                                </label>
+                              </div>
+                              <p class="text-xs text-slate-500">PNG, JPG jusqu'à 2MB</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <label class="block text-sm font-medium text-slate-700">Image de couverture (Bannière)</label>
+                          <div class="mt-2 flex justify-center rounded-md border-2 border-dashed border-slate-300 px-6 pt-5 pb-6">
+                            <div class="space-y-1 text-center">
+                              <div class="flex text-sm text-slate-600 justify-center">
+                                <span class="text-brand-600 font-medium cursor-pointer">Cliquer pour uploader</span>
+                              </div>
+                              <p class="text-xs text-slate-500">Ratio 16:9 recommandé (ex: 1200x675px)</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Step 7: Preview -->
+                  <div class="wizard-step step-hidden bg-white" id="step-7">
+                    <div class="space-y-6 py-6 px-4 sm:p-6">
+                      <div>
+                        <h3 class="text-lg font-medium leading-6 text-slate-900">Preview & Soumission</h3>
+                        <p class="mt-1 text-sm text-slate-500">Vérifiez les informations avant de publier.</p>
+                      </div>
+
+                      <div class="bg-brand-50 border border-brand-200 rounded-md p-4">
+                        <div class="flex">
+                          <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-brand-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                          </div>
+                          <div class="ml-3">
+                            <h3 class="text-sm font-medium text-brand-800">Prêt à être publié</h3>
+                            <div class="mt-2 text-sm text-brand-700">
+                              <p>Votre hackathon passera de brouillon à public. Les participants pourront commencer à s'inscrire si la date d'ouverture est atteinte.</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Navigation Actions -->
+                  <div class="bg-slate-50 px-4 py-3 sm:px-6 border-t border-slate-200">
+                    <div class="flex justify-between items-center w-full">
+                      <button type="button" id="btn-prev" class="hidden inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                        Précédent
+                      </button>
+                      <div class="flex-1"></div> <!-- Spacer to push 'Next' to the right when 'Prev' is hidden -->
+                      <button type="button" id="btn-next" class="inline-flex justify-center rounded-md border border-transparent bg-brand-700 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                        Étape suivante
+                      </button>
+                      <button type="button" id="btn-submit" class="hidden inline-flex justify-center rounded-md border border-transparent bg-brand-700 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                        Publier le Hackathon
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- JavaScript logic for Wizard -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const totalSteps = 7;
+        let currentStep = 1;
+
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const btnSubmit = document.getElementById('btn-submit');
+        const navItems = document.querySelectorAll('.wizard-nav-item');
+
+        function updateWizardUI() {
+          // Hide all steps
+          document.querySelectorAll('.wizard-step').forEach(step => {
+            step.classList.add('step-hidden');
+            step.classList.remove('block');
+          });
+
+          // Show current step
+          const activeStepDiv = document.getElementById('step-' + currentStep);
+          if(activeStepDiv) {
+            activeStepDiv.classList.remove('step-hidden');
+            activeStepDiv.classList.add('block');
+          }
+
+          // Update Navigation buttons
+          if (currentStep === 1) {
+            btnPrev.classList.add('hidden');
+          } else {
+            btnPrev.classList.remove('hidden');
+          }
+
+          if (currentStep === totalSteps) {
+            btnNext.classList.add('hidden');
+            btnSubmit.classList.remove('hidden');
+          } else {
+            btnNext.classList.remove('hidden');
+            btnSubmit.classList.add('hidden');
+          }
+
+          // Update Sidebar Styles
+          navItems.forEach(item => {
+            const stepNum = parseInt(item.getAttribute('data-step'));
+            const iconContainer = item.querySelector('.nav-icon');
+            const numberSpan = item.querySelector('.nav-number');
+            
+            // Reset base classes for unselected state
+            item.className = 'wizard-nav-item group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900';
+            iconContainer.className = 'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-slate-300 nav-icon';
+            numberSpan.className = 'text-slate-500 font-semibold nav-number';
+            numberSpan.innerHTML = stepNum;
+
+            if (stepNum === currentStep) {
+              // Current active step
+              item.className = 'wizard-nav-item group flex items-center rounded-md bg-white px-3 py-2 text-sm font-medium text-brand-700 shadow-sm ring-1 ring-slate-200';
+              iconContainer.className = 'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-50 border border-brand-200 nav-icon';
+              numberSpan.className = 'text-brand-700 font-semibold nav-number';
+            } else if (stepNum < currentStep) {
+              // Completed step (show checkmark instead of number)
+              iconContainer.className = 'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-600 border border-brand-600 nav-icon';
+              numberSpan.className = 'text-white font-semibold nav-number';
+              numberSpan.innerHTML = `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+            }
+          });
+        }
+
+        // Listeners for buttons
+        btnNext.addEventListener('click', () => {
+          if (currentStep < totalSteps) {
+            currentStep++;
+            updateWizardUI();
+          }
+        });
+
+        btnPrev.addEventListener('click', () => {
+          if (currentStep > 1) {
+            currentStep--;
+            updateWizardUI();
+          }
+        });
+
+        
+        // Internal Tabs Logic for Step 2
+        const contentTabs = document.querySelectorAll('.content-tab');
+        const contentPanes = document.querySelectorAll('.content-pane');
+
+        contentTabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            // Reset tabs
+            contentTabs.forEach(t => {
+              t.classList.remove('active', 'text-brand-600', 'border-brand-500');
+              t.classList.add('text-slate-500', 'border-transparent', 'hover:text-slate-700', 'hover:bg-slate-100');
+            });
+            // Set active tab
+            tab.classList.remove('text-slate-500', 'border-transparent', 'hover:text-slate-700', 'hover:bg-slate-100');
+            tab.classList.add('active', 'text-brand-600', 'border-brand-500');
+
+            // Hide all panes
+            contentPanes.forEach(p => {
+              p.classList.add('hidden');
+              p.classList.remove('block');
+            });
+            // Show target pane
+            const targetId = 'pane-' + tab.getAttribute('data-content');
+            const targetPane = document.getElementById(targetId);
+            if(targetPane) {
+              targetPane.classList.remove('hidden');
+              targetPane.classList.add('block');
+            }
+
+            // Hide toolbar and banner if FAQ tab is active
+            const toolbar = document.getElementById('rich-text-toolbar');
+            const markdownInfo = document.getElementById('markdown-info');
+            if(toolbar && markdownInfo) {
+              if (tab.getAttribute('data-content') === 'faq') {
+                toolbar.classList.add('hidden');
+                toolbar.classList.remove('flex');
+                markdownInfo.classList.add('hidden');
+                markdownInfo.classList.remove('flex');
+              } else {
+                toolbar.classList.remove('hidden');
+                toolbar.classList.add('flex');
+                markdownInfo.classList.remove('hidden');
+                markdownInfo.classList.add('flex');
+              }
+            }
+          });
+        });
+
+        // FAQ Logic
+        const btnAddFaq = document.getElementById('btn-add-faq');
+        const faqList = document.getElementById('faq-list');
+        const faqQuestionInput = document.getElementById('faq-question');
+        const faqAnswerInput = document.getElementById('faq-answer');
+
+        if(btnAddFaq) {
+          btnAddFaq.addEventListener('click', () => {
+            const question = faqQuestionInput.value.trim();
+            const answer = faqAnswerInput.value.trim();
+
+            if(question && answer) {
+              const newFaq = document.createElement('div');
+              newFaq.className = 'bg-slate-50 p-4 rounded-lg border border-slate-200 relative group';
+              newFaq.innerHTML = `
+                <button type="button" class="absolute top-2 right-2 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" onclick="this.parentElement.remove()">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+                <h4 class="font-bold text-slate-900 text-sm">${question}</h4>
+                <p class="text-sm text-slate-600 mt-2">${answer}</p>
+              `;
+              faqList.appendChild(newFaq);
+
+              // Clear inputs
+              faqQuestionInput.value = '';
+              faqAnswerInput.value = '';
+            }
+          });
+        }
+
+        // Initialize UI
+        updateWizardUI();
+      });
+    </script>
+  </body>
+</html>
