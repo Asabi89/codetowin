@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gestion des Participants — Organisateur CodeToWin</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23059669'/%3E%3Cpath d='M10 22V10h3v4h6v-4h3v12h-3v-5h-6v5z' fill='white'/%3E%3C/svg%3E" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -57,6 +58,7 @@
     <aside class="hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex">
       <div class="flex h-16 items-center border-b border-slate-200 px-6">
         <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" class="h-8" onerror="this.src='https://placehold.co/120x32/047857/white?text=CodeToWin'" />
+        <span class="ml-2 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">Organisateur</span>
       </div>
       <div class="flex-1 overflow-y-auto py-4">
         <nav class="space-y-1 px-3">
@@ -85,9 +87,6 @@
             <a href="organisateur-submissions.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
               <span class="truncate">Soumissions</span>
             </a>
-            <a href="organisateur-evaluation.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
-              <span class="truncate">Évaluations</span>
-            </a>
             <a href="organisateur-results.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
               <span class="truncate">Résultats</span>
             </a>
@@ -104,11 +103,11 @@
             </svg>
             Créer un hackathon
           </a>
-          <a href="organisateur-equipe.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+          <a href="organisateur-membres.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
             <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            Équipe
+            Membres
           </a>
           <a href="organisateur-messages.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900 justify-between">
             <div class="flex items-center">
@@ -155,6 +154,12 @@
           </div>
         </div>
         <div class="flex items-center gap-4">
+          <a href="organisateur-notifications.html" class="relative block text-slate-400 hover:text-slate-500">
+            <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">3</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </a>
           <button type="button" class="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
             <svg class="-ml-1 mr-2 h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -196,13 +201,37 @@
             </select>
           </div>
           
-          <div class="flex items-center gap-2">
-            <button type="button" class="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+          <div class="flex items-center gap-2 relative">
+            <button type="button" id="btn-bulk-action" class="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
               Action groupée
               <svg class="-mr-1 ml-2 h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
             </button>
+            
+            <!-- Dropdown menu -->
+            <div id="dropdown-bulk-action" class="hidden absolute right-0 top-full mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10" role="menu" aria-orientation="vertical" tabindex="-1">
+              <div class="py-1" role="none">
+                <a href="#" class="text-slate-700 block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900" role="menuitem">
+                  <span class="flex items-center">
+                    <svg class="mr-2 h-4 w-4 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Approuver la sélection
+                  </span>
+                </a>
+                <a href="#" class="text-slate-700 block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900" role="menuitem">
+                  <span class="flex items-center">
+                    <svg class="mr-2 h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    Rejeter la sélection
+                  </span>
+                </a>
+                <a href="#" class="text-slate-700 block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900" role="menuitem">
+                  <span class="flex items-center">
+                    <svg class="mr-2 h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Envoyer un message
+                  </span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -303,5 +332,26 @@
 
       </main>
     </div>
+  
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const btnBulk = document.getElementById('btn-bulk-action');
+        const dropdownBulk = document.getElementById('dropdown-bulk-action');
+        
+        if (btnBulk && dropdownBulk) {
+          btnBulk.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownBulk.classList.toggle('hidden');
+          });
+
+          document.addEventListener('click', (e) => {
+            if (!btnBulk.contains(e.target) && !dropdownBulk.contains(e.target)) {
+              dropdownBulk.classList.add('hidden');
+            }
+          });
+        }
+      });
+    </script>
+
   </body>
 </html>
