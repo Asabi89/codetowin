@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mes Équipes — Mentor CodeToWin</title>
+    <title>Gestion des Soumissions — Mentor CodeToWin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -54,9 +54,10 @@
   <body class="flex h-screen overflow-hidden bg-slate-50">
     
     <!-- Sidebar -->
-    <aside class="hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex">
+    <aside class="hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex z-10 shadow-sm">
       <div class="flex h-16 items-center border-b border-slate-200 px-6">
         <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" class="h-8" onerror="this.src='https://placehold.co/120x32/047857/white?text=CodeToWin'" />
+        <span class="ml-2 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">Mentor</span>
       </div>
       <div class="flex-1 overflow-y-auto py-4">
         <nav class="space-y-1 px-3">
@@ -76,14 +77,14 @@
             <span class="inline-flex items-center justify-center rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-medium text-brand-800">2</span>
           </a>
           
-          <a href="mentor-teams.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium bg-brand-50 text-brand-700">
-            <svg class="mr-3 h-5 w-5 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <a href="mentor-teams.html" class="group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
+            <svg class="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
             Mes Équipes
           </a>
-          <a href="mentor-submissions.html" class="group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
-            <svg class="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <a href="mentor-submissions.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium bg-brand-50 text-brand-700">
+            <svg class="mr-3 h-5 w-5 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Soumissions
@@ -134,7 +135,11 @@
             </svg>
           </button>
           <div class="ml-4 flex items-center space-x-2 text-sm sm:ml-0">
-            <span class="font-semibold text-slate-900 text-xl">Mes Équipes</span>
+            <span class="font-medium text-slate-500">Mes Équipes</span>
+            <svg class="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <span class="font-medium text-slate-900">Soumissions</span>
           </div>
         </div>
         <div class="flex items-center gap-4">
@@ -155,8 +160,8 @@
         
         <div class="sm:flex sm:items-center">
           <div class="sm:flex-auto">
-            <h1 class="font-display text-2xl font-bold text-slate-900">Mes Équipes (2)</h1>
-            <p class="mt-2 text-sm text-slate-700">Consultez vos équipes assignées.</p>
+            <h1 class="font-display text-2xl font-bold text-slate-900">Soumissions par Hackathon</h1>
+            <p class="mt-2 text-sm text-slate-700">Sélectionnez un hackathon pour évaluer les projets soumis par vos équipes.</p>
           </div>
         </div>
 
@@ -168,106 +173,90 @@
                 <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
               </svg>
             </div>
-            <input type="text" class="block w-full rounded-md border-slate-300 pl-10 focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 border" placeholder="Chercher une équipe...">
+            <input type="text" class="block w-full rounded-md border-slate-300 pl-10 focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 border" placeholder="Chercher un projet, une équipe...">
           </div>
           <select class="block w-full sm:w-auto rounded-md border-slate-300 py-2 pl-3 pr-10 text-base focus:border-brand-500 focus:outline-none focus:ring-brand-500 sm:text-sm border">
-            <option>Tous les mentors</option>
-            <option>Sans mentor</option>
-            <option>Vous</option>
-            <option>Marie Koné</option>
+            <option>Tous les statuts</option>
+            <option>Soumis</option>
+            <option>Évalué</option>
           </select>
+          <button type="button" class="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ml-auto">
+            <svg class="-ml-1 mr-2 h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+            Exporter les notes
+          </button>
         </div>
 
-        <!-- Grid of Teams -->
+                <!-- Grid of Hackathons -->
         <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           
-          <!-- Team Card 1 -->
-          <div class="col-span-1 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
-            <div class="flex w-full items-center justify-between space-x-6 p-6">
-              <div class="flex-1 truncate">
-                <div class="flex items-center space-x-3">
-                  <a href="mentor-team-details.html" class="hover:underline"><h3 class="truncate text-lg font-medium text-slate-900">AgriTech Innovators</h3></a>
-                  <span class="inline-block flex-shrink-0 rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-800">4 membres</span>
-                </div>
-                <p class="mt-1 truncate text-sm text-slate-500">Solution IoT pour optimisation d'irrigation</p>
-                <div class="mt-4">
-                  <!-- Members Avatars -->
-                  <div class="flex -space-x-2 overflow-hidden">
-                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026704e" alt="">
-                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026705e" alt="">
-                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026706e" alt="">
-                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026707e" alt="">
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="bg-slate-50 px-6 py-3">
+          <!-- Hackathon Card 1 -->
+          <div class="col-span-1 flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
+            <div class="flex flex-1 flex-col p-6">
               <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                  <img class="h-6 w-6 rounded-full border border-slate-200" src="https://ui-avatars.com/api/?name=Seydou+Kane&background=047857&color=fff" alt="">
-                  <span class="ml-2 text-sm text-slate-600 font-medium">Vous</span>
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
+                  <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <span class="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold leading-5 text-green-800 ring-1 ring-inset ring-green-600/20">En cours</span>
+              </div>
+              <h3 class="mt-4 text-xl font-bold text-slate-900">AI for Climate Africa</h3>
+              <p class="mt-1 text-sm text-slate-500">Hybride · Dakar</p>
+              
+              <div class="mt-6 grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
+                <div>
+                  <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Vos équipes</p>
+                  <p class="mt-1 text-lg font-semibold text-slate-900">2</p>
                 </div>
                 <div>
-                  <span class="inline-flex rounded-full bg-amber-100 px-2 text-xs font-semibold leading-5 text-amber-800">Soumission en cours</span>
+                  <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Soumissions</p>
+                  <p class="mt-1 text-lg font-semibold text-brand-600">2 <span class="text-sm font-normal text-slate-500">à évaluer</span></p>
                 </div>
               </div>
             </div>
-            <div class="-mt-px flex divide-x divide-slate-200">
-              <div class="flex w-0 flex-1">
-                <a href="mentor-messages.html" class="relative -mr-px inline-flex w-0 flex-1 items-center justify-center rounded-bl-xl border border-transparent py-3 text-sm font-medium text-slate-700 hover:text-slate-500">
-                  <svg class="h-5 w-5 text-slate-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                  Contacter
-                </a>
-              </div>
-              <div class="-ml-px flex w-0 flex-1">
-                <a href="mentor-team-details.html" class="relative inline-flex w-0 flex-1 items-center justify-center rounded-br-xl border border-transparent py-3 text-sm font-medium text-slate-700 hover:text-slate-500">
-                  <svg class="h-5 w-5 text-slate-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                  Détails
-                </a>
-              </div>
+            
+            <div class="bg-slate-50 p-4 rounded-b-xl border-t border-slate-200">
+              <a href="mentor-hackathon-submissions.html" class="flex w-full items-center justify-center rounded-md border border-transparent bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                Voir les soumissions
+                <svg class="ml-2 -mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
             </div>
           </div>
 
-          <!-- Team Card 2 (No Mentor) -->
-          <div class="col-span-1 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
-            <div class="flex w-full items-center justify-between space-x-6 p-6">
-              <div class="flex-1 truncate">
-                <div class="flex items-center space-x-3">
-                  <a href="mentor-team-details.html" class="hover:underline"><h3 class="truncate text-lg font-medium text-slate-900">Green Data Squad</h3></a>
-                  <span class="inline-block flex-shrink-0 rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-800">3 membres</span>
-                </div>
-                <p class="mt-1 truncate text-sm text-slate-500">Analyse de données climatiques API</p>
-                <div class="mt-4">
-                  <!-- Members Avatars -->
-                  <div class="flex -space-x-2 overflow-hidden">
-                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026708e" alt="">
-                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026709e" alt="">
-                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://i.pravatar.cc/150?u=a042581f4e29026710e" alt="">
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="bg-slate-50 px-6 py-3">
+          <!-- Hackathon Card 2 -->
+          <div class="col-span-1 flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
+            <div class="flex flex-1 flex-col p-6">
               <div class="flex items-center justify-between">
-                <div></div>
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+                  <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                  </svg>
+                </div>
+                <span class="inline-flex rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold leading-5 text-slate-800 ring-1 ring-inset ring-slate-500/10">Terminé</span>
+              </div>
+              <h3 class="mt-4 text-xl font-bold text-slate-900">HealthTech Dakar 2025</h3>
+              <p class="mt-1 text-sm text-slate-500">Présentiel · Dakar</p>
+              
+              <div class="mt-6 grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
                 <div>
-                  <span class="inline-flex rounded-full bg-slate-100 px-2 text-xs font-semibold leading-5 text-slate-600">Pas encore de projet</span>
+                  <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Vos équipes</p>
+                  <p class="mt-1 text-lg font-semibold text-slate-900">1</p>
+                </div>
+                <div>
+                  <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Soumissions</p>
+                  <p class="mt-1 text-lg font-semibold text-slate-500">1 <span class="text-sm font-normal text-slate-500">évaluée</span></p>
                 </div>
               </div>
             </div>
-            <div class="-mt-px flex divide-x divide-slate-200">
-              <div class="flex w-0 flex-1">
-                <a href="mentor-messages.html" class="relative -mr-px inline-flex w-0 flex-1 items-center justify-center rounded-bl-xl border border-transparent py-3 text-sm font-medium text-slate-700 hover:text-slate-500">
-                  <svg class="h-5 w-5 text-slate-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                  Contacter
-                </a>
-              </div>
-              <div class="-ml-px flex w-0 flex-1">
-                <a href="mentor-team-details.html" class="relative inline-flex w-0 flex-1 items-center justify-center rounded-br-xl border border-transparent py-3 text-sm font-medium text-slate-700 hover:text-slate-500">
-                  <svg class="h-5 w-5 text-slate-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                  Détails
-                </a>
-              </div>
+            
+            <div class="bg-slate-50 p-4 rounded-b-xl border-t border-slate-200">
+              <a href="mentor-hackathon-submissions.html" class="flex w-full items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                Consulter les notes
+              </a>
             </div>
           </div>
 
@@ -275,6 +264,5 @@
 
       </main>
     </div>
-
-    </body>
+  </body>
 </html>
