@@ -3,17 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Espace Évaluation du Projet sur CodeToWin. Gérez, suivez et optimisez votre expérience de hackathon en Afrique." />
-    <meta name="keywords" content="CodeToWin, Hackathon, Afrique, Innovation, Évaluation du Projet, Tableau de bord" />
+    <meta
+      name="description"
+      content="Espace Évaluation du Projet sur CodeToWin. Gérez, suivez et optimisez votre expérience de hackathon en Afrique."
+    />
+    <meta
+      name="keywords"
+      content="CodeToWin, Hackathon, Afrique, Innovation, Évaluation du Projet, Tableau de bord"
+    />
     <meta name="author" content="CodeToWin" />
     <title>Évaluation du Projet — Organisateur CodeToWin</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23059669'/%3E%3Cpath d='M10 22V10h3v4h6v-4h3v12h-3v-5h-6v5z' fill='white'/%3E%3C/svg%3E" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23059669'/%3E%3Cpath d='M10 22V10h3v4h6v-4h3v12h-3v-5h-6v5z' fill='white'/%3E%3C/svg%3E"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Fontshare Satoshi and Google Font Inter -->
-    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,800,700,500,400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=satoshi@900,800,700,500,400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script>
       tailwind.config = {
         theme: {
@@ -46,89 +62,214 @@
     </script>
     <style>
       body {
-        background-color: #F8FAFC;
-        color: #0F172A;
+        background-color: #f8fafc;
+        color: #0f172a;
       }
     </style>
   </head>
   <body class="flex h-screen overflow-hidden bg-slate-50">
-    
     <!-- Sidebar -->
-    <aside class="hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex">
+    <aside
+      class="hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex"
+    >
       <div class="flex h-16 items-center border-b border-slate-200 px-6">
-        <img src="../../assets/brand/codetowin-brand.png" alt="CodeToWin" class="h-8" onerror="this.src='https://placehold.co/120x32/047857/white?text=CodeToWin'" />
-        <span class="ml-2 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">Organisateur</span>
+        <img
+          src="../../assets/brand/codetowin-brand.png"
+          alt="CodeToWin"
+          class="h-8"
+          onerror="
+            this.src = 'https://placehold.co/120x32/047857/white?text=CodeToWin'
+          "
+        />
+        <span
+          class="ml-2 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600"
+          >Organisateur</span
+        >
       </div>
       <div class="flex-1 overflow-y-auto py-4">
         <nav class="space-y-1 px-3">
-          <a href="organisateur-dashboard.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
-            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          <a
+            href="organisateur-dashboard.html"
+            class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900"
+          >
+            <svg
+              class="mr-3 h-5 w-5 text-slate-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
             </svg>
             Dashboard
           </a>
-          <a href="organisateur-hackathons.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium bg-brand-50 text-brand-700">
-            <svg class="mr-3 h-5 w-5 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          <a
+            href="organisateur-hackathons.html"
+            class="flex items-center rounded-md px-3 py-2 text-sm font-medium bg-brand-50 text-brand-700"
+          >
+            <svg
+              class="mr-3 h-5 w-5 text-brand-700"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+              />
             </svg>
             Mes Hackathons
           </a>
           <div class="mt-1 space-y-1 border-l-2 border-slate-200 ml-[22px]">
-            <a href="organisateur-edit-hackathon.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+            <a
+              href="organisateur-edit-hackathon.html"
+              class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900"
+            >
               <span class="truncate">Configuration</span>
             </a>
-            <a href="organisateur-participants.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+            <a
+              href="organisateur-participants.html"
+              class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900"
+            >
               <span class="truncate">Participants</span>
             </a>
-            <a href="organisateur-teams.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+            <a
+              href="organisateur-teams.html"
+              class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900"
+            >
               <span class="truncate">Équipes</span>
             </a>
-            <a href="organisateur-submissions.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-brand-700 font-semibold">
+            <a
+              href="organisateur-submissions.html"
+              class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-brand-700 font-semibold"
+            >
               <span class="truncate">Soumissions</span>
             </a>
-            <a href="organisateur-results.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+            <a
+              href="organisateur-results.html"
+              class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900"
+            >
               <span class="truncate">Résultats</span>
             </a>
-            <a href="organisateur-mentors.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+            <a
+              href="organisateur-mentors.html"
+              class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900"
+            >
               <span class="truncate">Mentors</span>
             </a>
-            <a href="organisateur-announcements.html" class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900">
+            <a
+              href="organisateur-announcements.html"
+              class="group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 text-slate-600 font-medium hover:text-slate-900"
+            >
               <span class="truncate">Annonces</span>
             </a>
           </div>
-          <a href="organisateur-create-hackathon.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
-            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          <a
+            href="organisateur-create-hackathon.html"
+            class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900"
+          >
+            <svg
+              class="mr-3 h-5 w-5 text-slate-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             Créer un hackathon
           </a>
-          <a href="organisateur-membres.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
-            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          <a
+            href="organisateur-membres.html"
+            class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900"
+          >
+            <svg
+              class="mr-3 h-5 w-5 text-slate-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              />
             </svg>
             Membres
           </a>
-          <a href="organisateur-messages.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900 justify-between">
+          <a
+            href="organisateur-messages.html"
+            class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900 justify-between"
+          >
             <div class="flex items-center">
-              <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              <svg
+                class="mr-3 h-5 w-5 text-slate-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                />
               </svg>
               Messages
             </div>
-            <span class="inline-flex items-center justify-center rounded-full bg-brand-600 px-2 py-0.5 text-xs font-bold text-white">2</span>
+            <span
+              class="inline-flex items-center justify-center rounded-full bg-brand-600 px-2 py-0.5 text-xs font-bold text-white"
+              >2</span
+            >
           </a>
-          <a href="organisateur-settings.html" class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900">
-            <svg class="mr-3 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <a
+            href="organisateur-settings.html"
+            class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900"
+          >
+            <svg
+              class="mr-3 h-5 w-5 text-slate-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              ></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              ></path>
             </svg>
             Paramètres
           </a>
         </nav>
       </div>
       <div class="border-t border-slate-200 p-4">
-        <a href="#" class="group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900">
-          <img src="https://ui-avatars.com/api/?name=TechHub+Senegal&background=047857&color=fff" alt="" class="mr-3 h-8 w-8 rounded-full" />
+        <a
+          href="#"
+          class="group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+        >
+          <img
+            src="https://ui-avatars.com/api/?name=TechHub+Senegal&background=047857&color=fff"
+            alt=""
+            class="mr-3 h-8 w-8 rounded-full"
+          />
           <span class="truncate">TechHub Sénégal</span>
         </a>
       </div>
@@ -137,161 +278,374 @@
     <!-- Main content -->
     <div class="flex flex-1 flex-col overflow-hidden">
       <!-- Topbar -->
-      <header class="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+      <header
+        class="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6"
+      >
         <div class="flex items-center">
           <button class="text-slate-500 focus:outline-none sm:hidden">
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
           <div class="ml-4 flex items-center space-x-2 text-sm sm:ml-0">
-            <a href="organisateur-hackathons.html" class="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</a>
-            <svg class="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            <a
+              href="organisateur-hackathons.html"
+              class="font-medium text-slate-500 hover:text-slate-900"
+              >AI for Climate Africa</a
+            >
+            <svg
+              class="h-5 w-5 text-slate-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
             </svg>
-            <a href="organisateur-submissions.html" class="font-medium text-slate-500 hover:text-slate-900">Soumissions</a>
-            <svg class="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            <a
+              href="organisateur-submissions.html"
+              class="font-medium text-slate-500 hover:text-slate-900"
+              >Soumissions</a
+            >
+            <svg
+              class="h-5 w-5 text-slate-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
             </svg>
-            <span class="font-medium text-slate-900">Évaluation : AgriSense</span>
+            <span class="font-medium text-slate-900"
+              >Évaluation : AgriSense</span
+            >
           </div>
         </div>
       </header>
 
-      
-
-
       <!-- Main scrollable area -->
       <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-        
         <div class="mx-auto max-w-5xl">
           <!-- Navigation retour -->
           <div class="mb-6">
-            <a href="organisateur-submissions.html" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-700">
-              <svg class="mr-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            <a
+              href="organisateur-submissions.html"
+              class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-700"
+            >
+              <svg
+                class="mr-1 h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
               Retour aux soumissions
             </a>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
             <!-- Left Column: Evaluation Form -->
             <div class="lg:col-span-2 space-y-6">
-              <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+              <div
+                class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden"
+              >
                 <div class="border-b border-slate-200 bg-slate-50 px-6 py-4">
-                  <h2 class="text-lg font-bold text-slate-900">Grille d'évaluation</h2>
-                  <p class="text-sm text-slate-500 mt-1">Notez chaque critère sur 10. Le score final sera calculé automatiquement.</p>
+                  <h2 class="text-lg font-bold text-slate-900">
+                    Grille d'évaluation
+                  </h2>
+                  <p class="text-sm text-slate-500 mt-1">
+                    Notez chaque critère sur 10. Le score final sera calculé
+                    automatiquement.
+                  </p>
                 </div>
-                
+
                 <form id="evaluation-form" class="p-6 space-y-8">
-                  
                   <!-- Criterion 1 -->
                   <div>
                     <div class="flex justify-between items-end mb-2">
-                      <label for="crit-innovation" class="block text-sm font-bold text-slate-900">Innovation & Originalité</label>
-                      <span class="text-sm font-medium text-brand-600" id="val-innovation">0 / 10</span>
+                      <label
+                        for="crit-innovation"
+                        class="block text-sm font-bold text-slate-900"
+                        >Innovation & Originalité</label
+                      >
+                      <span
+                        class="text-sm font-medium text-brand-600"
+                        id="val-innovation"
+                        >0 / 10</span
+                      >
                     </div>
-                    <p class="text-xs text-slate-500 mb-3">Le projet propose-t-il une solution nouvelle au problème ? Se démarque-t-il des solutions existantes ?</p>
-                    <input type="range" id="crit-innovation" min="0" max="10" step="0.5" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
+                    <p class="text-xs text-slate-500 mb-3">
+                      Le projet propose-t-il une solution nouvelle au problème ?
+                      Se démarque-t-il des solutions existantes ?
+                    </p>
+                    <input
+                      type="range"
+                      id="crit-innovation"
+                      min="0"
+                      max="10"
+                      step="0.5"
+                      value="0"
+                      class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600"
+                    />
                   </div>
 
                   <!-- Criterion 2 -->
                   <div>
                     <div class="flex justify-between items-end mb-2">
-                      <label for="crit-faisabilite" class="block text-sm font-bold text-slate-900">Faisabilité technique</label>
-                      <span class="text-sm font-medium text-brand-600" id="val-faisabilite">0 / 10</span>
+                      <label
+                        for="crit-faisabilite"
+                        class="block text-sm font-bold text-slate-900"
+                        >Faisabilité technique</label
+                      >
+                      <span
+                        class="text-sm font-medium text-brand-600"
+                        id="val-faisabilite"
+                        >0 / 10</span
+                      >
                     </div>
-                    <p class="text-xs text-slate-500 mb-3">Le prototype est-il fonctionnel ? L'architecture technique est-elle robuste et scalable ?</p>
-                    <input type="range" id="crit-faisabilite" min="0" max="10" step="0.5" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
+                    <p class="text-xs text-slate-500 mb-3">
+                      Le prototype est-il fonctionnel ? L'architecture technique
+                      est-elle robuste et scalable ?
+                    </p>
+                    <input
+                      type="range"
+                      id="crit-faisabilite"
+                      min="0"
+                      max="10"
+                      step="0.5"
+                      value="0"
+                      class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600"
+                    />
                   </div>
 
                   <!-- Criterion 3 -->
                   <div>
                     <div class="flex justify-between items-end mb-2">
-                      <label for="crit-impact" class="block text-sm font-bold text-slate-900">Impact potentiel</label>
-                      <span class="text-sm font-medium text-brand-600" id="val-impact">0 / 10</span>
+                      <label
+                        for="crit-impact"
+                        class="block text-sm font-bold text-slate-900"
+                        >Impact potentiel</label
+                      >
+                      <span
+                        class="text-sm font-medium text-brand-600"
+                        id="val-impact"
+                        >0 / 10</span
+                      >
                     </div>
-                    <p class="text-xs text-slate-500 mb-3">Le projet répond-il de manière efficace à l'enjeu posé ? Quel est son impact métier ou sociétal ?</p>
-                    <input type="range" id="crit-impact" min="0" max="10" step="0.5" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
+                    <p class="text-xs text-slate-500 mb-3">
+                      Le projet répond-il de manière efficace à l'enjeu posé ?
+                      Quel est son impact métier ou sociétal ?
+                    </p>
+                    <input
+                      type="range"
+                      id="crit-impact"
+                      min="0"
+                      max="10"
+                      step="0.5"
+                      value="0"
+                      class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600"
+                    />
                   </div>
 
                   <!-- Criterion 4 -->
                   <div>
                     <div class="flex justify-between items-end mb-2">
-                      <label for="crit-ux" class="block text-sm font-bold text-slate-900">Design & UX</label>
-                      <span class="text-sm font-medium text-brand-600" id="val-ux">0 / 10</span>
+                      <label
+                        for="crit-ux"
+                        class="block text-sm font-bold text-slate-900"
+                        >Design & UX</label
+                      >
+                      <span
+                        class="text-sm font-medium text-brand-600"
+                        id="val-ux"
+                        >0 / 10</span
+                      >
                     </div>
-                    <p class="text-xs text-slate-500 mb-3">L'interface est-elle intuitive ? L'expérience utilisateur est-elle bien pensée ?</p>
-                    <input type="range" id="crit-ux" min="0" max="10" step="0.5" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
+                    <p class="text-xs text-slate-500 mb-3">
+                      L'interface est-elle intuitive ? L'expérience utilisateur
+                      est-elle bien pensée ?
+                    </p>
+                    <input
+                      type="range"
+                      id="crit-ux"
+                      min="0"
+                      max="10"
+                      step="0.5"
+                      value="0"
+                      class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600"
+                    />
                   </div>
 
-                  <hr class="border-slate-200">
+                  <hr class="border-slate-200" />
 
                   <!-- General Feedback -->
                   <div>
-                    <label for="feedback" class="block text-sm font-bold text-slate-900">Commentaire général</label>
-                    <p class="text-xs text-slate-500 mb-2">Partagez vos impressions avec l'équipe. Ces retours leur seront précieux.</p>
-                    <textarea id="feedback" rows="4" class="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"></textarea>
+                    <label
+                      for="feedback"
+                      class="block text-sm font-bold text-slate-900"
+                      >Commentaire général</label
+                    >
+                    <p class="text-xs text-slate-500 mb-2">
+                      Partagez vos impressions avec l'équipe. Ces retours leur
+                      seront précieux.
+                    </p>
+                    <textarea
+                      id="feedback"
+                      rows="4"
+                      class="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
+                    ></textarea>
                   </div>
 
                   <!-- Action Buttons -->
-                  <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                    <a href="organisateur-submissions.html" class="rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">Annuler</a>
-                    <button type="button" onclick="submitEvaluation()" class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">Enregistrer l'évaluation</button>
+                  <div
+                    class="flex justify-end gap-3 pt-4 border-t border-slate-100"
+                  >
+                    <a
+                      href="organisateur-submissions.html"
+                      class="rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50"
+                      >Annuler</a
+                    >
+                    <button
+                      type="button"
+                      onclick="submitEvaluation()"
+                      class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+                    >
+                      Enregistrer l'évaluation
+                    </button>
                   </div>
-
                 </form>
               </div>
             </div>
 
             <!-- Right Column: Project Summary & Score -->
             <div class="space-y-6">
-              
               <!-- Live Score Card -->
-              <div class="rounded-xl border border-brand-200 bg-brand-50 p-6 text-center shadow-sm">
-                <h3 class="text-sm font-medium uppercase tracking-wider text-brand-800">Score Total</h3>
+              <div
+                class="rounded-xl border border-brand-200 bg-brand-50 p-6 text-center shadow-sm"
+              >
+                <h3
+                  class="text-sm font-medium uppercase tracking-wider text-brand-800"
+                >
+                  Score Total
+                </h3>
                 <div class="mt-2 flex items-baseline justify-center">
-                  <span class="text-5xl font-extrabold tracking-tight text-brand-700" id="total-score">0</span>
-                  <span class="ml-1 text-xl font-medium text-brand-600">/ 40</span>
+                  <span
+                    class="text-5xl font-extrabold tracking-tight text-brand-700"
+                    id="total-score"
+                    >0</span
+                  >
+                  <span class="ml-1 text-xl font-medium text-brand-600"
+                    >/ 40</span
+                  >
                 </div>
-                <p class="mt-2 text-xs text-brand-600" id="score-percentage">(soit 0%)</p>
+                <p class="mt-2 text-xs text-brand-600" id="score-percentage">
+                  (soit 0%)
+                </p>
               </div>
 
               <!-- Project Summary Card -->
-              <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+              <div
+                class="rounded-xl border border-slate-200 bg-white shadow-sm"
+              >
                 <div class="border-b border-slate-200 px-6 py-4">
                   <h3 class="font-medium text-slate-900">Résumé du projet</h3>
                 </div>
                 <div class="p-6">
                   <div class="flex items-center space-x-3 mb-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 text-green-600">
-                      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    <div
+                      class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 text-green-600"
+                    >
+                      <svg
+                        class="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
+                      </svg>
                     </div>
                     <div>
-                      <h4 class="text-lg font-bold text-slate-900">AgriSense</h4>
-                      <p class="text-xs font-medium text-slate-500">Par AgriTech Innovators</p>
+                      <h4 class="text-lg font-bold text-slate-900">
+                        AgriSense
+                      </h4>
+                      <p class="text-xs font-medium text-slate-500">
+                        Par AgriTech Innovators
+                      </p>
                     </div>
                   </div>
-                  
+
                   <p class="text-sm text-slate-600 mb-6">
-                    AgriSense est une plateforme IoT complète permettant aux petits agriculteurs de surveiller l'humidité du sol et de prédire les besoins en eau grâce à des modèles de machine learning locaux, réduisant la consommation d'eau de 30%.
+                    AgriSense est une plateforme IoT complète permettant aux
+                    petits agriculteurs de surveiller l'humidité du sol et de
+                    prédire les besoins en eau grâce à des modèles de machine
+                    learning locaux, réduisant la consommation d'eau de 30%.
                   </p>
 
                   <div class="space-y-3">
-                    <a href="#" class="flex items-center justify-center w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-700">
-                      <svg class="mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" /></svg>
+                    <a
+                      href="#"
+                      class="flex items-center justify-center w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-700"
+                    >
+                      <svg
+                        class="mr-2 h-5 w-5"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
                       Voir le code (GitHub)
                     </a>
-                    <a href="#" class="flex items-center justify-center w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-brand-600 shadow-sm ring-1 ring-inset ring-brand-300 hover:bg-brand-50">
-                      <svg class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    <a
+                      href="#"
+                      class="flex items-center justify-center w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-brand-600 shadow-sm ring-1 ring-inset ring-brand-300 hover:bg-brand-50"
+                    >
+                      <svg
+                        class="mr-2 h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
+                      </svg>
                       Voir la démonstration
                     </a>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -300,36 +654,38 @@
 
     <script>
       // Live scoring logic
-      document.addEventListener('DOMContentLoaded', () => {
-        const criteria = ['innovation', 'faisabilite', 'impact', 'ux'];
-        
+      document.addEventListener("DOMContentLoaded", () => {
+        const criteria = ["innovation", "faisabilite", "impact", "ux"];
+
         const updateTotal = () => {
           let total = 0;
-          criteria.forEach(c => {
-            const val = parseFloat(document.getElementById(`crit-${c}`).value) || 0;
+          criteria.forEach((c) => {
+            const val =
+              parseFloat(document.getElementById(`crit-${c}`).value) || 0;
             total += val;
           });
-          
-          document.getElementById('total-score').textContent = total;
-          
+
+          document.getElementById("total-score").textContent = total;
+
           const percentage = Math.round((total / 40) * 100);
-          document.getElementById('score-percentage').textContent = `(soit ${percentage}%)`;
+          document.getElementById("score-percentage").textContent =
+            `(soit ${percentage}%)`;
         };
 
         // Read query parameters
         const urlParams = new URLSearchParams(window.location.search);
 
-        criteria.forEach(c => {
+        criteria.forEach((c) => {
           const input = document.getElementById(`crit-${c}`);
           const display = document.getElementById(`val-${c}`);
-          
+
           // Pre-fill if parameter exists
           if (urlParams.has(c)) {
             input.value = urlParams.get(c);
             display.textContent = `${input.value} / 10`;
           }
-          
-          input.addEventListener('input', (e) => {
+
+          input.addEventListener("input", (e) => {
             display.textContent = `${e.target.value} / 10`;
             updateTotal();
           });

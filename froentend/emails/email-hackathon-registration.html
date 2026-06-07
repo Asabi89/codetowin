@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="x-apple-disable-message-reformatting" />
     <title>Inscription confirmée : {{Nom_Hackathon}} 🚀</title>
+    <!-- Web Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,800,700,500,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
     <!--[if mso]>
       <style>
         table { border-collapse: collapse; border-spacing: 0; border: none; margin: 0; }
@@ -14,7 +18,8 @@
       <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
     <![endif]-->
     <style>
-      table, td, div, h1, p { font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+      table, td, div, p, a, span { font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+      h1, h2, h3, h4, h5, h6 { font-family: "Satoshi", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif !important; }
       @media screen and (max-width: 530px) {
         .col-sml { max-width: 27% !important; }
         .col-lge { max-width: 73% !important; }
@@ -41,7 +46,7 @@
               <!-- Main Content -->
               <tr>
                 <td style="padding: 40px 40px 30px 40px; background-color: #ffffff;">
-                  <h1 style="margin-top: 0; margin-bottom: 24px; font-size: 24px; line-height: 32px; font-weight: 700; letter-spacing: -0.02em; color: #0f172a;">Inscription confirmée ! 🚀</h1>
+                  <h1 style="font-family: 'Satoshi', 'Inter', sans-serif; margin-top: 0; margin-bottom: 24px; font-size: 24px; line-height: 32px; font-weight: 700; letter-spacing: -0.02em; color: #0f172a;">Inscription confirmée ! 🚀</h1>
                   <p style="margin: 0 0 20px 0">Bonjour <strong>{{Nom_Utilisateur}}</strong>,</p>
                   <p style="margin: 0 0 20px 0">Votre équipe <strong>{{Nom_Equipe}}</strong> est officiellement inscrite au hackathon <strong>"{{Nom_Hackathon}}"</strong> ! 🎉</p>
                   <p style="margin: 0 0 20px 0">N'oubliez pas de consulter le règlement, de réunir toutes les ressources nécessaires et de vous préparer pour le lancement le <strong>{{Date_Debut}}</strong>.</p>
