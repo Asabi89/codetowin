@@ -2,6 +2,9 @@ import React, { useContext, useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
+/* Import the CSS that contains all the original navbar classes */
+import '../assets/css/hackaton.css';
+
 export default function MainLayout({ children }) {
   const { registered, profile, logout } = useContext(AuthContext);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -10,15 +13,21 @@ export default function MainLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  /* Close avatar dropdown on outside click */
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  /* Close mobile menu on route change */
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const handleSignOut = (e) => {
     e.preventDefault();
@@ -27,233 +36,299 @@ export default function MainLayout({ children }) {
     navigate('/');
   };
 
-  const fullName = profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || 'User' : 'User';
-  const username = profile ? `@${(profile.firstName || 'user').toLowerCase()}${(profile.lastName || '').toLowerCase()}` : '@user';
-  const avatar = profile?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80';
+  const handleSearchClick = () => {
+    navigate('/hackathons');
+  };
+
+  const fullName =
+    profile
+      ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || 'User'
+      : 'User';
+  const username =
+    profile
+      ? `@${(profile.firstName || 'user').toLowerCase()}${(profile.lastName || '').toLowerCase()}`
+      : '@user';
+  const avatar =
+    profile?.avatar ||
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80';
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-slate-900 font-sans antialiased">
-      {/* HEADER SECTION */}
-      {registered ? (
-        /* Authenticated Header */
-        <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur shadow-sm">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex h-16 items-center justify-between gap-4">
-              <div className="flex items-center gap-8">
-                <Link to="/" className="inline-flex items-center" aria-label="CodeToWin">
-                  <img src="/assets/brand/codetowin-brand.png" alt="CodeToWin" className="h-9 w-auto object-contain" />
-                </Link>
-                <nav className="hidden md:flex items-center gap-1" aria-label="Navigation">
-                  <Link
-                    to="/hackathons"
-                    className={`text-sm font-semibold px-3 py-2 rounded-lg transition ${
-                      location.pathname === '/hackathons'
-                        ? 'text-emerald-700 bg-emerald-50'
-                        : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    Explorer
-                  </Link>
-                  <Link
-                    to="/hackathons/google-cloud-rapid-agent?tab=my-project"
-                    className={`text-sm font-semibold px-3 py-2 rounded-lg transition ${
-                      location.pathname.includes('/hackathons/')
-                        ? 'text-emerald-700 bg-emerald-50'
-                        : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    Mes Projets
-                  </Link>
-                </nav>
-              </div>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
 
-              <div className="flex items-center gap-3">
+      {/* ===== AUTHENTICATED HEADER ===== */}
+      {registered ? (
+        <header className="auth-header" id="auth-header">
+          <div className="auth-header-inner">
+            {/* Left: Logo + Nav */}
+            <div className="auth-header-left">
+              <Link to="/" className="brand-link" aria-label="CodeToWin">
+                <img
+                  src="/assets/brand/codetowin-brand.png"
+                  alt="CodeToWin"
+                  className="brand-mark brand-mark-header"
+                  decoding="async"
+                />
+              </Link>
+              <nav className="auth-nav-links" aria-label="Navigation">
+                <Link
+                  to="/hackathons"
+                  className={`auth-nav-link${location.pathname === '/hackathons' ? ' active' : ''}`}
+                >
+                  Explorer
+                </Link>
+                <Link
+                  to="/hackathons/google-cloud-rapid-agent?tab=my-project"
+                  className={`auth-nav-link${location.pathname.startsWith('/hackathons/') ? ' active' : ''}`}
+                >
+                  Mes Projets
+                </Link>
+              </nav>
+            </div>
+
+            {/* Right: Search + Avatar pill */}
+            <div className="auth-header-right">
+              {/* Search icon → navigates to /hackathons */}
+              <button
+                type="button"
+                className="search-icon-btn"
+                aria-label="Rechercher un hackathon"
+                onClick={handleSearchClick}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </svg>
+              </button>
+
+              {/* Avatar pill + dropdown */}
+              <div className="avatar-pill-wrap" ref={dropdownRef}>
                 <button
                   type="button"
-                  className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
-                  onClick={() => alert('Recherche bientôt disponible !')}
-                  aria-label="Search"
+                  className={`avatar-pill${dropdownOpen ? ' is-open' : ''}`}
+                  id="hk-avatar-pill"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  aria-haspopup="true"
+                  aria-expanded={dropdownOpen}
                 >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <circle cx="11" cy="11" r="7"></circle>
-                    <path d="m21 21-4.3-4.3" strokeLinecap="round" strokeLinejoin="round"></path>
+                  <img
+                    src={avatar}
+                    alt="Avatar"
+                    className="avatar-pill-img"
+                    id="hk-header-avatar"
+                  />
+                  <span className="avatar-pill-name" id="hk-header-name">
+                    {profile?.firstName || 'User'}
+                  </span>
+                  <svg
+                    className="avatar-pill-chevron"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M3 4.5L6 7.5L9 4.5"></path>
                   </svg>
                 </button>
 
-                <div className="relative" ref={dropdownRef}>
-                  <button
-                    type="button"
-                    className={`flex items-center gap-2 p-1 pl-2 pr-3 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 transition duration-150 ${
-                      dropdownOpen ? 'border-emerald-500 ring-2 ring-emerald-500/20' : ''
-                    }`}
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                  >
-                    <img src={avatar} alt="Avatar" className="h-7 w-7 rounded-full object-cover bg-slate-200" />
-                    <span className="hidden sm:inline text-xs font-bold text-slate-700 max-w-[100px] truncate">{profile?.firstName || 'User'}</span>
-                    <svg
-                      className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                    >
-                      <path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round"></path>
-                    </svg>
-                  </button>
-
-                  {dropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl border border-slate-200 bg-white shadow-lg ring-1 ring-black/5 z-50 overflow-hidden py-1">
-                      <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100">
-                        <img src={avatar} alt="Avatar" className="h-9 w-9 rounded-full object-cover bg-slate-200" />
-                        <div className="min-w-0">
-                          <div className="text-sm font-bold text-slate-900 truncate">{fullName}</div>
-                          <div className="text-xs text-slate-500 truncate">{username}</div>
-                        </div>
+                {/* Dropdown menu */}
+                <div
+                  className={`avatar-dropdown${dropdownOpen ? ' is-open' : ''}`}
+                  id="hk-avatar-dropdown"
+                >
+                  {/* User info block */}
+                  <div className="dropdown-user-block">
+                    <img
+                      src={avatar}
+                      alt="Avatar"
+                      className="dropdown-user-avatar"
+                      id="hk-dd-avatar"
+                    />
+                    <div className="dropdown-user-info">
+                      <div className="dropdown-user-name" id="hk-dd-name">
+                        {fullName}
                       </div>
-                      <div className="p-1">
-                        <Link
-                          to="/participant"
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition"
-                          onClick={() => setDropdownOpen(false)}
-                        >
-                          <svg className="h-4.5 w-4.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <circle cx="12" cy="8" r="4" strokeLinecap="round" strokeLinejoin="round"></circle>
-                            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" strokeLinecap="round" strokeLinejoin="round"></path>
-                          </svg>
-                          Mon Profil
-                        </Link>
-                        <Link
-                          to="/hackathons/google-cloud-rapid-agent?tab=my-project"
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition"
-                          onClick={() => setDropdownOpen(false)}
-                        >
-                          <svg className="h-4.5 w-4.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="3" width="7" height="7" rx="1" strokeLinecap="round" strokeLinejoin="round"></rect>
-                            <rect x="14" y="3" width="7" height="7" rx="1" strokeLinecap="round" strokeLinejoin="round"></rect>
-                            <rect x="3" y="14" width="7" height="7" rx="1" strokeLinecap="round" strokeLinejoin="round"></rect>
-                            <rect x="14" y="14" width="7" height="7" rx="1" strokeLinecap="round" strokeLinejoin="round"></rect>
-                          </svg>
-                          Mes Projets
-                        </Link>
-                      </div>
-                      <div className="border-t border-slate-100 p-1">
-                        <button
-                          onClick={handleSignOut}
-                          className="flex w-full items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-red-600 hover:bg-red-50 transition"
-                        >
-                          <svg className="h-4.5 w-4.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" strokeLinecap="round" strokeLinejoin="round"></path>
-                            <polyline points="16,17 21,12 16,7" strokeLinecap="round" strokeLinejoin="round"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12" strokeLinecap="round" strokeLinejoin="round"></line>
-                          </svg>
-                          Déconnexion
-                        </button>
+                      <div className="dropdown-user-email" id="hk-dd-email">
+                        {username}
                       </div>
                     </div>
-                  )}
+                  </div>
+
+                  {/* Nav links */}
+                  <div className="dropdown-links">
+                    <Link
+                      to="/participant"
+                      className="dropdown-link"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="8" r="4"></circle>
+                        <path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"></path>
+                      </svg>
+                      Mon Profil
+                    </Link>
+                    <Link
+                      to="/profile"
+                      className="dropdown-link"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"></path>
+                      </svg>
+                      Paramètres
+                    </Link>
+                    <Link
+                      to="/hackathons/google-cloud-rapid-agent?tab=my-project"
+                      className="dropdown-link"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                        <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                        <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                        <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                      </svg>
+                      Mes Projets
+                    </Link>
+
+                    <div className="dropdown-divider"></div>
+
+                    <button
+                      className="dropdown-link dropdown-link--danger"
+                      onClick={handleSignOut}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
+                        <polyline points="16,17 21,12 16,7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                      </svg>
+                      Déconnexion
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </header>
+
       ) : (
-        /* Guest Header */
-        <header className="border-b border-slate-200 bg-white">
-          <div className="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between gap-4">
-              <Link to="/" className="inline-flex items-center" aria-label="CodeToWin">
-                <img src="/assets/brand/codetowin-brand.png" alt="CodeToWin" className="h-10 w-auto object-contain" />
+        /* ===== GUEST HEADER ===== */
+        <header className="site-header" id="site-header">
+          <div className="header-inner">
+            {/* Logo */}
+            <Link to="/" className="brand-link" aria-label="CodeToWin">
+              <img
+                src="/assets/brand/codetowin-brand.png"
+                alt="CodeToWin"
+                className="brand-mark brand-mark-header"
+                decoding="async"
+              />
+            </Link>
+
+            {/* Desktop nav */}
+            <nav className="desktop-nav" aria-label="Navigation principale">
+              <Link to="/hackathons" className="desktop-nav-link">
+                Explorer les hackathons
               </Link>
+              <Link to="/login" className="desktop-nav-link">
+                Connexion
+              </Link>
+              <Link to="/signup" className="desktop-nav-cta">
+                S'inscrire
+              </Link>
+            </nav>
 
-              <nav className="hidden sm:flex items-center gap-7" aria-label="Navigation principale">
-                <Link to="/hackathons" className="text-sm font-semibold text-slate-700 transition hover:text-emerald-700">Explorer les hackathons</Link>
-                <Link to="/login" className="text-sm font-semibold text-slate-700 transition hover:text-emerald-700">Connexion</Link>
-                <Link to="/signup" className="inline-flex items-center justify-center rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-800">S'inscrire</Link>
-              </nav>
+            {/* Mobile hamburger */}
+            <button
+              type="button"
+              className="mobile-nav-button"
+              aria-label="Ouvrir le menu"
+              onClick={() => setMobileMenuOpen(true)}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                <path d="M4 7h16M4 12h16M4 17h16"></path>
+              </svg>
+            </button>
+          </div>
 
+          {/* Mobile drawer backdrop */}
+          <div
+            className={`mobile-nav-backdrop${mobileMenuOpen ? ' is-open' : ''}`}
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          ></div>
+
+          {/* Mobile sidebar */}
+          <nav
+            className={`mobile-nav-sidebar${mobileMenuOpen ? ' is-open' : ''}`}
+            aria-label="Menu mobile"
+          >
+            <div className="mobile-nav-sidebar-header">
+              <span className="mobile-nav-label">Menu</span>
               <button
                 type="button"
-                className="inline-flex items-center justify-center p-2 rounded-lg text-slate-500 hover:text-emerald-700 sm:hidden"
-                onClick={() => setMobileMenuOpen(true)}
-                aria-label="Ouvrir le menu"
+                className="mobile-nav-button"
+                aria-label="Fermer le menu"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" strokeLinejoin="round"></path>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                  <path d="M6 6l12 12M18 6 6 18"></path>
                 </svg>
               </button>
             </div>
-          </div>
+            <div className="mobile-nav-sidebar-links">
+              <Link to="/hackathons" className="mobile-nav-sidebar-link" onClick={() => setMobileMenuOpen(false)}>
+                Explorer les hackathons
+              </Link>
+            </div>
+            <div className="mobile-nav-sidebar-actions">
+              <Link to="/signup" className="mobile-nav-primary" onClick={() => setMobileMenuOpen(false)}>
+                S'inscrire
+              </Link>
+              <Link to="/login" className="mobile-nav-secondary" onClick={() => setMobileMenuOpen(false)}>
+                Connexion
+              </Link>
+            </div>
+          </nav>
         </header>
       )}
 
-      {/* MOBILE BACKDROP & DRAWER */}
-      {mobileMenuOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm sm:hidden"
-            onClick={() => setMobileMenuOpen(false)}
-          ></div>
-          <aside className="fixed inset-y-0 right-0 z-50 flex w-full max-w-xs flex-col border-l border-slate-200 bg-white p-6 shadow-xl sm:hidden">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Menu</span>
-              <button
-                type="button"
-                className="rounded-lg p-2 text-slate-500 hover:text-emerald-700"
-                onClick={() => setMobileMenuOpen(false)}
-                aria-label="Fermer le menu"
-              >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"></path>
-                </svg>
-              </button>
-            </div>
-
-            <div className="mt-8 flex flex-col gap-4">
-              <Link to="/hackathons" className="text-lg font-semibold text-slate-800 hover:text-emerald-700 py-2" onClick={() => setMobileMenuOpen(false)}>Explorer les hackathons</Link>
-              {registered ? (
-                <>
-                  <Link to="/hackathons/google-cloud-rapid-agent?tab=my-project" className="text-lg font-semibold text-slate-800 hover:text-emerald-700 py-2" onClick={() => setMobileMenuOpen(false)}>Mes Projets</Link>
-                  <Link to="/participant" className="text-lg font-semibold text-slate-800 hover:text-emerald-700 py-2" onClick={() => setMobileMenuOpen(false)}>Mon Profil</Link>
-                  <button onClick={(e) => { setMobileMenuOpen(false); handleSignOut(e); }} className="text-left text-lg font-semibold text-red-600 hover:text-red-700 py-2">Déconnexion</button>
-                </>
-              ) : (
-                <>
-                  <Link to="/login" className="text-lg font-semibold text-slate-800 hover:text-emerald-700 py-2" onClick={() => setMobileMenuOpen(false)}>Connexion</Link>
-                  <Link to="/signup" className="inline-flex w-full items-center justify-center rounded-full bg-emerald-700 py-3 text-base font-semibold text-white hover:bg-emerald-800" onClick={() => setMobileMenuOpen(false)}>S'inscrire</Link>
-                </>
-              )}
-            </div>
-          </aside>
-        </>
-      )}
-
-      {/* MAIN VIEWPORT */}
-      <main className="flex-1">
+      {/* ===== MAIN CONTENT ===== */}
+      <main style={{ flex: 1 }}>
         {children}
       </main>
 
-      {/* FOOTER SECTION */}
-      <footer className="border-t border-slate-200 bg-slate-950 py-10 text-slate-300">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+      {/* ===== FOOTER ===== */}
+      <footer style={{
+        background: '#0f172a',
+        color: '#94a3b8',
+        borderTop: '1px solid rgba(255,255,255,0.08)',
+        padding: '2.5rem 0',
+      }}>
+        <div style={{ width: 'min(1200px, calc(100% - 2rem))', margin: '0 auto' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2rem' }}>
             <div>
-              <Link to="/" className="inline-flex items-center" aria-label="CodeToWin">
-                <img src="/assets/brand/codetowin-brand.png" alt="CodeToWin" className="h-8 w-auto object-contain" />
+              <Link to="/" aria-label="CodeToWin">
+                <img
+                  src="/assets/brand/codetowin-brand.png"
+                  alt="CodeToWin"
+                  style={{ height: '2rem', width: 'auto', filter: 'brightness(0) invert(1)' }}
+                />
               </Link>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-400">
-                <strong className="font-semibold text-white">CodeToWin</strong> relie les talents tech africains et les organisateurs autour de projets concrets, de profils publics et de preuves vérifiables.
+              <p style={{ marginTop: '1rem', maxWidth: '38ch', fontSize: '0.875rem', lineHeight: 1.7, color: '#64748b' }}>
+                <strong style={{ color: '#fff' }}>CodeToWin</strong> relie les talents tech africains et les organisateurs autour de projets concrets, de profils publics et de preuves vérifiables.
               </p>
             </div>
-
-            <div className="grid gap-3 text-sm text-slate-400 sm:text-right">
-              <a className="transition hover:text-white" href="#conditions">Conditions</a>
-              <a className="transition hover:text-white" href="#politique">Politique</a>
-              <a className="transition hover:text-white" href="#aide">Aide</a>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', textAlign: 'right', fontSize: '0.875rem' }}>
+              <a href="#conditions" style={{ color: '#64748b', textDecoration: 'none', transition: 'color 150ms ease' }}>Conditions</a>
+              <a href="#politique" style={{ color: '#64748b', textDecoration: 'none', transition: 'color 150ms ease' }}>Politique</a>
+              <a href="#aide" style={{ color: '#64748b', textDecoration: 'none', transition: 'color 150ms ease' }}>Aide</a>
             </div>
           </div>
-
-          <div className="mt-10 border-t border-white/10 pt-6 text-sm text-slate-500">
-            <p>© 2026 <strong className="font-semibold text-white">CodeToWin</strong>. Tous droits réservés.</p>
+          <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.5rem', fontSize: '0.8rem', color: '#475569' }}>
+            © 2026 <strong style={{ color: '#e2e8f0' }}>CodeToWin</strong>. Tous droits réservés.
           </div>
         </div>
       </footer>
