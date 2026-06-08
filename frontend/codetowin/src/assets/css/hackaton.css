@@ -32,7 +32,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
 }
 
 .brand-link {
@@ -48,7 +48,7 @@
 }
 
 .brand-mark-header {
-  height: 3rem;
+  height: 2rem;
 }
 
 .desktop-nav {
@@ -230,7 +230,7 @@
 
 /* ===== AUTHENTICATED HEADER ===== */
 .auth-header { position: sticky; top: 0; z-index: 200; background: rgba(255,255,255,0.97); backdrop-filter: blur(16px); border-bottom: 1px solid #e5e7eb; }
-.auth-header-inner { width: min(1240px, calc(100% - 2rem)); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; }
+.auth-header-inner { width: min(1240px, calc(100% - 2rem)); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.5rem 0; }
 .auth-header-left { display: flex; align-items: center; gap: 2rem; }
 .auth-nav-links { display: none; align-items: center; gap: 0.25rem; }
 .auth-nav-link { font-size: 0.9rem; font-weight: 600; color: #64748b; text-decoration: none; padding: 0.5rem 0.85rem; border-radius: 0.5rem; transition: color 150ms ease, background-color 150ms ease; white-space: nowrap; }
