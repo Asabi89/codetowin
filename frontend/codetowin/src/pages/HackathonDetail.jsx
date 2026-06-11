@@ -240,7 +240,7 @@ export default function HackathonDetail() {
           <nav className="tab-nav" id="tab-nav" aria-label="Screen Tabs Navigation">
             <button type="button" className={`tab-link ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setActiveTab('overview')}>Aperçu</button>
             <button type="button" className={`tab-link ${activeTab === 'my-project' ? 'active' : ''}`} onClick={() => setActiveTab('my-project')}>Mon projet</button>
-            <button type="button" className={`tab-link ${activeTab === 'participants' ? 'active' : ''}`} onClick={() => setActiveTab('participants')}>Copains</button>
+            <button type="button" className={`tab-link ${activeTab === 'participants' ? 'active' : ''}`} onClick={() => setActiveTab('participants')}>Participants</button>
             <button type="button" className={`tab-link ${activeTab === 'resources' ? 'active' : ''}`} onClick={() => setActiveTab('resources')}>Ressources</button>
             <button type="button" className={`tab-link ${activeTab === 'rules' ? 'active' : ''}`} onClick={() => setActiveTab('rules')}>Règles</button>
             <button type="button" className={`tab-link ${activeTab === 'updates' ? 'active' : ''}`} onClick={() => setActiveTab('updates')}>Actus</button>

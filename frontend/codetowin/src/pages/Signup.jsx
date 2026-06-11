@@ -17,25 +17,17 @@ export default function Signup() {
       alert("Les mots de passe ne correspondent pas !");
       return;
     }
-    // Simulate registration
-    registerUser({
-      firstName: username || 'User',
-      lastName: '',
-      email: email,
-      title: 'Développeur',
-      about: '',
-      bio: '',
-      skills: 'React, Tailwind',
-      interests: 'Hackathons',
-      city: '',
-      country: '',
-      github: '',
-      linkedin: '',
-      website: '',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
+    // Generate a 6-digit verification code
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Redirect to verify email, passing state
+    navigate('/verify-email', {
+      state: {
+        email: email,
+        username: username,
+        otpCode: generatedOtp
+      }
     });
-    // Redirect to home page
-    navigate('/');
   };
 
   const handleSocialSignup = (provider) => {

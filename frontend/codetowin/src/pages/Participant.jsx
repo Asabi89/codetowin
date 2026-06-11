@@ -1,11 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import '../assets/css/participant.css';
 
 export default function Participant() {
-  const { workspaceState, profile, registered } = useContext(AuthContext);
+  const { workspaceState, profile, registered, registerUser } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('portfolio');
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
   if (!registered || !profile) {
@@ -32,6 +33,19 @@ export default function Participant() {
   const projectName = workspaceState.projectName || 'Untitled Project';
   const isSubmitted = workspaceState.submitted;
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      registerUser({
+        ...profile,
+        avatar: ev.target.result
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="participant-page-wrapper">
       {/* ===== PROFILE IDENTITY ===== */}
@@ -39,6 +53,24 @@ export default function Participant() {
         <div className="profile-avatar-block">
           <div className="profile-avatar-frame">
             <img src={avatar} alt="Profile photo" className="profile-avatar-img" />
+            <button
+              type="button"
+              className="profile-avatar-edit-btn owner-only"
+              aria-label="Modifier la photo"
+              onClick={() => fileInputRef.current.click()}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              style={{ display: 'none' }}
+              accept="image/*"
+              onChange={handleAvatarChange}
+            />
           </div>
 
           <div className="profile-identity-info">
