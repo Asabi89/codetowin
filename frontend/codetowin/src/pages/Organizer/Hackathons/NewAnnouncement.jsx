@@ -13,19 +13,34 @@ export default function OrganizerNewAnnouncement() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-slate-50">
+    <div className="flex flex-1 flex-col overflow-hidden">
+      {/* Topbar */}
       <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
-        <div className="flex items-center space-x-2 text-sm">
-          <Link to={`/organizer/hackathons`} className="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</Link>
-          <span className="text-slate-400">/</span>
-          <Link to={`/organizer/hackathons/${id}/announcements`} className="font-medium text-slate-500 hover:text-slate-900">Annonces</Link>
-          <span className="text-slate-400">/</span>
-          <span className="font-medium text-slate-900">Nouvelle Annonce</span>
+        <div className="flex items-center">
+          <button className="text-slate-500 focus:outline-none sm:hidden">
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div className="ml-4 flex items-center space-x-2 text-sm sm:ml-0">
+            <Link to="/organizer/hackathons" className="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</Link>
+            <svg className="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            </svg>
+            <Link to={`/organizer/hackathons/${id}/announcements`} className="font-medium text-slate-500 hover:text-slate-900">Annonces</Link>
+            <svg className="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            </svg>
+            <span className="font-medium text-slate-900">Nouvelle Annonce</span>
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+      {/* Main scrollable area */}
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
+        
         <div className="mx-auto max-w-3xl">
+          {/* Navigation retour */}
           <div className="mb-6">
             <Link to={`/organizer/hackathons/${id}/announcements`} className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-700">
               <ChevronLeft className="mr-1 h-5 w-5" />
@@ -40,6 +55,7 @@ export default function OrganizerNewAnnouncement() {
             </div>
           </div>
 
+          {/* Compose Area */}
           <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
             <div className="px-4 py-5 sm:p-6">
               <form onSubmit={handleSubmit} className="space-y-8">
@@ -59,6 +75,7 @@ export default function OrganizerNewAnnouncement() {
                   <div className="sm:col-span-2">
                     <label className="block text-sm font-semibold text-slate-900 mb-3">Canaux de diffusion</label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Channel In-App */}
                       <div className="relative flex items-start rounded-lg border border-slate-200 p-4 shadow-sm">
                         <div className="flex h-5 items-center">
                           <input id="channel-inapp" name="channels" type="checkbox" defaultChecked className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
@@ -68,6 +85,7 @@ export default function OrganizerNewAnnouncement() {
                           <p className="text-slate-500 mt-1">Apparaît dans le centre de notifications.</p>
                         </div>
                       </div>
+                      {/* Channel Email */}
                       <div className="relative flex items-start rounded-lg border border-slate-200 p-4 shadow-sm">
                         <div className="flex h-5 items-center">
                           <input id="channel-email" name="channels" type="checkbox" defaultChecked className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
@@ -83,14 +101,14 @@ export default function OrganizerNewAnnouncement() {
                   <div className="sm:col-span-2">
                     <label htmlFor="subject" className="block text-sm font-semibold text-slate-900">Sujet de l'annonce</label>
                     <div className="mt-2">
-                      <input type="text" name="subject" id="subject" className="block w-full rounded-md border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6 px-3" placeholder="ex: Cérémonie de remise des prix" required />
+                      <input type="text" name="subject" id="subject" className="block w-full rounded-md border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" placeholder="ex: Cérémonie de remise des prix" required />
                     </div>
                   </div>
 
                   <div className="sm:col-span-2">
                     <label htmlFor="message" className="block text-sm font-semibold text-slate-900">Contenu du message</label>
                     <div className="mt-2">
-                      <textarea id="message" name="message" rows="10" className="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6 px-3" placeholder="Bonjour à tous,..." required></textarea>
+                      <textarea id="message" name="message" rows="10" className="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" placeholder="Bonjour à tous,..." required></textarea>
                     </div>
                     <p className="mt-2 text-sm text-slate-500 flex items-center">
                       <Info className="mr-1.5 h-4 w-4 text-slate-400" />
@@ -102,7 +120,7 @@ export default function OrganizerNewAnnouncement() {
                     <label htmlFor="schedule" className="block text-sm font-semibold text-slate-900">Planification de l'envoi (optionnel)</label>
                     <p className="text-xs text-slate-500 mb-2">Laissez vide pour envoyer immédiatement.</p>
                     <div className="mt-1 max-w-sm">
-                      <input type="datetime-local" name="schedule" id="schedule" className="block w-full rounded-md border-0 py-2 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" />
+                      <input type="datetime-local" name="schedule" id="schedule" className="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" />
                     </div>
                   </div>
                 </div>
@@ -111,11 +129,12 @@ export default function OrganizerNewAnnouncement() {
                   <button type="button" className="rounded-md bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
                     Sauvegarder en brouillon
                   </button>
-                  <button type="submit" className="inline-flex justify-center items-center rounded-md bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
-                    <Send className="-ml-1 mr-2 h-4 w-4" />
+                  <button type="submit" className="inline-flex justify-center rounded-md bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+                    <Send className="-ml-1 mr-2 h-5 w-5" />
                     Envoyer l'annonce
                   </button>
                 </div>
+
               </form>
             </div>
           </div>

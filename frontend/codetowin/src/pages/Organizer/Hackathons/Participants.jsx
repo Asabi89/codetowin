@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, Check, X, Mail, Download, CheckCircle2, XCircle } from 'lucide-react';
-import { Badge } from '../../../components/common/Badge';
 import { Link } from 'react-router-dom';
 
 const PARTICIPANTS_MOCK = [
@@ -45,35 +44,44 @@ export default function OrganizerParticipants() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'Approuvé':
-        return <Badge variant="success">Approuvé</Badge>;
+        return <span className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">Approuvé</span>;
       case 'En attente':
-        return <Badge variant="warning">En attente</Badge>;
+        return <span className="inline-flex rounded-full bg-amber-100 px-2 text-xs font-semibold leading-5 text-amber-800">En attente</span>;
       case 'Rejeté':
-        return <Badge variant="danger">Rejeté</Badge>;
+        return <span className="inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">Rejeté</span>;
       default:
-        return <Badge variant="neutral">{status}</Badge>;
+        return <span className="inline-flex rounded-full bg-slate-100 px-2 text-xs font-semibold leading-5 text-slate-800">{status}</span>;
     }
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-slate-50">
+    <div className="flex flex-1 flex-col overflow-hidden">
       
       {/* Topbar equivalent is handled by Layout, but let's assume we add page-specific header content or actions here */}
-      <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-4 sm:px-6">
-        <div className="flex items-center space-x-2 text-sm">
-          <Link to="/organizer/hackathons" className="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</Link>
-          <span className="text-slate-400">/</span>
-          <span className="font-medium text-slate-900">Participants</span>
+      <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+        <div className="flex items-center">
+          <button className="text-slate-500 focus:outline-none sm:hidden">
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div className="ml-4 flex items-center space-x-2 text-sm sm:ml-0">
+            <Link to="/organizer/hackathons" className="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</Link>
+            <svg className="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            </svg>
+            <span className="font-medium text-slate-900">Participants</span>
+          </div>
         </div>
         <div className="flex items-center gap-4">
-          <button type="button" className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">
-            <Download className="-ml-1 mr-2 h-4 w-4 text-slate-400" />
+          <button type="button" className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+            <Download className="-ml-1 mr-2 h-5 w-5 text-slate-400" />
             Exporter CSV
           </button>
         </div>
-      </div>
+      </header>
 
-      <div className="p-4 sm:p-6 lg:p-8">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
             <h1 className="font-display text-2xl font-bold text-slate-900">Participants ({participants.length})</h1>
@@ -83,7 +91,7 @@ export default function OrganizerParticipants() {
 
         {/* Filters */}
         <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex gap-2 w-full sm:w-auto">
+          <div className="flex gap-2">
             <div className="relative rounded-md shadow-sm w-full sm:w-64">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <Search className="h-5 w-5 text-slate-400" />
@@ -102,7 +110,7 @@ export default function OrganizerParticipants() {
             <button 
               type="button" 
               onClick={() => setIsBulkDropdownOpen(!isBulkDropdownOpen)}
-              className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+              className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
             >
               Action groupée
               <ChevronDown className="-mr-1 ml-2 h-5 w-5 text-slate-400" />
@@ -112,17 +120,23 @@ export default function OrganizerParticipants() {
             {isBulkDropdownOpen && (
               <div className="absolute right-0 top-full mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
                 <div className="py-1">
-                  <button className="flex w-full items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900">
-                    <CheckCircle2 className="mr-2 h-4 w-4 text-brand-600" />
-                    Approuver la sélection
+                  <button className="text-slate-700 block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900">
+                    <span className="flex items-center">
+                      <CheckCircle2 className="mr-2 h-4 w-4 text-brand-600" />
+                      Approuver la sélection
+                    </span>
                   </button>
-                  <button className="flex w-full items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900">
-                    <XCircle className="mr-2 h-4 w-4 text-red-600" />
-                    Rejeter la sélection
+                  <button className="text-slate-700 block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900">
+                    <span className="flex items-center">
+                      <XCircle className="mr-2 h-4 w-4 text-red-600" />
+                      Rejeter la sélection
+                    </span>
                   </button>
-                  <button className="flex w-full items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900">
-                    <Mail className="mr-2 h-4 w-4 text-blue-600" />
-                    Envoyer un message
+                  <button className="text-slate-700 block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900">
+                    <span className="flex items-center">
+                      <Mail className="mr-2 h-4 w-4 text-blue-600" />
+                      Envoyer un message
+                    </span>
                   </button>
                 </div>
               </div>
@@ -206,7 +220,7 @@ export default function OrganizerParticipants() {
           </div>
         </div>
 
-      </div>
+      </main>
     </div>
   );
 }

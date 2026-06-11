@@ -1,0 +1,108 @@
+/* components.css */
+@import './variables.css';
+
+/* Boutons */
+.btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary {
+  background-color: var(--brand-600);
+  color: white;
+  border: 1px solid transparent;
+}
+.btn-primary:hover {
+  background-color: var(--brand-700);
+}
+.btn-primary:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--brand-500);
+}
+
+.btn-secondary {
+  background-color: white;
+  color: var(--slate-700);
+  border: 1px solid var(--slate-300);
+}
+.btn-secondary:hover {
+  background-color: var(--slate-50);
+}
+
+.btn-danger {
+  background-color: var(--red-600);
+  color: white;
+  border: 1px solid transparent;
+}
+.btn-danger:hover {
+  background-color: var(--red-500);
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem 0.625rem;
+  border-radius: var(--border-radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.badge-brand {
+  background-color: var(--brand-100);
+  color: var(--brand-800);
+}
+.badge-red {
+  background-color: var(--red-100);
+  color: var(--red-800);
+}
+
+/* Cards */
+.card {
+  background-color: white;
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--slate-200);
+}
+
+.card-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--slate-200);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Forms */
+.form-input {
+  display: block;
+  width: 100%;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--slate-300);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--slate-900);
+  box-shadow: var(--shadow-sm);
+}
+.form-input:focus {
+  border-color: var(--brand-500);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--brand-500);
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--slate-900);
+  margin-bottom: 0.5rem;
+}

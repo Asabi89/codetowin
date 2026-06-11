@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { UserPlus, Star, Link as LinkIcon, FileText, CheckCircle, Clock, XCircle, UserCheck } from 'lucide-react';
-import { Badge } from '../../../components/common/Badge';
 import { Link } from 'react-router-dom';
 
 const ACCEPTED_MENTORS = [
@@ -78,27 +76,33 @@ export default function OrganizerMentors() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-slate-50">
-      
-      <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-4 sm:px-6">
-        <div className="flex items-center space-x-2 text-sm">
-          <Link to="/organizer/hackathons" className="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</Link>
-          <span className="text-slate-400">/</span>
-          <span className="font-medium text-slate-900">Mentors</span>
+    <div className="flex flex-1 flex-col overflow-hidden">
+      {/* Topbar equivalent for Mentors page */}
+      <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+        <div className="flex items-center">
+          <div className="flex items-center space-x-2 text-sm">
+            <Link to="/organizer/hackathons" className="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</Link>
+            <svg className="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            </svg>
+            <span className="font-medium text-slate-900">Mentors</span>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <button
             type="button"
             onClick={() => setIsInviteNewModalOpen(true)}
-            className="inline-flex items-center rounded-md border border-transparent bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-800"
+            className="inline-flex items-center rounded-md border border-transparent bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
           >
-            <UserPlus className="-ml-1 mr-2 h-5 w-5" />
+            <svg className="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+            </svg>
             Inviter un mentor
           </button>
         </div>
-      </div>
+      </header>
 
-      <div className="p-4 sm:p-6 lg:p-8">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
             <h1 className="font-display text-2xl font-bold text-slate-900">Mentors</h1>
@@ -155,7 +159,7 @@ export default function OrganizerMentors() {
                     </Link>
                   </div>
                   <div className="-ml-px flex w-0 flex-1">
-                    <button onClick={() => openAssignModal(mentor)} className="relative inline-flex w-0 flex-1 items-center justify-center rounded-br-xl border border-transparent py-4 text-sm font-medium text-slate-700 hover:text-slate-500">
+                    <button onClick={() => openAssignModal(mentor)} className="relative inline-flex w-0 flex-1 items-center justify-center rounded-br-xl border border-transparent py-4 text-sm font-medium text-slate-700 hover:text-slate-500 focus:outline-none">
                       Assigner
                     </button>
                   </div>
@@ -210,7 +214,8 @@ export default function OrganizerMentors() {
                   <dd className="text-sm text-slate-500">{mentor.role}</dd>
                   <dd className="mt-3">
                     <span className="inline-flex items-center text-xs text-slate-500">
-                      <Star className="mr-1 h-4 w-4 text-gold-400 fill-current" /> {mentor.rating}
+                      <svg className="mr-1 h-4 w-4 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg> 
+                      {mentor.rating}
                     </span>
                   </dd>
                 </dl>
@@ -224,6 +229,7 @@ export default function OrganizerMentors() {
                   </div>
                   <div className="-ml-px flex w-0 flex-1 bg-brand-50 rounded-br-xl hover:bg-brand-100">
                     <button onClick={() => alert('Invitation envoyée !')} className="relative inline-flex w-0 flex-1 items-center justify-center border border-transparent py-4 text-sm font-medium text-brand-700">
+                      <svg className="mr-2 h-5 w-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                       Inviter
                     </button>
                   </div>
@@ -233,7 +239,7 @@ export default function OrganizerMentors() {
           ))}
 
         </div>
-      </div>
+      </main>
 
       {/* Modal Inviter Nouveau Mentor */}
       {isInviteNewModalOpen && (
@@ -246,22 +252,24 @@ export default function OrganizerMentors() {
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
                       <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 sm:mx-0 sm:h-10 sm:w-10">
-                        <UserPlus className="h-6 w-6 text-brand-600" />
+                        <svg className="h-6 w-6 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                        </svg>
                       </div>
                       <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
                         <h3 className="text-lg font-semibold leading-6 text-slate-900" id="modal-title">Inviter un nouveau mentor</h3>
                         <div className="mt-4 space-y-5">
                           <div>
                             <label className="block text-sm font-medium leading-6 text-slate-900">Adresse e-mail <span className="text-red-500">*</span></label>
-                            <input type="email" className="mt-2 block w-full rounded-md border border-slate-300 py-1.5 text-slate-900 shadow-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 sm:text-sm px-3" placeholder="mentor@exemple.com" required />
+                            <input type="email" className="block w-full mt-2 rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm px-3" placeholder="mentor@exemple.com" required />
                           </div>
                           <div>
                             <label className="block text-sm font-medium leading-6 text-slate-900">Domaine d'expertise</label>
-                            <input type="text" className="mt-2 block w-full rounded-md border border-slate-300 py-1.5 text-slate-900 shadow-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 sm:text-sm px-3" placeholder="ex: Data Science, UX/UI, Marketing..." />
+                            <input type="text" className="block w-full mt-2 rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm px-3" placeholder="ex: Data Science, UX/UI, Marketing..." />
                           </div>
                           <div>
                             <label className="block text-sm font-medium leading-6 text-slate-900">Message personnalisé (Optionnel)</label>
-                            <textarea rows="3" className="mt-2 block w-full rounded-md border border-slate-300 py-1.5 text-slate-900 shadow-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 sm:text-sm px-3" placeholder="Bonjour, j'aimerais vous inviter..."></textarea>
+                            <textarea rows="3" className="block w-full mt-2 rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm px-3" placeholder="Bonjour, j'aimerais vous inviter..."></textarea>
                           </div>
                         </div>
                       </div>
@@ -289,15 +297,17 @@ export default function OrganizerMentors() {
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
                       <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 sm:mx-0 sm:h-10 sm:w-10">
-                        <UserCheck className="h-6 w-6 text-brand-600" />
+                        <svg className="h-6 w-6 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
                       </div>
                       <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
                         <h3 className="text-lg font-semibold leading-6 text-slate-900">Assigner <span className="text-brand-600">{selectedMentor?.name}</span></h3>
                         <div className="mt-4 space-y-5">
                           <div>
                             <label className="block text-sm font-medium leading-6 text-slate-900">Sélectionner les équipes à assigner</label>
-                            <div className="mt-2 space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
-                              <div className="flex items-start">
+                            <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-4 space-y-3 max-h-48 overflow-y-auto">
+                              <div className="relative flex items-start">
                                 <div className="flex h-6 items-center">
                                   <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600" />
                                 </div>
@@ -306,7 +316,7 @@ export default function OrganizerMentors() {
                                   <p className="text-slate-500">4 membres</p>
                                 </div>
                               </div>
-                              <div className="flex items-start">
+                              <div className="relative flex items-start">
                                 <div className="flex h-6 items-center">
                                   <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600" />
                                 </div>

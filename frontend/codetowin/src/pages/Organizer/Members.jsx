@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Badge } from '../../components/common/Badge';
 
 const MEMBERS_MOCK = [
   {
@@ -22,7 +21,8 @@ const MEMBERS_MOCK = [
     id: 3,
     name: 'Moussa K.',
     email: 'moussa@gmail.com',
-    avatar: 'https://ui-avatars.com/api/?name=M&background=e2e8f0&color=475569',
+    avatar: '', // To use the initials block
+    initials: 'M',
     role: 'Administrateur',
     status: 'Invitation en attente',
   },
@@ -44,9 +44,13 @@ export default function OrganizerMembers() {
   };
 
   const getStatusBadge = (status) => {
-    if (status === 'Actif') return <Badge variant="success">Actif</Badge>;
-    if (status === 'Invitation en attente') return <Badge variant="warning">Invitation en attente</Badge>;
-    return <Badge variant="neutral">{status}</Badge>;
+    if (status === 'Actif') {
+      return <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Actif</span>;
+    }
+    if (status === 'Invitation en attente') {
+      return <span className="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Invitation en attente</span>;
+    }
+    return <span className="inline-flex items-center rounded-md bg-slate-50 px-2 py-1 text-xs font-medium text-slate-700 ring-1 ring-inset ring-slate-600/20">{status}</span>;
   };
 
   return (
@@ -92,7 +96,13 @@ export default function OrganizerMembers() {
                             <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                               <div className="flex items-center">
                                 <div className="h-10 w-10 flex-shrink-0">
-                                  <img className="h-10 w-10 rounded-full" src={member.avatar} alt="" />
+                                  {member.avatar ? (
+                                    <img className="h-10 w-10 rounded-full" src={member.avatar} alt="" />
+                                  ) : (
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 font-medium text-slate-600">
+                                      {member.initials}
+                                    </div>
+                                  )}
                                 </div>
                                 <div className="ml-4">
                                   <div className="font-medium text-slate-900">{member.name}</div>
@@ -169,7 +179,7 @@ export default function OrganizerMembers() {
                                   id="member-email" 
                                   value={inviteEmail}
                                   onChange={e => setInviteEmail(e.target.value)}
-                                  className="block w-full rounded-md border border-slate-300 py-1.5 text-slate-900 shadow-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 sm:text-sm px-3" 
+                                  className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm px-3" 
                                   placeholder="collegue@techhub.com" 
                                   required 
                                 />
@@ -181,7 +191,7 @@ export default function OrganizerMembers() {
                                 id="member-role" 
                                 value={inviteRole}
                                 onChange={e => setInviteRole(e.target.value)}
-                                className="mt-2 block w-full rounded-md border border-slate-300 py-2 pl-3 pr-10 text-slate-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 sm:text-sm"
+                                className="mt-2 block w-full rounded-md border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm"
                               >
                                 <option value="admin">Administrateur (Accès total)</option>
                                 <option value="editor">Éditeur (Peut créer/modifier des hackathons)</option>

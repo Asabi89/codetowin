@@ -78,10 +78,18 @@ const NOTIFICATIONS = [
 
 export default function OrganizerNotifications() {
   return (
-    <div className="flex-1 overflow-y-auto bg-slate-50">
+    <div className="flex flex-1 flex-col overflow-hidden">
+      {/* Topbar */}
       <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
-        <div className="flex items-center space-x-2 text-sm">
-          <span className="font-medium text-slate-900">Centre de notifications</span>
+        <div className="flex items-center">
+          <button className="text-slate-500 focus:outline-none sm:hidden">
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div className="ml-4 flex items-center space-x-2 text-sm sm:ml-0">
+            <span className="font-medium text-slate-900">Centre de notifications</span>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <button type="button" className="text-sm font-medium text-brand-600 hover:text-brand-800">
@@ -90,7 +98,9 @@ export default function OrganizerNotifications() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+      {/* Main scrollable area */}
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
+        
         <div className="mx-auto max-w-4xl">
           <div className="sm:flex sm:items-center sm:justify-between mb-6">
             <div className="sm:flex-auto">
@@ -98,6 +108,7 @@ export default function OrganizerNotifications() {
               <p className="mt-2 text-sm text-slate-700">Restez informé de l'activité sur vos hackathons.</p>
             </div>
             
+            {/* Filters */}
             <div className="mt-4 sm:mt-0 flex space-x-3">
               <select className="block w-full rounded-md border-slate-300 py-2 pl-3 pr-10 text-base focus:border-brand-500 focus:outline-none focus:ring-brand-500 sm:text-sm border shadow-sm">
                 <option>Toutes les notifications</option>
@@ -108,10 +119,12 @@ export default function OrganizerNotifications() {
             </div>
           </div>
 
+          {/* Notification List */}
           <div className="bg-white shadow sm:rounded-lg overflow-hidden border border-slate-200">
             <ul role="list" className="divide-y divide-slate-200">
               {NOTIFICATIONS.map((notif) => (
-                <li key={notif.id} className={`${notif.unread ? 'bg-brand-50/50 hover:bg-brand-50/80' : 'hover:bg-slate-50'} transition cursor-pointer relative`}>
+                <li key={notif.id} className={`transition cursor-pointer relative ${notif.unread ? 'bg-brand-50/50 hover:bg-brand-50/80' : 'hover:bg-slate-50'}`}>
+                  {/* Unread dot */}
                   {notif.unread && (
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-brand-500"></div>
                   )}
@@ -133,10 +146,10 @@ export default function OrganizerNotifications() {
                       
                       {notif.actions && (
                         <div className="mt-3 flex space-x-3">
-                          <button type="button" className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50">
+                          <button type="button" className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
                             Voir le profil
                           </button>
-                          <button type="button" className="inline-flex items-center rounded-md border border-transparent bg-brand-600 px-3 py-1 text-xs font-medium text-white shadow-sm hover:bg-brand-700">
+                          <button type="button" className="inline-flex items-center rounded-md border border-transparent bg-brand-600 px-3 py-1 text-xs font-medium text-white shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
                             Approuver
                           </button>
                         </div>
@@ -144,7 +157,7 @@ export default function OrganizerNotifications() {
                       
                       {notif.viewTeam && (
                         <div className="mt-3">
-                          <button type="button" className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50">
+                          <button type="button" className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
                             Voir l'équipe
                           </button>
                         </div>
@@ -161,7 +174,9 @@ export default function OrganizerNotifications() {
               Charger plus de notifications
             </button>
           </div>
+
         </div>
+
       </main>
     </div>
   );

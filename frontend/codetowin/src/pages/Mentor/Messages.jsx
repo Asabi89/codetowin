@@ -1,33 +1,57 @@
 import React, { useState } from 'react';
-import { Search, Info, Send, ChevronLeft } from 'lucide-react';
+import { Search, Info, Send, ChevronLeft, MessageSquare } from 'lucide-react';
+import '../../styles/messaging.css';
 
 const chatData = {
   ecopay: {
+    id: 'ecopay',
     name: "Groupe : EcoPay Solutions",
     role: "Participant • Fintech Builders Challenge",
     isGroup: true,
-    avatar: "https://ui-avatars.com/api/?name=EcoPay+Solutions&background=10b981&color=fff",
+    avatar: "ES",
+    avatarBgColor: "#D1FAE5",
+    avatarTextColor: "#059669",
+    avatarBorderColor: "#A7F3D0",
+    category: 'equipes',
+    unread: 1,
+    lastTime: '10:42',
+    lastMessage: 'Moussa : On est bloqués...',
     messages: [
-      { id: 1, sender: "me", text: "Bonjour l'équipe ! Je suis Seydou, votre mentor pour ce hackathon. Comment avance le projet ?", time: "Hier 14:00", senderName: "Moi" },
+      { id: 1, sender: "me", text: "Bonjour l'équipe ! Je suis Seydou, votre mentor pour ce hackathon. Comment avance le projet ?", time: "Hier 14:00" },
       { id: 2, sender: "them", text: "Bonjour Seydou ! L'idée est claire, mais notre développeur backend a une question sur la base de données.", time: "Hier 14:15", senderName: "Omar Fall" },
       { id: 3, sender: "them", text: "Moussa : On est bloqués sur l'API de paiement qui renvoie une erreur 500.", time: "10:42", senderName: "Moussa Diop" }
     ]
   },
   retailsync: {
+    id: 'retailsync',
     name: "Paul (Privé)",
     role: "Participant • Fintech Builders Challenge",
-    avatar: "https://ui-avatars.com/api/?name=RetailSync&background=3b82f6&color=fff",
+    isGroup: false,
+    avatar: "RS",
+    avatarBgColor: "#DBEAFE",
+    avatarTextColor: "#2563EB",
+    avatarBorderColor: "#BFDBFE",
+    category: 'equipes',
+    unread: 0,
+    lastTime: 'Hier',
+    lastMessage: 'Paul : Merci pour le retour !',
     messages: [
       { id: 1, sender: "them", text: "Merci pour le retour sur notre pitch ! On va l'améliorer.", time: "Hier 16:30", senderName: "Paul" }
     ]
   },
   techhub: {
+    id: 'techhub',
     name: "TechHub Sénégal",
     role: "Organisateur",
-    avatar: "https://ui-avatars.com/api/?name=TechHub+Senegal&background=047857&color=fff",
+    isGroup: false,
+    avatarImg: "https://ui-avatars.com/api/?name=TechHub+Senegal&background=047857&color=fff",
+    category: 'organisation',
+    unread: 0,
+    lastTime: 'Lun.',
+    lastMessage: 'Bienvenue dans l\'équipe !',
     messages: [
       { id: 1, sender: "them", text: "Bienvenue dans l'équipe des mentors ! N'hésitez pas si vous avez des questions.", time: "Lundi 09:00", senderName: "Orga" },
-      { id: 2, sender: "me", text: "Merci ! J'ai bien reçu l'assignation de mes 2 équipes.", time: "Lundi 10:15", senderName: "Moi" }
+      { id: 2, sender: "me", text: "Merci ! J'ai bien reçu l'assignation de mes 2 équipes.", time: "Lundi 10:15" }
     ]
   }
 };
@@ -37,6 +61,7 @@ export default function MentorMessages() {
   const [activeChatId, setActiveChatId] = useState('ecopay');
   const [messageInput, setMessageInput] = useState('');
 
+  const filteredChats = Object.values(chatData).filter(chat => chat.category === activeTab);
   const activeChat = activeChatId ? chatData[activeChatId] : null;
 
   const handleSendMessage = (e) => {
@@ -48,40 +73,38 @@ export default function MentorMessages() {
   };
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden bg-white">
+    <div className="messaging-container">
       {/* Topbar */}
-      <header className="flex h-16 items-center justify-between border-b border-slate-200 px-4 sm:px-6 shrink-0">
-        <div className="flex items-center">
-          <h1 className="text-xl font-semibold text-slate-900">Messagerie</h1>
-        </div>
+      <header className="notifications-header">
+        <h1 className="topbar-title">Messagerie</h1>
       </header>
 
       {/* Chat Interface Layout */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="messaging-layout">
         
         {/* Left Panel: Chat List */}
-        <div className={`w-full sm:w-1/3 md:w-80 border-r border-slate-200 flex flex-col bg-slate-50 flex-shrink-0 ${activeChatId ? 'hidden sm:flex' : 'flex'}`}>
+        <div className="messaging-sidebar" style={{ display: activeChatId ? 'none' : 'flex' }}>
           
           {/* Search & Tabs */}
-          <div className="p-4 border-b border-slate-200 bg-white">
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <Search className="h-5 w-5 text-slate-400" />
+          <div className="messaging-sidebar-header">
+            <div className="search-input-wrap">
+              <div className="search-icon-wrap">
+                <Search className="search-icon" />
               </div>
-              <input type="text" className="block w-full rounded-md border-slate-300 pl-10 focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 border shadow-sm" placeholder="Rechercher une conversation..." />
+              <input type="text" className="search-input" placeholder="Rechercher une conversation..." />
             </div>
 
             {/* Tabs */}
-            <div className="mt-4 flex space-x-1 rounded-md bg-slate-100 p-1">
+            <div className="messaging-tabs">
               <button 
-                className={`w-1/2 rounded py-1.5 text-xs font-medium ${activeTab === 'equipes' ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'}`} 
                 onClick={() => setActiveTab('equipes')}
+                className={`messaging-tab ${activeTab === 'equipes' ? 'messaging-tab-active' : 'messaging-tab-inactive'}`}
               >
                 Équipes
               </button>
               <button 
-                className={`w-1/2 rounded py-1.5 text-xs font-medium ${activeTab === 'organisation' ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'}`} 
                 onClick={() => setActiveTab('organisation')}
+                className={`messaging-tab ${activeTab === 'organisation' ? 'messaging-tab-active' : 'messaging-tab-inactive'}`}
               >
                 Organisateurs
               </button>
@@ -89,146 +112,124 @@ export default function MentorMessages() {
           </div>
 
           {/* Contact List */}
-          <div className="flex-1 overflow-y-auto p-2 space-y-1">
-            
-            {activeTab === 'equipes' && (
-              <>
-                <div 
-                  className={`group flex items-center rounded-lg p-3 cursor-pointer ${activeChatId === 'ecopay' ? 'bg-brand-50' : 'hover:bg-slate-100'}`} 
-                  onClick={() => setActiveChatId('ecopay')}
-                >
-                  <div className="relative">
-                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 border border-emerald-200">
-                      <span className="font-bold text-sm">ES</span>
-                    </div>
-                    <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-400 ring-2 ring-white"></span>
-                  </div>
-                  <div className="ml-3 flex-1 overflow-hidden">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-slate-900">Groupe : EcoPay</p>
-                      <p className="text-xs text-brand-600 font-semibold">10:42</p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <p className="truncate text-sm text-slate-500 font-medium text-slate-900">Moussa : On est bloqués...</p>
-                      <span className="inline-flex items-center justify-center rounded-full bg-brand-500 px-2 py-0.5 text-xs font-bold text-white">1</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div 
-                  className={`group flex items-center rounded-lg p-3 cursor-pointer ${activeChatId === 'retailsync' ? 'bg-brand-50' : 'hover:bg-slate-100'}`} 
-                  onClick={() => setActiveChatId('retailsync')}
-                >
-                  <div className="relative">
-                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 border border-blue-200">
-                      <span className="font-bold text-sm">RS</span>
-                    </div>
-                  </div>
-                  <div className="ml-3 flex-1 overflow-hidden">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-slate-900">Paul (Privé)</p>
-                      <p className="text-xs text-slate-500">Hier</p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <p className="truncate text-sm text-slate-500">Paul : Merci pour le retour !</p>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {activeTab === 'organisation' && (
+          <div className="chat-list">
+            {filteredChats.map(chat => (
               <div 
-                className={`group flex items-center rounded-lg p-3 cursor-pointer ${activeChatId === 'techhub' ? 'bg-brand-50' : 'hover:bg-slate-100'}`} 
-                onClick={() => setActiveChatId('techhub')}
+                key={chat.id}
+                onClick={() => setActiveChatId(chat.id)}
+                className={`chat-item ${activeChatId === chat.id ? 'chat-item-active' : 'chat-item-inactive'}`}
               >
-                <div className="relative">
-                  <img className="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name=TechHub+Senegal&background=047857&color=fff" alt="" />
+                <div className="chat-avatar-wrap">
+                  {chat.avatarImg ? (
+                    <img className="chat-avatar-img" src={chat.avatarImg} alt="" />
+                  ) : (
+                    <div className="chat-avatar-text" style={{ backgroundColor: chat.avatarBgColor, color: chat.avatarTextColor, borderColor: chat.avatarBorderColor || 'transparent' }}>
+                      <span>{chat.avatar}</span>
+                    </div>
+                  )}
+                  <span className={`chat-status ${chat.unread > 0 ? 'unread' : ''} ${activeChatId === chat.id ? 'active' : ''}`}></span>
                 </div>
-                <div className="ml-3 flex-1 overflow-hidden">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-slate-900">TechHub Sénégal</p>
-                    <p className="text-xs text-slate-500">Lun.</p>
+                <div className="chat-info">
+                  <div className="chat-name-row">
+                    <p className="chat-name">{chat.name}</p>
+                    <p className={`chat-time ${chat.unread > 0 ? 'unread' : ''}`}>{chat.lastTime}</p>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <p className="truncate text-sm text-slate-500">Bienvenue dans l'équipe !</p>
+                  <div className="chat-msg-row">
+                    <p className={`chat-msg ${chat.unread > 0 ? 'unread' : ''}`}>{chat.lastMessage}</p>
+                    {chat.unread > 0 && (
+                      <span className="chat-badge">
+                        {chat.unread}
+                      </span>
+                    )}
                   </div>
                 </div>
+              </div>
+            ))}
+            {filteredChats.length === 0 && (
+              <div style={{ padding: '1rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--slate-500)' }}>
+                Aucune conversation trouvée.
               </div>
             )}
           </div>
         </div>
 
         {/* Right Panel: Chat Area */}
-        <div className={`flex-col flex-1 bg-white relative ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
+        <div className="chat-area" style={{ display: activeChatId ? 'flex' : 'none' }}>
           
           {!activeChatId ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center bg-slate-50 z-10">
-              <div className="h-24 w-24 rounded-full bg-slate-200 flex items-center justify-center mb-4">
-                <MessageSquare className="h-12 w-12 text-slate-400" />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', textAlign: 'center', color: 'var(--slate-500)' }}>
+              <div style={{ height: '6rem', width: '6rem', borderRadius: 'var(--border-radius-full)', backgroundColor: 'var(--slate-200)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+                <MessageSquare style={{ height: '3rem', width: '3rem', color: 'var(--slate-400)' }} />
               </div>
-              <h3 className="text-lg font-medium text-slate-900">Vos Messages</h3>
-              <p className="mt-1 text-sm text-slate-500 max-w-sm">Sélectionnez une équipe ou un organisateur dans la liste pour commencer à discuter.</p>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 500, color: 'var(--slate-900)', margin: 0 }}>Vos Messages</h3>
+              <p style={{ marginTop: '0.25rem', fontSize: '0.875rem', maxWidth: '24rem', margin: 0 }}>Sélectionnez une équipe ou un organisateur dans la liste pour commencer à discuter.</p>
             </div>
           ) : (
             <>
               {/* Active Chat Header */}
-              <div className="h-16 border-b border-slate-200 flex items-center justify-between px-6 shrink-0 bg-white">
-                <div className="flex items-center">
+              <div className="chat-header">
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   <button 
-                    className="sm:hidden mr-3 text-slate-400 hover:text-slate-600 focus:outline-none"
+                    className="icon-btn hover-text-slate-600"
+                    style={{ marginRight: '0.75rem' }}
                     onClick={() => setActiveChatId(null)}
                   >
-                    <ChevronLeft className="h-6 w-6" />
+                    <ChevronLeft style={{ height: '1.5rem', width: '1.5rem' }} />
                   </button>
-                  <img className="h-10 w-10 rounded-full object-cover" src={activeChat.avatar} alt="" />
-                  <div className="ml-3">
-                    <p className="text-sm font-bold text-slate-900">{activeChat.name}</p>
-                    <p className="text-xs text-brand-600 font-medium">{activeChat.role}</p>
+                  {activeChat.avatarImg ? (
+                    <img className="chat-avatar-img" src={activeChat.avatarImg} alt="" />
+                  ) : (
+                    <div className="chat-avatar-text" style={{ backgroundColor: activeChat.avatarBgColor, color: activeChat.avatarTextColor, borderColor: activeChat.avatarBorderColor || 'transparent' }}>
+                      <span>{activeChat.avatar}</span>
+                    </div>
+                  )}
+                  <div style={{ marginLeft: '0.75rem' }}>
+                    <p style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--slate-900)', margin: 0 }}>{activeChat.name}</p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--brand-600)', fontWeight: 500, margin: 0 }}>{activeChat.role}</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <button className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none">
-                    <Info className="h-5 w-5" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <button className="icon-btn" title="Informations">
+                    <Info style={{ height: '1.25rem', width: '1.25rem' }} />
                   </button>
                 </div>
               </div>
 
               {/* Chat Messages Area */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50">
-                <div className="flex justify-center">
-                  <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-medium text-slate-500">Aujourd'hui</span>
+              <div className="chat-messages">
+                <div className="chat-date-separator">
+                  <span className="chat-date-badge">Aujourd'hui</span>
                 </div>
                 
-                {activeChat.messages.map((msg, index) => (
-                  <div key={msg.id} className={`flex flex-col ${msg.sender === 'them' ? 'items-start' : 'items-end'}`}>
-                    <div className={`relative max-w-md md:max-w-lg px-4 py-2 ${msg.sender === 'them' ? 'bg-white text-slate-800 shadow-sm border border-slate-100 rounded-2xl rounded-tl-sm' : 'bg-brand-600 text-white rounded-2xl rounded-tr-sm'}`}>
-                      {msg.sender === 'them' && activeChat.isGroup && (
-                        <span className="block text-[11px] font-bold text-brand-600 mb-1">{msg.senderName}</span>
-                      )}
-                      <p className="text-sm">{msg.text}</p>
-                      <span className={`text-[10px] mt-1 block text-right ${msg.sender === 'them' ? 'text-slate-400' : 'text-brand-200'}`}>
-                        {msg.time}
-                      </span>
+                {activeChat.messages.map((msg) => (
+                  <div key={msg.id} className={`msg-wrapper ${msg.sender === 'me' ? 'me' : 'them'}`}>
+                    {msg.senderName && msg.sender === 'them' && activeChat.isGroup && (
+                      <span className="msg-sender-name">{msg.senderName}</span>
+                    )}
+                    <div className={`msg-bubble ${msg.sender === 'me' ? 'me' : 'them'}`}>
+                      <p className="msg-text">{msg.text}</p>
+                      <div className="msg-meta">
+                        <span className={`msg-time ${msg.sender === 'me' ? 'me' : 'them'}`}>{msg.time}</span>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* Chat Input Area */}
-              <div className="border-t border-slate-200 bg-white p-2 sm:p-4 shrink-0 flex flex-col relative z-20">
-                <form onSubmit={handleSendMessage} className="flex items-end space-x-2">
-                  <div className="flex-1">
-                    <input 
-                      type="text" 
+              <div className="chat-input-area">
+                <form onSubmit={handleSendMessage} className="chat-form">
+                  <div style={{ flex: 1 }}>
+                    <textarea 
+                      rows="1"
                       value={messageInput}
                       onChange={(e) => setMessageInput(e.target.value)}
-                      className="block w-full rounded-xl border-slate-300 focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-3 px-4 border shadow-sm" 
+                      className="chat-textarea" 
                       placeholder="Écrivez votre message..." 
                     />
                   </div>
-                  <button type="submit" className="inline-flex items-center justify-center rounded-full bg-brand-600 p-3 text-white hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition shadow-sm">
-                    <Send className="h-5 w-5" />
+                  <button type="submit" className="chat-send-btn">
+                    <Send style={{ height: '1.25rem', width: '1.25rem' }} />
                   </button>
                 </form>
               </div>

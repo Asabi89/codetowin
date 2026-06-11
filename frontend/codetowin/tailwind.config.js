@@ -3,28 +3,15 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/assets/brand",
   ],
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Manrope', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Space Grotesk', 'Satoshi', 'Manrope', 'system-ui', 'sans-serif'],
-        mono: ['ui-monospace', 'Consolas', 'monospace'],
+        sans: ["Inter", "sans-serif"],
+        display: ["Satoshi", "sans-serif"],
       },
       colors: {
-        emerald: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#059669',
-          800: '#065f46',
-          900: '#0f172a',
-          950: '#052e16',
-        },
         brand: {
           50: "#ECFDF5",
           100: "#D1FAE5",
@@ -44,8 +31,15 @@ export default {
         gold: {
           400: "#FBBF24", // Gold Accent
         },
+        silver: {
+          400: "#9CA3AF",
+        },
+        bronze: {
+          400: "#D97706",
+        }
       },
     },
   },
   plugins: [],
 }
+

@@ -1,94 +1,110 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Users } from 'lucide-react';
+import '../../styles/dashboard.css';
 
 export default function MentorInvitations() {
   return (
-    <div className="flex-1 overflow-y-auto bg-slate-50">
+    <div className="dashboard-content">
       {/* Topbar */}
-      <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
-        <div className="flex items-center">
-          <h1 className="text-xl font-semibold text-slate-900">Mes Invitations</h1>
+      <header className="dashboard-header-row" style={{ borderBottom: '1px solid var(--slate-200)', backgroundColor: 'white', padding: '1rem', marginLeft: '-1rem', marginRight: '-1rem', marginTop: '-2rem', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--slate-900)', margin: 0 }}>Mes Invitations</h1>
         </div>
       </header>
 
       {/* Main scrollable area */}
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+      <div>
         
-        <div className="sm:flex sm:items-center">
-          <div className="sm:flex-auto">
-            <h2 className="text-xl font-semibold text-slate-900">Demandes de mentorat</h2>
-            <p className="mt-2 text-sm text-slate-700">Ces organisateurs souhaitent que vous accompagniez des équipes lors de leurs hackathons.</p>
+        <div style={{ display: 'flex', alignItems: 'center' }} className="sm-flex">
+          <style>{`
+            @media (min-width: 640px) {
+              .sm-flex { flex-direction: row !important; }
+            }
+          `}</style>
+          <div style={{ flex: '1 1 auto' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--slate-900)', margin: 0 }}>Demandes de mentorat</h2>
+            <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: 'var(--slate-700)', margin: 0 }}>Ces organisateurs souhaitent que vous accompagniez des équipes lors de leurs hackathons.</p>
           </div>
         </div>
 
-        <div className="mt-8 space-y-6">
+        <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           
           {/* Invitation Card 1 */}
-          <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div className="p-6">
-              <div className="sm:flex sm:items-center sm:justify-between">
-                <div className="sm:flex sm:items-start gap-4">
-                  <div className="h-14 w-14 flex-shrink-0 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200 overflow-hidden">
-                    <img src="https://ui-avatars.com/api/?name=TechHub+Senegal&background=0F172A&color=fff" alt="Logo" className="h-full w-full object-cover" />
+          <div className="card hover-shadow" style={{ padding: 0, overflow: 'hidden', transition: 'box-shadow 0.2s' }}>
+            <style>{`.hover-shadow:hover { box-shadow: var(--shadow-md) !important; }`}</style>
+            <div style={{ padding: '1.5rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} className="sm-flex-row sm-items-center sm-justify-between">
+                <style>{`
+                  @media (min-width: 640px) {
+                    .sm-flex-row { flex-direction: row !important; }
+                    .sm-items-start { align-items: flex-start !important; }
+                    .sm-justify-between { justify-content: space-between !important; }
+                    .sm-mt-0 { margin-top: 0 !important; }
+                  }
+                `}</style>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} className="sm-flex-row sm-items-start">
+                  <div style={{ height: '3.5rem', width: '3.5rem', flexShrink: 0, borderRadius: 'var(--border-radius-lg)', backgroundColor: 'var(--slate-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--slate-200)', overflow: 'hidden' }}>
+                    <img src="https://ui-avatars.com/api/?name=TechHub+Senegal&background=0F172A&color=fff" alt="Logo" style={{ height: '100%', width: '100%', objectFit: 'cover' }} />
                   </div>
-                  <div className="mt-4 sm:mt-0">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-bold text-slate-900">AI for Climate Africa 2026</h3>
-                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">Nouveau</span>
+                  <div style={{ marginTop: '1rem' }} className="sm-mt-0">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--slate-900)', margin: 0 }}>AI for Climate Africa 2026</h3>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', borderRadius: 'var(--border-radius-full)', backgroundColor: '#EFF6FF', padding: '0.25rem 0.5rem', fontSize: '0.75rem', fontWeight: 500, color: '#1D4ED8', border: '1px solid rgba(29, 78, 216, 0.1)' }}>Nouveau</span>
                     </div>
-                    <p className="text-sm font-medium text-slate-600 mt-1">Organisé par <span className="text-slate-900">TechHub Sénégal</span></p>
+                    <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--slate-600)', marginTop: '0.25rem', margin: 0 }}>Organisé par <span style={{ color: 'var(--slate-900)' }}>TechHub Sénégal</span></p>
                     
-                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-500">
-                      <div className="flex items-center">
-                        <Calendar className="mr-2 h-4 w-4 text-slate-400" />
+                    <div style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: 'repeat(1, minmax(0, 1fr))', gap: '1rem', fontSize: '0.875rem', color: 'var(--slate-500)' }} className="sm-grid-cols-2">
+                      <style>{`@media (min-width: 640px) { .sm-grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }`}</style>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Calendar style={{ marginRight: '0.5rem', height: '1rem', width: '1rem', color: 'var(--slate-400)' }} />
                         12 - 14 Août 2026
                       </div>
-                      <div className="flex items-center">
-                        <Users className="mr-2 h-4 w-4 text-slate-400" />
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Users style={{ marginRight: '0.5rem', height: '1rem', width: '1rem', color: 'var(--slate-400)' }} />
                         Suivi estimé : 3 équipes
                       </div>
                     </div>
 
-                    <div className="mt-4 bg-slate-50 rounded-lg p-4 border border-slate-200">
-                      <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Message de l'organisateur</h4>
-                      <p className="text-sm text-slate-600 italic">"Bonjour Seydou, vu votre expertise en Machine Learning, nous adorerions vous avoir parmi nos mentors pour orienter les équipes qui travaillent sur l'analyse de données satellites. Êtes-vous disponible ?"</p>
+                    <div style={{ marginTop: '1rem', backgroundColor: 'var(--slate-50)', borderRadius: 'var(--border-radius-lg)', padding: '1rem', border: '1px solid var(--slate-200)' }}>
+                      <h4 style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--slate-700)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem', margin: 0 }}>Message de l'organisateur</h4>
+                      <p style={{ fontSize: '0.875rem', color: 'var(--slate-600)', fontStyle: 'italic', margin: 0 }}>"Bonjour Seydou, vu votre expertise en Machine Learning, nous adorerions vous avoir parmi nos mentors pour orienter les équipes qui travaillent sur l'analyse de données satellites. Êtes-vous disponible ?"</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="bg-slate-50 px-6 py-4 flex items-center justify-end gap-3 border-t border-slate-200">
-              <button type="button" className="inline-flex justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-100">
+            <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid var(--slate-200)' }}>
+              <button type="button" className="btn btn-secondary">
                 Décliner
               </button>
-              <button type="button" className="inline-flex justify-center rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500">
+              <button type="button" className="btn btn-primary">
                 Accepter l'invitation
               </button>
             </div>
           </div>
 
           {/* Invitation Card 2 */}
-          <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div className="p-6">
-              <div className="sm:flex sm:items-center sm:justify-between">
-                <div className="sm:flex sm:items-start gap-4">
-                  <div className="h-14 w-14 flex-shrink-0 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200 overflow-hidden">
-                    <img src="https://ui-avatars.com/api/?name=Finbank&background=0F172A&color=fff" alt="Logo" className="h-full w-full object-cover" />
+          <div className="card hover-shadow" style={{ padding: 0, overflow: 'hidden', transition: 'box-shadow 0.2s' }}>
+            <div style={{ padding: '1.5rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} className="sm-flex-row sm-items-center sm-justify-between">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} className="sm-flex-row sm-items-start">
+                  <div style={{ height: '3.5rem', width: '3.5rem', flexShrink: 0, borderRadius: 'var(--border-radius-lg)', backgroundColor: 'var(--slate-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--slate-200)', overflow: 'hidden' }}>
+                    <img src="https://ui-avatars.com/api/?name=Finbank&background=0F172A&color=fff" alt="Logo" style={{ height: '100%', width: '100%', objectFit: 'cover' }} />
                   </div>
-                  <div className="mt-4 sm:mt-0">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-bold text-slate-900">Fintech Builders Challenge</h3>
+                  <div style={{ marginTop: '1rem' }} className="sm-mt-0">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--slate-900)', margin: 0 }}>Fintech Builders Challenge</h3>
                     </div>
-                    <p className="text-sm font-medium text-slate-600 mt-1">Organisé par <span className="text-slate-900">Banque Atlantique</span></p>
+                    <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--slate-600)', marginTop: '0.25rem', margin: 0 }}>Organisé par <span style={{ color: 'var(--slate-900)' }}>Banque Atlantique</span></p>
                     
-                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-500">
-                      <div className="flex items-center">
-                        <Calendar className="mr-2 h-4 w-4 text-slate-400" />
+                    <div style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: 'repeat(1, minmax(0, 1fr))', gap: '1rem', fontSize: '0.875rem', color: 'var(--slate-500)' }} className="sm-grid-cols-2">
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Calendar style={{ marginRight: '0.5rem', height: '1rem', width: '1rem', color: 'var(--slate-400)' }} />
                         01 - 03 Septembre 2026
                       </div>
-                      <div className="flex items-center">
-                        <Users className="mr-2 h-4 w-4 text-slate-400" />
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Users style={{ marginRight: '0.5rem', height: '1rem', width: '1rem', color: 'var(--slate-400)' }} />
                         Suivi estimé : 2 équipes
                       </div>
                     </div>
@@ -96,18 +112,18 @@ export default function MentorInvitations() {
                 </div>
               </div>
             </div>
-            <div className="bg-slate-50 px-6 py-4 flex items-center justify-end gap-3 border-t border-slate-200">
-              <button type="button" className="inline-flex justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-100">
+            <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid var(--slate-200)' }}>
+              <button type="button" className="btn btn-secondary">
                 Décliner
               </button>
-              <button type="button" className="inline-flex justify-center rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500">
+              <button type="button" className="btn btn-primary">
                 Accepter l'invitation
               </button>
             </div>
           </div>
 
         </div>
-      </main>
+      </div>
     </div>
   );
 }
