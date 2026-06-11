@@ -8,7 +8,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Manrope', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Space Grotesk', 'Manrope', 'system-ui', 'sans-serif'],
+        display: ['Space Grotesk', 'Satoshi', 'Manrope', 'system-ui', 'sans-serif'],
         mono: ['ui-monospace', 'Consolas', 'monospace'],
       },
       colors: {
@@ -24,6 +24,25 @@ export default {
           800: '#065f46',
           900: '#0f172a',
           950: '#052e16',
+        },
+        brand: {
+          50: "#ECFDF5",
+          100: "#D1FAE5",
+          200: "#A7F3D0",
+          300: "#6EE7B7",
+          400: "#34D399",
+          500: "#10B981",
+          600: "#059669",
+          700: "#047857", // Primary Green
+          800: "#065F46", // Dark Green
+          900: "#064E3B",
+          950: "#022C22",
+        },
+        navy: {
+          900: "#0F172A", // Dark Navy
+        },
+        gold: {
+          400: "#FBBF24", // Gold Accent
         },
       },
     },
