@@ -1,40 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-
-const LEADERBOARD_MOCK = [
-  {
-    id: 1,
-    rank: 1,
-    team: 'AgriTech Innovators',
-    project: 'AgriSense IoT',
-    score: 94,
-    status: 'Générés',
-  },
-  {
-    id: 2,
-    rank: 2,
-    team: 'CodeMakers',
-    project: 'EcoTrade App',
-    score: 85,
-    status: 'En attente',
-  },
-  {
-    id: 3,
-    rank: 3,
-    team: 'Data Rangers',
-    project: 'ClimaStats Dashboard',
-    score: 81,
-    status: 'En attente',
-  },
-  {
-    id: 4,
-    rank: 4,
-    team: 'Green Data Squad',
-    project: '- (Pas de soumission finale)',
-    score: '-',
-    status: 'En attente (Participation)',
-  },
-];
+import { LEADERBOARD_MOCK } from '../../../mockdata/organizer';
+import { certificatesApi } from '../../../api/certificates';
+import { hackathonsApi } from '../../../api/hackathons';
 
 export default function OrganizerResults() {
   const { id } = useParams();
@@ -42,69 +10,48 @@ export default function OrganizerResults() {
   const [isPublished, setIsPublished] = useState(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
 
-  const handleGenerateSingle = (id) => {
+  const handleGenerateSingle = async (itemId) => {
+    try {
+      await certificatesApi.generateCertificates(id);
+    } catch (err) {
+      console.warn("Erreur lors de la génération du certificat via l'API, simulation locale.", err);
+    }
     setLeaderboard(prev => prev.map(item => 
-      item.id === id ? { ...item, status: 'Générés' } : item
+      item.id === itemId ? { ...item, status: 'Générés' } : item
     ));
   };
 
-  const handleGenerateAll = () => {
-    setLeaderboard(prev => prev.map(item => ({ ...item, status: 'Générés' })));
+  const handleGenerateAll = async () => {
     setIsGeneratingAll(true);
+    try {
+      await certificatesApi.generateCertificates(id);
+    } catch (err) {
+      console.warn("Erreur lors de la génération des certificats via l'API, simulation locale.", err);
+    } finally {
+      setLeaderboard(prev => prev.map(item => ({ ...item, status: 'Générés' })));
+      setIsGeneratingAll(false);
+    }
   };
 
-  const confirmPublish = () => {
-    setIsPublished(true);
-    setIsPublishModalOpen(false);
+  const confirmPublish = async () => {
+    setIsPublishing(true);
+    try {
+      await hackathonsApi.updateHackathon(id, { status: 'publie', results_published: true });
+      setIsPublished(true);
+      setIsPublishModalOpen(false);
+    } catch (err) {
+      console.warn("Erreur lors de la publication des résultats via l'API, simulation locale.", err);
+      setIsPublished(true);
+      setIsPublishModalOpen(false);
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      {/* Topbar */}
-      <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
-        <div className="flex items-center">
-          <button className="text-slate-500 focus:outline-none sm:hidden">
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <div className="ml-4 flex items-center space-x-2 text-sm sm:ml-0">
-            <Link to="/organizer/hackathons" className="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</Link>
-            <svg className="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-            </svg>
-            <span className="font-medium text-slate-900">Résultats & Certificats</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link to="/organizer/notifications" className="relative block text-slate-400 hover:text-slate-500">
-            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">3</span>
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-          </Link>
-          <button 
-            type="button" 
-            onClick={handleGenerateAll}
-            disabled={isGeneratingAll}
-            className={`inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${isGeneratingAll ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50'}`}
-          >
-            {isGeneratingAll ? 'Certificats à jour' : 'Générer les certificats'}
-          </button>
-          <button 
-            type="button" 
-            onClick={() => !isPublished && setIsPublishModalOpen(true)}
-            disabled={isPublished}
-            className={`inline-flex items-center rounded-md border border-transparent bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${isPublished ? 'opacity-50 cursor-not-allowed' : 'hover:bg-brand-800'}`}
-          >
-            {isPublished ? 'Résultats publiés' : 'Publier les résultats'}
-          </button>
-        </div>
-      </header>
-
-      {/* Main scrollable area */}
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
         
         <div className="sm:flex sm:items-center sm:justify-between mb-8">
           <div className="sm:flex-auto">
@@ -112,6 +59,24 @@ export default function OrganizerResults() {
             <p className="mt-2 text-sm text-slate-700">
               Le classement est basé sur les évaluations des mentors et organisateurs. Les résultats sont actuellement {isPublished ? <strong className="text-brand-600">publiés</strong> : <strong>brouillons</strong>}.
             </p>
+          </div>
+          <div className="mt-4 sm:mt-0 flex items-center gap-3">
+            <button 
+              type="button" 
+              onClick={handleGenerateAll}
+              disabled={isGeneratingAll}
+              className={`inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${isGeneratingAll ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50'}`}
+            >
+              {isGeneratingAll ? 'Génération...' : 'Générer les certificats'}
+            </button>
+            <button 
+              type="button" 
+              onClick={() => !isPublished && setIsPublishModalOpen(true)}
+              disabled={isPublished || isPublishing}
+              className={`inline-flex items-center rounded-md border border-transparent bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${isPublished || isPublishing ? 'opacity-50 cursor-not-allowed' : 'hover:bg-brand-800'}`}
+            >
+              {isPublishing ? 'Publication...' : isPublished ? 'Résultats publiés' : 'Publier les résultats'}
+            </button>
           </div>
         </div>
 
@@ -249,7 +214,6 @@ export default function OrganizerResults() {
           </div>
         </div>
 
-      </main>
 
       {/* Publish Confirmation Modal */}
       {isPublishModalOpen && (
@@ -273,7 +237,7 @@ export default function OrganizerResults() {
                   </div>
                 </div>
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                  <button type="button" onClick={confirmPublish} className="inline-flex w-full justify-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 sm:ml-3 sm:w-auto">Publier définitivement</button>
+                  <button type="button" onClick={confirmPublish} disabled={isPublishing} className="inline-flex w-full justify-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 sm:ml-3 sm:w-auto disabled:cursor-not-allowed disabled:opacity-50">{isPublishing ? 'Publication...' : 'Publier définitivement'}</button>
                   <button type="button" onClick={() => setIsPublishModalOpen(false)} className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto">Annuler</button>
                 </div>
               </div>

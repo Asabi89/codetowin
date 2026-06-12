@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 /* Import the CSS that contains all the original navbar classes */
-import '../assets/css/hackaton.css';
+import '../styles/pages/participant/hackaton.css';
 
 export default function MainLayout({ children }) {
   const { registered, profile, logout } = useContext(AuthContext);
@@ -51,12 +51,23 @@ export default function MainLayout({ children }) {
   const avatar =
     profile?.avatar ||
     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80';
+  const publicPageHashes = ['#conditions', '#politique', '#aide'];
+  const isPublicHashPage = location.pathname === '/' && publicPageHashes.includes(location.hash);
+  const isHome = location.pathname === '/' && !isPublicHashPage;
+  const usesAuthenticatedPrototypeHeader =
+    registered ||
+    location.pathname === '/hackathons' ||
+    location.pathname.startsWith('/hackathons/') ||
+    location.pathname === '/profile' ||
+    location.pathname === '/participant';
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+  const homeSectionHref = (section) => (isHome ? `#${section}` : `/#${section}`);
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
 
       {/* ===== AUTHENTICATED HEADER ===== */}
-      {registered ? (
+      {usesAuthenticatedPrototypeHeader ? (
         <header className="auth-header" id="auth-header">
           <div className="auth-header-inner">
             {/* Left: Logo + Nav */}
@@ -215,63 +226,73 @@ export default function MainLayout({ children }) {
 
       ) : (
         /* ===== GUEST HEADER ===== */
-        <header className="site-header" id="site-header">
-          <div className="header-inner">
-            {/* Logo */}
-            <Link to="/" className="brand-link" aria-label="CodeToWin">
-              <img
-                src="/assets/brand/codetowin-brand.png"
-                alt="CodeToWin"
-                className="brand-mark brand-mark-header"
-                decoding="async"
-              />
-            </Link>
+        <>
+          <header className={isHome ? 'border-b border-slate-200 bg-white' : 'site-header'} id="site-header">
+            <div className={isHome ? 'mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8' : 'header-inner'}>
+              <div className={isHome ? 'flex items-center justify-between gap-4' : 'contents'}>
+                <Link to="/" className={isHome ? 'inline-flex items-center' : 'brand-link'} aria-label="CodeToWin">
+                  <img
+                    src="/assets/brand/codetowin-brand.png"
+                    alt="CodeToWin"
+                    className="brand-mark brand-mark-header"
+                    decoding="async"
+                  />
+                </Link>
 
-            {/* Desktop nav */}
-            <nav className="desktop-nav" aria-label="Navigation principale">
-              <Link to="/hackathons" className="desktop-nav-link">
-                Explorer les hackathons
-              </Link>
-              <Link to="/login" className="desktop-nav-link">
-                Connexion
-              </Link>
-              <Link to="/signup" className="desktop-nav-cta">
-                S'inscrire
-              </Link>
-            </nav>
+                <nav className={isHome ? 'hidden items-center gap-7 sm:flex' : 'desktop-nav'} aria-label="Navigation principale">
+                  <a href={isHome ? '#hackathons' : '/hackathons'} className={isHome ? 'text-sm font-semibold text-slate-700 transition hover:text-emerald-700' : 'desktop-nav-link'}>
+                    Explorer les hackathons
+                  </a>
+                  {isHome ? (
+                    <>
+                      <a href="#participer" className="text-sm font-semibold text-slate-700 transition hover:text-emerald-700">Rejoindre un hackathon</a>
+                      <a href="#organiser" className="text-sm font-semibold text-slate-700 transition hover:text-emerald-700">Créer un hackathon</a>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/login" className="desktop-nav-link">Connexion</Link>
+                      <Link to="/signup" className="desktop-nav-cta">S'inscrire</Link>
+                    </>
+                  )}
+                </nav>
 
-            {/* Mobile hamburger */}
-            <button
-              type="button"
-              className="mobile-nav-button"
-              aria-label="Ouvrir le menu"
-              onClick={() => setMobileMenuOpen(true)}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                <path d="M4 7h16M4 12h16M4 17h16"></path>
-              </svg>
-            </button>
-          </div>
+                <button
+                  type="button"
+                  className={isHome ? 'mobile-nav-button sm:hidden' : 'mobile-nav-button'}
+                  aria-label="Ouvrir le menu"
+                  aria-controls="mobile-nav-sidebar"
+                  aria-expanded={mobileMenuOpen}
+                  onClick={() => setMobileMenuOpen(true)}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                    <path d="M4 7h16M4 12h16M4 17h16"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </header>
 
-          {/* Mobile drawer backdrop */}
-          <div
-            className={`mobile-nav-backdrop${mobileMenuOpen ? ' is-open' : ''}`}
-            onClick={() => setMobileMenuOpen(false)}
-            aria-hidden="true"
-          ></div>
+          <button
+            id="mobile-nav-backdrop"
+            type="button"
+            className={`mobile-nav-backdrop${mobileMenuOpen ? ' is-open' : ''}${isHome ? ' sm:hidden' : ''}`}
+            onClick={closeMobileMenu}
+            aria-label="Fermer le menu"
+            tabIndex={-1}
+          ></button>
 
-          {/* Mobile sidebar */}
-          <nav
-            className={`mobile-nav-sidebar${mobileMenuOpen ? ' is-open' : ''}`}
-            aria-label="Menu mobile"
+          <aside
+            id="mobile-nav-sidebar"
+            className={`mobile-nav-sidebar${mobileMenuOpen ? ' is-open' : ''}${isHome ? ' sm:hidden' : ''}`}
+            aria-label="Navigation mobile"
           >
             <div className="mobile-nav-sidebar-header">
-              <span className="mobile-nav-label">Menu</span>
+              <span className={isHome ? 'text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700' : 'mobile-nav-label'}>Menu</span>
               <button
                 type="button"
                 className="mobile-nav-button"
                 aria-label="Fermer le menu"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                   <path d="M6 6l12 12M18 6 6 18"></path>
@@ -279,20 +300,25 @@ export default function MainLayout({ children }) {
               </button>
             </div>
             <div className="mobile-nav-sidebar-links">
-              <Link to="/hackathons" className="mobile-nav-sidebar-link" onClick={() => setMobileMenuOpen(false)}>
+              <a href={isHome ? '#hackathons' : '/hackathons'} className="mobile-nav-sidebar-link" onClick={closeMobileMenu}>
                 Explorer les hackathons
-              </Link>
+              </a>
             </div>
             <div className="mobile-nav-sidebar-actions">
-              <Link to="/signup" className="mobile-nav-primary" onClick={() => setMobileMenuOpen(false)}>
-                S'inscrire
-              </Link>
-              <Link to="/login" className="mobile-nav-secondary" onClick={() => setMobileMenuOpen(false)}>
-                Connexion
-              </Link>
+              {isHome ? (
+                <>
+                  <a href={homeSectionHref('participer')} className="mobile-nav-secondary" onClick={closeMobileMenu}>Rejoindre un hackathon</a>
+                  <a href={homeSectionHref('organiser')} className="mobile-nav-primary" onClick={closeMobileMenu}>Créer un hackathon</a>
+                </>
+              ) : (
+                <>
+                  <Link to="/signup" className="mobile-nav-primary" onClick={closeMobileMenu}>S'inscrire</Link>
+                  <Link to="/login" className="mobile-nav-secondary" onClick={closeMobileMenu}>Connexion</Link>
+                </>
+              )}
             </div>
-          </nav>
-        </header>
+          </aside>
+        </>
       )}
 
       {/* ===== MAIN CONTENT ===== */}
@@ -301,34 +327,36 @@ export default function MainLayout({ children }) {
       </main>
 
       {/* ===== FOOTER ===== */}
-      <footer style={{
+      <footer className={isHome ? 'border-t border-white/10 bg-slate-950 py-10 text-slate-300' : 'site-footer'} style={isHome ? undefined : {
         background: '#0f172a',
         color: '#94a3b8',
         borderTop: '1px solid rgba(255,255,255,0.08)',
         padding: '2.5rem 0',
       }}>
-        <div style={{ width: 'min(1200px, calc(100% - 2rem))', margin: '0 auto' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2rem' }}>
+        <div className={isHome ? 'mx-auto max-w-7xl px-6 lg:px-8' : undefined} style={isHome ? undefined : { width: 'min(1200px, calc(100% - 2rem))', margin: '0 auto' }}>
+          <div className={isHome ? 'flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between' : undefined} style={isHome ? undefined : { display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2rem' }}>
             <div>
-              <Link to="/" aria-label="CodeToWin">
+              <a href={isHome ? '#hero' : '/'} className={isHome ? 'inline-flex items-center' : undefined} aria-label="CodeToWin">
                 <img
                   src="/assets/brand/codetowin-brand.png"
                   alt="CodeToWin"
-                  style={{ height: '2rem', width: 'auto', filter: 'brightness(0) invert(1)' }}
+                  className={isHome ? 'brand-mark brand-mark-footer' : undefined}
+                  decoding="async"
+                  style={isHome ? undefined : { height: '2rem', width: 'auto', filter: 'brightness(0) invert(1)' }}
                 />
-              </Link>
-              <p style={{ marginTop: '1rem', maxWidth: '38ch', fontSize: '0.875rem', lineHeight: 1.7, color: '#64748b' }}>
-                <strong style={{ color: '#fff' }}>CodeToWin</strong> relie les talents tech africains et les organisateurs autour de projets concrets, de profils publics et de preuves vérifiables.
+              </a>
+              <p className={isHome ? 'mt-4 max-w-2xl text-sm leading-7 text-slate-400' : undefined} style={isHome ? undefined : { marginTop: '1rem', maxWidth: '38ch', fontSize: '0.875rem', lineHeight: 1.7, color: '#64748b' }}>
+                <strong className={isHome ? 'font-semibold text-white' : undefined} style={isHome ? undefined : { color: '#fff' }}>CodeToWin</strong> relie les talents tech africains et les organisateurs autour de projets concrets, de profils publics et de preuves vérifiables.
               </p>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', textAlign: 'right', fontSize: '0.875rem' }}>
-              <a href="#conditions" style={{ color: '#64748b', textDecoration: 'none', transition: 'color 150ms ease' }}>Conditions</a>
-              <a href="#politique" style={{ color: '#64748b', textDecoration: 'none', transition: 'color 150ms ease' }}>Politique</a>
-              <a href="#aide" style={{ color: '#64748b', textDecoration: 'none', transition: 'color 150ms ease' }}>Aide</a>
+            <div className={isHome ? 'grid gap-3 text-sm text-slate-400 sm:text-right' : undefined} style={isHome ? undefined : { display: 'flex', flexDirection: 'column', gap: '0.75rem', textAlign: 'right', fontSize: '0.875rem' }}>
+              <Link className={isHome ? 'transition hover:text-white' : undefined} to="/#conditions" style={isHome ? undefined : { color: '#64748b', textDecoration: 'none', transition: 'color 150ms ease' }}>Conditions</Link>
+              <Link className={isHome ? 'transition hover:text-white' : undefined} to="/#politique" style={isHome ? undefined : { color: '#64748b', textDecoration: 'none', transition: 'color 150ms ease' }}>Politique</Link>
+              <Link className={isHome ? 'transition hover:text-white' : undefined} to="/#aide" style={isHome ? undefined : { color: '#64748b', textDecoration: 'none', transition: 'color 150ms ease' }}>Aide</Link>
             </div>
           </div>
-          <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.5rem', fontSize: '0.8rem', color: '#475569' }}>
-            © 2026 <strong style={{ color: '#e2e8f0' }}>CodeToWin</strong>. Tous droits réservés.
+          <div className={isHome ? 'mt-10 border-t border-white/10 pt-6 text-sm text-slate-500' : undefined} style={isHome ? undefined : { marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.5rem', fontSize: '0.8rem', color: '#475569' }}>
+            <p>© 2026 <strong className={isHome ? 'font-semibold text-white' : undefined} style={isHome ? undefined : { color: '#e2e8f0' }}>CodeToWin</strong>. Tous droits réservés.</p>
           </div>
         </div>
       </footer>

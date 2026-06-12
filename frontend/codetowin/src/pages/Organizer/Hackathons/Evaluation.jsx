@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Code, ExternalLink, Activity } from 'lucide-react';
+import { submissionsApi } from '../../../api/submissions';
+import { SUBMISSIONS_MOCK } from '../../../mockdata/organizer';
+import { useToast } from '../../../context/ToastContext';
 
 export default function OrganizerEvaluation() {
   const { id } = useParams();
+  const { showToast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submission, setSubmission] = useState(null);
 
   const [scores, setScores] = useState({
     innovation: 0,
@@ -16,23 +24,47 @@ export default function OrganizerEvaluation() {
   
   const [feedback, setFeedback] = useState('');
 
+  const params = new URLSearchParams(location.search);
+  const submissionId = params.get('submissionId') || '1';
+
   useEffect(() => {
-    // Parse query params if any
-    const params = new URLSearchParams(location.search);
-    const newScores = { ...scores };
-    let hasParams = false;
-
-    Object.keys(scores).forEach(key => {
-      if (params.has(key)) {
-        newScores[key] = parseFloat(params.get(key));
-        hasParams = true;
+    const fetchSubmissionDetails = async () => {
+      try {
+        setLoading(true);
+        const data = await submissionsApi.getSubmissionById(submissionId);
+        if (data) {
+          setSubmission(data);
+          if (data.scores) {
+            setScores({
+              innovation: data.scores.innovation || 0,
+              faisabilite: data.scores.faisabilite || 0,
+              impact: data.scores.impact || 0,
+              ux: data.scores.ux || 0,
+            });
+          }
+          if (data.feedback) setFeedback(data.feedback);
+        } else {
+          const mock = SUBMISSIONS_MOCK.find(s => String(s.id) === String(submissionId)) || SUBMISSIONS_MOCK[0];
+          setSubmission(mock);
+          if (mock.score && mock.score !== '-') {
+            const val = parseFloat(mock.score) / 4;
+            setScores({ innovation: val, faisabilite: val, impact: val, ux: val });
+          }
+        }
+      } catch (err) {
+        console.warn("Erreur lors de la récupération de la soumission, utilisation du fallback mocké.", err);
+        const mock = SUBMISSIONS_MOCK.find(s => String(s.id) === String(submissionId)) || SUBMISSIONS_MOCK[0];
+        setSubmission(mock);
+        if (mock.score && mock.score !== '-') {
+          const val = parseFloat(mock.score) / 4;
+          setScores({ innovation: val, faisabilite: val, impact: val, ux: val });
+        }
+      } finally {
+        setLoading(false);
       }
-    });
-
-    if (hasParams) {
-      setScores(newScores);
-    }
-  }, [location]);
+    };
+    fetchSubmissionDetails();
+  }, [submissionId]);
 
   const handleScoreChange = (key, value) => {
     setScores(prev => ({
@@ -44,11 +76,37 @@ export default function OrganizerEvaluation() {
   const totalScore = Object.values(scores).reduce((acc, curr) => acc + curr, 0);
   const percentage = Math.round((totalScore / 40) * 100);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("L'évaluation a été enregistrée avec succès !");
-    navigate(`/organizer/hackathons/${id}/submissions`);
+    try {
+      setIsSubmitting(true);
+      await submissionsApi.updateSubmission(submissionId, {
+        scores,
+        feedback,
+        total_score: totalScore,
+      });
+      await submissionsApi.updateSubmissionStatus(submissionId, 'Évalué');
+      showToast("L'évaluation a été enregistrée avec succès !", "success");
+      navigate(`/organizer/hackathons/${id}/submissions`);
+    } catch (err) {
+      console.warn("Erreur lors de la soumission de l'évaluation via l'API, simulation locale.", err);
+      showToast("Évaluation enregistrée (simulation locale) !", "success");
+      navigate(`/organizer/hackathons/${id}/submissions`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center p-8 flex-1">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600"></div>
+          <p className="text-sm font-medium text-slate-500">Chargement de la grille d'évaluation...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
@@ -170,7 +228,7 @@ export default function OrganizerEvaluation() {
                     rows="4"
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
-                    className="block w-full rounded-md border-0 py-2 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border py-2 px-3 text-slate-900 shadow-sm placeholder:text-slate-400 focus:ring-2 focus:ring-brand-600 sm:text-sm border-slate-300"
                   ></textarea>
                 </div>
 
@@ -184,9 +242,10 @@ export default function OrganizerEvaluation() {
                   </Link>
                   <button
                     type="submit"
-                    className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+                    disabled={isSubmitting}
+                    className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Enregistrer l'évaluation
+                    {isSubmitting ? "Enregistrement..." : "Enregistrer l'évaluation"}
                   </button>
                 </div>
               </form>
@@ -223,25 +282,29 @@ export default function OrganizerEvaluation() {
                     <Activity className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-slate-900">AgriSense</h4>
-                    <p className="text-xs font-medium text-slate-500">Par AgriTech Innovators</p>
+                    <h4 className="text-lg font-bold text-slate-900">{submission?.projectName || 'Projet'}</h4>
+                    <p className="text-xs font-medium text-slate-500">Par {submission?.teamName || 'Équipe'}</p>
                   </div>
                 </div>
 
                 <p className="text-sm text-slate-600 mb-6">
-                  AgriSense est une plateforme IoT complète permettant aux petits agriculteurs de surveiller l'humidité du sol et de prédire les besoins en eau grâce à des modèles de machine learning locaux, réduisant la consommation d'eau de 30%.
+                  {submission?.description || 'Pas de description fournie.'}
                 </p>
 
                 <div className="space-y-3">
                   <a
-                    href="#"
+                    href={submission?.repoLink || submission?.githubUrl || '#'}
+                    target="_blank"
+                    rel="noreferrer"
                     className="flex items-center justify-center w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-700"
                   >
                     <Code className="mr-2 h-5 w-5" />
                     Voir le code (GitHub)
                   </a>
                   <a
-                    href="#"
+                    href={submission?.demoLink || submission?.demoUrl || '#'}
+                    target="_blank"
+                    rel="noreferrer"
                     className="flex items-center justify-center w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-brand-600 shadow-sm ring-1 ring-inset ring-brand-300 hover:bg-brand-50"
                   >
                     <ExternalLink className="mr-2 h-5 w-5" />

@@ -1,32 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, Check, X, Mail, Download, CheckCircle2, XCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
-
-const PARTICIPANTS_MOCK = [
-  {
-    id: 1,
-    name: 'Amadou Diallo',
-    email: 'amadou.d@example.com',
-    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
-    country: 'Sénégal',
-    team: null,
-    status: 'En attente',
-    date: 'Il y a 2 heures',
-  },
-  {
-    id: 2,
-    name: 'Sarah Kone',
-    email: 'sarah.kone@example.com',
-    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704e',
-    country: "Côte d'Ivoire",
-    team: 'AgriTech Innovators',
-    status: 'Approuvé',
-    date: 'Il y a 1 jour',
-  },
-];
+import { Link, useParams } from 'react-router-dom';
+import Badge from '../../../components/common/Badge';
+import { PARTICIPANTS_MOCK } from '../../../mockdata/organizer';
+import { hackathonsApi } from '../../../api/hackathons';
+import { useToast } from '../../../context/ToastContext';
 
 export default function OrganizerParticipants() {
-  const [participants, setParticipants] = useState(PARTICIPANTS_MOCK);
+  const { id } = useParams(); // Hackathon ID
+  const { showToast } = useToast();
+  const [participants, setParticipants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('Tous les statuts');
   const [isBulkDropdownOpen, setIsBulkDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   
@@ -41,53 +27,104 @@ export default function OrganizerParticipants() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'Approuvé':
-        return <span className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">Approuvé</span>;
-      case 'En attente':
-        return <span className="inline-flex rounded-full bg-amber-100 px-2 text-xs font-semibold leading-5 text-amber-800">En attente</span>;
-      case 'Rejeté':
-        return <span className="inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">Rejeté</span>;
-      default:
-        return <span className="inline-flex rounded-full bg-slate-100 px-2 text-xs font-semibold leading-5 text-slate-800">{status}</span>;
+  useEffect(() => {
+    const fetchRegistrations = async () => {
+      try {
+        setLoading(true);
+        const data = await hackathonsApi.getRegistrations(id);
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map(reg => ({
+            id: reg.id,
+            name: reg.user?.name || reg.name || 'Utilisateur',
+            email: reg.user?.email || reg.email || '',
+            avatar: reg.user?.avatar || reg.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(reg.user?.name || reg.name || 'U')}&background=047857&color=fff`,
+            country: reg.user?.country || reg.country || 'Sénégal',
+            team: reg.teamName || reg.team || null,
+            status: reg.status === 'approved' ? 'Approuvé' : reg.status === 'rejected' ? 'Rejeté' : 'En attente',
+            date: reg.createdAt ? new Date(reg.createdAt).toLocaleDateString() : (reg.date || 'Il y a 2 heures'),
+          }));
+          setParticipants(mapped);
+        } else {
+          setParticipants(PARTICIPANTS_MOCK);
+        }
+      } catch (err) {
+        console.warn("Erreur lors de la récupération des inscriptions via l'API, utilisation du fallback mocké.", err);
+        setParticipants(PARTICIPANTS_MOCK);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRegistrations();
+  }, [id]);
+
+  const handleApprove = async (regId) => {
+    try {
+      await hackathonsApi.approveRegistration(regId);
+      setParticipants(prev => prev.map(p => p.id === regId ? { ...p, status: 'Approuvé' } : p));
+      showToast("Inscription approuvée avec succès !", "success");
+    } catch (err) {
+      console.warn("Erreur lors de l'approbation via l'API, simulation locale.", err);
+      setParticipants(prev => prev.map(p => p.id === regId ? { ...p, status: 'Approuvé' } : p));
+      showToast("Inscription approuvée (simulation locale) !", "success");
     }
   };
 
-  return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      
-      {/* Topbar equivalent is handled by Layout, but let's assume we add page-specific header content or actions here */}
-      <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
-        <div className="flex items-center">
-          <button className="text-slate-500 focus:outline-none sm:hidden">
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <div className="ml-4 flex items-center space-x-2 text-sm sm:ml-0">
-            <Link to="/organizer/hackathons" className="font-medium text-slate-500 hover:text-slate-900">AI for Climate Africa</Link>
-            <svg className="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-            </svg>
-            <span className="font-medium text-slate-900">Participants</span>
-          </div>
+  const handleReject = async (regId) => {
+    try {
+      await hackathonsApi.rejectRegistration(regId);
+      setParticipants(prev => prev.map(p => p.id === regId ? { ...p, status: 'Rejeté' } : p));
+      showToast("Inscription rejetée.", "danger");
+    } catch (err) {
+      console.warn("Erreur lors du rejet via l'API, simulation locale.", err);
+      setParticipants(prev => prev.map(p => p.id === regId ? { ...p, status: 'Rejeté' } : p));
+      showToast("Inscription rejetée (simulation locale).", "danger");
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'Approuvé':
+        return <Badge variant="green">Approuvé</Badge>;
+      case 'En attente':
+        return <Badge variant="amber">En attente</Badge>;
+      case 'Rejeté':
+        return <Badge variant="red">Rejeté</Badge>;
+      default:
+        return <Badge variant="slate">{status}</Badge>;
+    }
+  };
+
+  const filteredParticipants = participants.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'Tous les statuts' || p.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center p-8 flex-1">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600"></div>
+          <p className="text-sm font-medium text-slate-500">Chargement des participants...</p>
         </div>
-        <div className="flex items-center gap-4">
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
+      <div className="sm:flex sm:items-center">
+        <div className="sm:flex-auto">
+          <h1 className="font-display text-2xl font-bold text-slate-900">Participants ({filteredParticipants.length})</h1>
+          <p className="mt-2 text-sm text-slate-700">Gérez les inscriptions à votre hackathon.</p>
+        </div>
+        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <button type="button" className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
-            <Download className="-ml-1 mr-2 h-5 w-5 text-slate-400" />
+            <svg className="-ml-1 mr-2 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
             Exporter CSV
           </button>
         </div>
-      </header>
-
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
-        <div className="sm:flex sm:items-center">
-          <div className="sm:flex-auto">
-            <h1 className="font-display text-2xl font-bold text-slate-900">Participants ({participants.length})</h1>
-            <p className="mt-2 text-sm text-slate-700">Gérez les inscriptions à votre hackathon "AI for Climate Africa".</p>
-          </div>
-        </div>
+      </div>
 
         {/* Filters */}
         <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -96,9 +133,19 @@ export default function OrganizerParticipants() {
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <Search className="h-5 w-5 text-slate-400" />
               </div>
-              <input type="text" className="block w-full rounded-md border-slate-300 pl-10 focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 border" placeholder="Chercher un nom, email..." />
+              <input 
+                type="text" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="block w-full rounded-md border-slate-300 pl-10 focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 border" 
+                placeholder="Chercher un nom, email..." 
+              />
             </div>
-            <select className="block w-full rounded-md border-slate-300 py-2 pl-3 pr-10 text-base focus:border-brand-500 focus:outline-none focus:ring-brand-500 sm:text-sm border">
+            <select 
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="block w-full rounded-md border-slate-300 py-2 pl-3 pr-10 text-base focus:border-brand-500 focus:outline-none focus:ring-brand-500 sm:text-sm border"
+            >
               <option>Tous les statuts</option>
               <option>Approuvé</option>
               <option>En attente</option>
@@ -166,7 +213,7 @@ export default function OrganizerParticipants() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200">
-                    {participants.map((participant) => (
+                    {filteredParticipants.map((participant) => (
                       <tr key={participant.id}>
                         <td className="relative px-7 sm:w-12 sm:px-6">
                           <input type="checkbox" className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
@@ -177,7 +224,7 @@ export default function OrganizerParticipants() {
                               <img className="h-10 w-10 rounded-full" src={participant.avatar} alt="" />
                             </div>
                             <div className="ml-4">
-                              <Link to="#" className="font-medium text-slate-900 hover:text-brand-600">{participant.name}</Link>
+                              <Link to={`/organizer/public/talents/${participant.id || participant.name.toLowerCase().replace(/\s+/g, '-')}`} className="font-medium text-slate-900 hover:text-brand-600">{participant.name}</Link>
                               <div className="text-sm text-slate-500">{participant.email}</div>
                             </div>
                           </div>
@@ -197,10 +244,10 @@ export default function OrganizerParticipants() {
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 space-x-2">
                           {participant.status === 'En attente' && (
                             <>
-                              <button className="text-brand-600 hover:text-brand-900" title="Approuver">
+                              <button onClick={() => handleApprove(participant.id)} className="text-brand-600 hover:text-brand-900" title="Approuver">
                                 <Check className="h-5 w-5" />
                               </button>
-                              <button className="text-red-600 hover:text-red-900" title="Rejeter">
+                              <button onClick={() => handleReject(participant.id)} className="text-red-600 hover:text-red-900" title="Rejeter">
                                 <X className="h-5 w-5" />
                               </button>
                             </>
@@ -213,6 +260,13 @@ export default function OrganizerParticipants() {
                         </td>
                       </tr>
                     ))}
+                    {filteredParticipants.length === 0 && (
+                      <tr>
+                        <td colSpan="7" className="py-8 text-center text-sm text-slate-500">
+                          Aucun participant trouvé.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -220,7 +274,6 @@ export default function OrganizerParticipants() {
           </div>
         </div>
 
-      </main>
     </div>
   );
 }

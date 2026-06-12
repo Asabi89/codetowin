@@ -1,129 +1,116 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Calendar, Users } from 'lucide-react';
-import '../../styles/dashboard.css';
+import React, { useState, useEffect } from 'react';
+import PageHeader from '../../components/common/PageHeader';
+import InvitationCard from '../../components/features/mentor/InvitationCard';
+import { MENTOR_INVITATIONS_MOCK } from '../../mockdata/mentor';
+import { mentorsApi } from '../../api/mentors';
+
+const extractArray = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.invitations)) return data.invitations;
+  return [];
+};
+
+const normalizeInvitation = (invitation) => {
+  const hackathon = invitation.hackathon || {};
+  const organizer = invitation.organizer || hackathon.organizer || {};
+  return {
+    id: invitation.id || invitation._id,
+    hackathonName: invitation.hackathonName || hackathon.title || hackathon.name || 'Hackathon',
+    organizer: invitation.organizerName || organizer.name || organizer.full_name || 'Organisateur',
+    logo: invitation.logo || organizer.logo || hackathon.logo || 'https://ui-avatars.com/api/?name=CT&background=0F172A&color=fff',
+    dates: invitation.dates || [hackathon.start_date, hackathon.end_date].filter(Boolean).join(' - ') || 'Dates à confirmer',
+    teamCount: invitation.teamCount ?? invitation.team_count ?? invitation.teams_count ?? 0,
+    isNew: invitation.isNew ?? invitation.is_new ?? true,
+    message: invitation.message || invitation.note || '',
+  };
+};
 
 export default function MentorInvitations() {
+  const [invitations, setInvitations] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInvitations = async () => {
+      try {
+        setLoading(true);
+        const data = await mentorsApi.getMyInvitations();
+        const apiInvitations = extractArray(data);
+        if (apiInvitations.length > 0) {
+          setInvitations(apiInvitations.map(normalizeInvitation));
+        } else {
+          setInvitations(MENTOR_INVITATIONS_MOCK);
+        }
+      } catch (err) {
+        console.warn('Erreur de chargement des invitations depuis l\'API, utilisation du fallback.', err);
+        setInvitations(MENTOR_INVITATIONS_MOCK);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInvitations();
+  }, []);
+
+  const handleAccept = async (id) => {
+    try {
+      await mentorsApi.acceptInvitation(id);
+      setInvitations(prev => prev.filter(inv => inv.id !== id));
+    } catch (err) {
+      console.warn('API error, simulating accept locally', err);
+      setInvitations(prev => prev.filter(inv => inv.id !== id));
+    }
+  };
+
+  const handleDecline = async (id) => {
+    try {
+      await mentorsApi.declineInvitation(id);
+      setInvitations(prev => prev.filter(inv => inv.id !== id));
+    } catch (err) {
+      console.warn('API error, simulating decline locally', err);
+      setInvitations(prev => prev.filter(inv => inv.id !== id));
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center p-8">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600"></div>
+          <p className="text-sm font-medium text-slate-500">Chargement des invitations...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="dashboard-content">
-      {/* Topbar */}
-      <header className="dashboard-header-row" style={{ borderBottom: '1px solid var(--slate-200)', backgroundColor: 'white', padding: '1rem', marginLeft: '-1rem', marginRight: '-1rem', marginTop: '-2rem', marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <h1 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--slate-900)', margin: 0 }}>Mes Invitations</h1>
-        </div>
-      </header>
+    <div className="p-4 sm:p-6 lg:p-8 h-full">
+      <PageHeader
+        title={`Demandes de mentorat (${invitations.length})`}
+        description="Ces organisateurs souhaitent que vous accompagniez des équipes lors de leurs hackathons."
+        as="h2"
+      />
 
-      {/* Main scrollable area */}
-      <div>
-        
-        <div style={{ display: 'flex', alignItems: 'center' }} className="sm-flex">
-          <style>{`
-            @media (min-width: 640px) {
-              .sm-flex { flex-direction: row !important; }
-            }
-          `}</style>
-          <div style={{ flex: '1 1 auto' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--slate-900)', margin: 0 }}>Demandes de mentorat</h2>
-            <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: 'var(--slate-700)', margin: 0 }}>Ces organisateurs souhaitent que vous accompagniez des équipes lors de leurs hackathons.</p>
+      <div className="mt-8 space-y-6">
+        {invitations.map((invitation) => (
+          <InvitationCard 
+            key={invitation.id} 
+            invitation={invitation} 
+            onAccept={() => handleAccept(invitation.id)}
+            onDecline={() => handleDecline(invitation.id)}
+          />
+        ))}
+        {invitations.length === 0 && (
+          <div className="text-center py-12 bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
+            <svg className="mx-auto h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M3 19v-8.93a2 2 0 01.89-1.664l8-5.333a2 2 0 012.22 0l8 5.333A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-2.25-1.5a2 2 0 00-2.22 0l-2.25 1.5" />
+            </svg>
+            <h3 className="mt-2 text-sm font-semibold text-slate-900">Aucune invitation</h3>
+            <p className="mt-1 text-sm text-slate-500">Vous n'avez pas de demandes de mentorat en attente pour le moment.</p>
           </div>
-        </div>
-
-        <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          
-          {/* Invitation Card 1 */}
-          <div className="card hover-shadow" style={{ padding: 0, overflow: 'hidden', transition: 'box-shadow 0.2s' }}>
-            <style>{`.hover-shadow:hover { box-shadow: var(--shadow-md) !important; }`}</style>
-            <div style={{ padding: '1.5rem' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} className="sm-flex-row sm-items-center sm-justify-between">
-                <style>{`
-                  @media (min-width: 640px) {
-                    .sm-flex-row { flex-direction: row !important; }
-                    .sm-items-start { align-items: flex-start !important; }
-                    .sm-justify-between { justify-content: space-between !important; }
-                    .sm-mt-0 { margin-top: 0 !important; }
-                  }
-                `}</style>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} className="sm-flex-row sm-items-start">
-                  <div style={{ height: '3.5rem', width: '3.5rem', flexShrink: 0, borderRadius: 'var(--border-radius-lg)', backgroundColor: 'var(--slate-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--slate-200)', overflow: 'hidden' }}>
-                    <img src="https://ui-avatars.com/api/?name=TechHub+Senegal&background=0F172A&color=fff" alt="Logo" style={{ height: '100%', width: '100%', objectFit: 'cover' }} />
-                  </div>
-                  <div style={{ marginTop: '1rem' }} className="sm-mt-0">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--slate-900)', margin: 0 }}>AI for Climate Africa 2026</h3>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', borderRadius: 'var(--border-radius-full)', backgroundColor: '#EFF6FF', padding: '0.25rem 0.5rem', fontSize: '0.75rem', fontWeight: 500, color: '#1D4ED8', border: '1px solid rgba(29, 78, 216, 0.1)' }}>Nouveau</span>
-                    </div>
-                    <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--slate-600)', marginTop: '0.25rem', margin: 0 }}>Organisé par <span style={{ color: 'var(--slate-900)' }}>TechHub Sénégal</span></p>
-                    
-                    <div style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: 'repeat(1, minmax(0, 1fr))', gap: '1rem', fontSize: '0.875rem', color: 'var(--slate-500)' }} className="sm-grid-cols-2">
-                      <style>{`@media (min-width: 640px) { .sm-grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }`}</style>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Calendar style={{ marginRight: '0.5rem', height: '1rem', width: '1rem', color: 'var(--slate-400)' }} />
-                        12 - 14 Août 2026
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Users style={{ marginRight: '0.5rem', height: '1rem', width: '1rem', color: 'var(--slate-400)' }} />
-                        Suivi estimé : 3 équipes
-                      </div>
-                    </div>
-
-                    <div style={{ marginTop: '1rem', backgroundColor: 'var(--slate-50)', borderRadius: 'var(--border-radius-lg)', padding: '1rem', border: '1px solid var(--slate-200)' }}>
-                      <h4 style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--slate-700)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem', margin: 0 }}>Message de l'organisateur</h4>
-                      <p style={{ fontSize: '0.875rem', color: 'var(--slate-600)', fontStyle: 'italic', margin: 0 }}>"Bonjour Seydou, vu votre expertise en Machine Learning, nous adorerions vous avoir parmi nos mentors pour orienter les équipes qui travaillent sur l'analyse de données satellites. Êtes-vous disponible ?"</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid var(--slate-200)' }}>
-              <button type="button" className="btn btn-secondary">
-                Décliner
-              </button>
-              <button type="button" className="btn btn-primary">
-                Accepter l'invitation
-              </button>
-            </div>
-          </div>
-
-          {/* Invitation Card 2 */}
-          <div className="card hover-shadow" style={{ padding: 0, overflow: 'hidden', transition: 'box-shadow 0.2s' }}>
-            <div style={{ padding: '1.5rem' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} className="sm-flex-row sm-items-center sm-justify-between">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} className="sm-flex-row sm-items-start">
-                  <div style={{ height: '3.5rem', width: '3.5rem', flexShrink: 0, borderRadius: 'var(--border-radius-lg)', backgroundColor: 'var(--slate-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--slate-200)', overflow: 'hidden' }}>
-                    <img src="https://ui-avatars.com/api/?name=Finbank&background=0F172A&color=fff" alt="Logo" style={{ height: '100%', width: '100%', objectFit: 'cover' }} />
-                  </div>
-                  <div style={{ marginTop: '1rem' }} className="sm-mt-0">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--slate-900)', margin: 0 }}>Fintech Builders Challenge</h3>
-                    </div>
-                    <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--slate-600)', marginTop: '0.25rem', margin: 0 }}>Organisé par <span style={{ color: 'var(--slate-900)' }}>Banque Atlantique</span></p>
-                    
-                    <div style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: 'repeat(1, minmax(0, 1fr))', gap: '1rem', fontSize: '0.875rem', color: 'var(--slate-500)' }} className="sm-grid-cols-2">
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Calendar style={{ marginRight: '0.5rem', height: '1rem', width: '1rem', color: 'var(--slate-400)' }} />
-                        01 - 03 Septembre 2026
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Users style={{ marginRight: '0.5rem', height: '1rem', width: '1rem', color: 'var(--slate-400)' }} />
-                        Suivi estimé : 2 équipes
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid var(--slate-200)' }}>
-              <button type="button" className="btn btn-secondary">
-                Décliner
-              </button>
-              <button type="button" className="btn btn-primary">
-                Accepter l'invitation
-              </button>
-            </div>
-          </div>
-
-        </div>
+        )}
       </div>
     </div>
   );
 }
+

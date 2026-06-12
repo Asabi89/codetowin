@@ -1,32 +1,41 @@
 import React, { useState } from 'react';
-import '../../styles/dashboard.css';
+import SecuritySettings from '../../components/features/settings/SecuritySettings';
 
 export default function MentorSettings() {
   const [activeTab, setActiveTab] = useState('security');
+  const [notifInvitations, setNotifInvitations] = useState(true);
+  const [notifMessages, setNotifMessages] = useState(true);
+  const [notifWeekly, setNotifWeekly] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const handleSaveNotifications = async () => {
+    setSaving(true);
+    setSuccess(false);
+    // Simuler un appel API
+    setTimeout(() => {
+      setSaving(false);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    }, 800);
+  };
 
   return (
-    <div className="dashboard-content">
-      {/* Topbar */}
-      <header className="page-header-row">
-        <div>
-          <h1 className="page-header-title">Paramètres du Mentor</h1>
-        </div>
-      </header>
-
-      {/* Main scrollable area */}
-      <div className="page-container">
+    <div className="p-4 sm:p-6 lg:p-8 h-full">
+      <div className="mx-auto max-w-5xl">
+        
         {/* Tabs Navigation */}
-        <div className="tabs-container">
-          <nav className="tabs-nav" aria-label="Tabs">
+        <div className="border-b border-slate-200">
+          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
             <button 
               onClick={() => setActiveTab('security')}
-              className={`tab-btn ${activeTab === 'security' ? 'active' : ''}`}
+              className={`tab-btn whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ${activeTab === 'security' ? 'border-brand-500 text-brand-600' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'}`}
             >
               Sécurité
             </button>
             <button 
               onClick={() => setActiveTab('notifications')}
-              className={`tab-btn ${activeTab === 'notifications' ? 'active' : ''}`}
+              className={`tab-btn whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ${activeTab === 'notifications' ? 'border-brand-500 text-brand-600' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'}`}
             >
               Notifications
             </button>
@@ -35,118 +44,106 @@ export default function MentorSettings() {
 
         {/* Tab Content: Sécurité */}
         {activeTab === 'security' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div className="card">
-              <div>
-                <h2 className="card-title">Changer le mot de passe</h2>
-                <p className="card-subtitle">Assurez-vous de choisir un mot de passe robuste.</p>
-              </div>
-
-              <form style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <div style={{ maxWidth: '28rem' }}>
-                    <label htmlFor="current-password" className="form-label">Mot de passe actuel</label>
-                    <input type="password" id="current-password" className="form-input" />
-                  </div>
-                  <div style={{ maxWidth: '28rem' }}>
-                    <label htmlFor="new-password" className="form-label">Nouveau mot de passe</label>
-                    <input type="password" id="new-password" className="form-input" />
-                  </div>
-                  <div style={{ maxWidth: '28rem' }}>
-                    <label htmlFor="confirm-password" className="form-label">Confirmer le nouveau mot de passe</label>
-                    <input type="password" id="confirm-password" className="form-input" />
-                  </div>
-                </div>
-                
-                <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                  <button type="button" className="btn btn-primary">Mettre à jour le mot de passe</button>
-                </div>
-              </form>
-            </div>
-
-            {/* Double Authentification */}
-            <div className="card">
-              <div>
-                <h2 className="card-title">Authentification à deux facteurs (A2F)</h2>
-                <p className="card-subtitle">Ajoutez une couche de sécurité supplémentaire à votre compte.</p>
-              </div>
-              <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--slate-100)', paddingTop: '1.5rem' }}>
-                <div>
-                  <h3 style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--slate-900)', margin: 0 }}>Status A2F</h3>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)', marginTop: '0.25rem', marginBottom: 0 }}>L'authentification à deux facteurs est actuellement <span style={{ fontWeight: 600, color: 'var(--slate-900)' }}>désactivée</span>.</p>
-                </div>
-                <button type="button" className="btn btn-secondary">Activer l'A2F</button>
-              </div>
-            </div>
-
-            {/* Zone de Danger */}
-            <div className="card" style={{ border: '1px solid var(--red-200)', backgroundColor: '#FEF2F2' }}>
-              <div>
-                <h2 className="card-title" style={{ color: 'var(--red-600)' }}>Zone de Danger</h2>
-                <p className="card-subtitle" style={{ color: 'var(--red-500)' }}>Actions irréversibles concernant votre compte et votre organisation.</p>
-              </div>
-              <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid var(--red-200)', paddingTop: '1.5rem', justifyContent: 'space-between' }}>
-                <div>
-                  <h3 style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--slate-900)', margin: 0 }}>Supprimer mon compte</h3>
-                  <p style={{ marginTop: '0.25rem', fontSize: '0.875rem', color: 'var(--slate-500)', maxWidth: '42rem', margin: 0 }}>La suppression de votre compte effacera de façon permanente votre profil et votre participation à toutes les équipes de mentorat. Cette action est <span style={{ fontWeight: 700, color: 'var(--slate-700)' }}>définitive et irréversible</span>.</p>
-                </div>
-                <div>
-                  <button type="button" className="btn-danger">Supprimer mon compte</button>
-                </div>
-              </div>
-            </div>
-
+          <div id="security" className="mt-8">
+            <SecuritySettings />
           </div>
         )}
 
         {/* Tab Content: Notifications */}
         {activeTab === 'notifications' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div className="card">
-              <div>
-                <h2 className="card-title">Préférences de notifications</h2>
-                <p className="card-subtitle">Choisissez les événements pour lesquels vous souhaitez être alerté par e-mail.</p>
-              </div>
-
-              <div style={{ marginTop: '1.5rem', borderTop: '1px solid var(--slate-100)', paddingTop: '1.5rem' }}>
-                <div className="form-checkbox-row">
-                  <div className="form-checkbox-wrapper">
-                    <input id="notif-invitations" type="checkbox" defaultChecked className="form-checkbox-input" />
+          <div id="notifications" className="mt-8 space-y-6">
+            {success && (
+              <div className="rounded-md bg-emerald-50 p-4 border border-emerald-200">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-emerald-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
                   </div>
-                  <div className="form-checkbox-content">
-                    <label htmlFor="notif-invitations" className="form-checkbox-label">Nouvelles invitations</label>
-                    <p className="form-checkbox-hint">Recevoir un e-mail à chaque fois qu'un organisateur vous invite en tant que mentor.</p>
-                  </div>
-                </div>
-
-                <div className="form-checkbox-row">
-                  <div className="form-checkbox-wrapper">
-                    <input id="notif-messages" type="checkbox" defaultChecked className="form-checkbox-input" />
-                  </div>
-                  <div className="form-checkbox-content">
-                    <label htmlFor="notif-messages" className="form-checkbox-label">Messages des équipes</label>
-                    <p className="form-checkbox-hint">Être alerté lorsqu'un participant de vos équipes assignées vous envoie un message.</p>
-                  </div>
-                </div>
-
-                <div className="form-checkbox-row">
-                  <div className="form-checkbox-wrapper">
-                    <input id="notif-weekly" type="checkbox" defaultChecked className="form-checkbox-input" />
-                  </div>
-                  <div className="form-checkbox-content">
-                    <label htmlFor="notif-weekly" className="form-checkbox-label">Récapitulatif hebdomadaire</label>
-                    <p className="form-checkbox-hint">Recevoir un résumé des événements clés sur vos hackathons chaque lundi.</p>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-emerald-800">Préférences de notifications enregistrées avec succès !</p>
                   </div>
                 </div>
               </div>
+            )}
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1.5rem', marginTop: '1.5rem', borderTop: '1px solid var(--slate-100)' }}>
-                <button type="button" className="btn btn-primary">Enregistrer les préférences</button>
+            <div className="bg-white shadow sm:rounded-xl">
+              <div className="px-4 py-6 sm:p-8">
+                <div>
+                  <h2 className="text-base font-semibold leading-7 text-slate-900">Préférences de notifications</h2>
+                  <p className="mt-1 text-sm leading-6 text-slate-500">Choisissez les événements pour lesquels vous souhaitez être alerté par e-mail.</p>
+                </div>
+
+                <div className="mt-6 border-t border-slate-100 pt-6 space-y-4">
+                  <div className="flex items-start">
+                    <div className="flex h-6 items-center">
+                      <input 
+                        id="notif-invitations" 
+                        name="notif-invitations" 
+                        type="checkbox" 
+                        checked={notifInvitations} 
+                        onChange={(e) => setNotifInvitations(e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600" 
+                      />
+                    </div>
+                    <div className="ml-3 text-sm leading-6">
+                      <label htmlFor="notif-invitations" className="font-medium text-slate-900">Nouvelles invitations</label>
+                      <p className="text-slate-500">Recevoir un e-mail à chaque fois qu'un organisateur vous invite en tant que mentor.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <div className="flex h-6 items-center">
+                      <input 
+                        id="notif-messages" 
+                        name="notif-messages" 
+                        type="checkbox" 
+                        checked={notifMessages} 
+                        onChange={(e) => setNotifMessages(e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600" 
+                      />
+                    </div>
+                    <div className="ml-3 text-sm leading-6">
+                      <label htmlFor="notif-messages" className="font-medium text-slate-900">Messages des équipes</label>
+                      <p className="text-slate-500">Être alerté lorsqu'un participant de vos équipes assignées vous envoie un message.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <div className="flex h-6 items-center">
+                      <input 
+                        id="notif-weekly" 
+                        name="notif-weekly" 
+                        type="checkbox" 
+                        checked={notifWeekly} 
+                        onChange={(e) => setNotifWeekly(e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600" 
+                      />
+                    </div>
+                    <div className="ml-3 text-sm leading-6">
+                      <label htmlFor="notif-weekly" className="font-medium text-slate-900">Récapitulatif hebdomadaire</label>
+                      <p className="text-slate-500">Recevoir un résumé des événements clés sur vos hackathons chaque lundi.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-6 mt-6 border-t border-slate-100">
+                  <button 
+                    type="button" 
+                    disabled={saving}
+                    onClick={handleSaveNotifications}
+                    className="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 disabled:opacity-50"
+                  >
+                    {saving ? 'Enregistrement...' : 'Enregistrer les préférences'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         )}
+
       </div>
     </div>
   );
 }
+

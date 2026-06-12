@@ -1,124 +1,182 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Download, ChevronRight } from 'lucide-react';
-import '../../styles/dashboard.css';
+import PageHeader from '../../components/common/PageHeader';
+import SearchFilterBar from '../../components/common/SearchFilterBar';
+import { hackathonsApi } from '../../api/hackathons';
+
+const extractArray = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.hackathons)) return data.hackathons;
+  return [];
+};
+
+const fallbackHackathons = [
+  {
+    id: 1,
+    name: 'AI for Climate Africa',
+    status: 'En cours',
+    statusClass: 'bg-green-100 text-green-800 ring-green-600/20',
+    location: 'Hybride · Dakar',
+    teamsCount: 2,
+    submissionsCount: 2,
+    needsEvaluation: true,
+    icon: (
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
+        <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+      </div>
+    )
+  },
+  {
+    id: 2,
+    name: 'HealthTech Dakar 2025',
+    status: 'Terminé',
+    statusClass: 'bg-slate-100 text-slate-800 ring-slate-500/10',
+    location: 'Présentiel · Dakar',
+    teamsCount: 1,
+    submissionsCount: 1,
+    needsEvaluation: false,
+    icon: (
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+        <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+        </svg>
+      </div>
+    )
+  }
+];
+
+const exportCsv = (rows, filename) => {
+  const csvRows = [
+    ['Hackathon', 'Statut', 'Équipes', 'Soumissions'],
+    ...rows.map(row => [row.name, row.status, row.teamsCount, row.submissionsCount]),
+  ];
+  const csv = csvRows.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+};
+
+const normalizeHackathon = (hackathon) => {
+  const status = String(hackathon.status || '').toLowerCase();
+  const active = ['active', 'published', 'publie', 'publié', 'ongoing'].includes(status);
+  return {
+    id: hackathon.id || hackathon._id || hackathon.slug,
+    name: hackathon.title || hackathon.name || 'Hackathon',
+    status: active ? 'En cours' : 'Terminé',
+    statusClass: active ? 'bg-green-100 text-green-800 ring-green-600/20' : 'bg-slate-100 text-slate-800 ring-slate-500/10',
+    location: `${hackathon.format || (hackathon.online ? 'En ligne' : 'Présentiel')} · ${hackathon.location || hackathon.city || 'Dakar'}`,
+    teamsCount: hackathon.teamsCount ?? hackathon.teams_count ?? hackathon.assigned_teams_count ?? 0,
+    submissionsCount: hackathon.submissionsCount ?? hackathon.submissions_count ?? 0,
+    needsEvaluation: hackathon.needsEvaluation ?? hackathon.needs_evaluation ?? active,
+    icon: active ? fallbackHackathons[0].icon : fallbackHackathons[1].icon,
+  };
+};
 
 export default function MentorSubmissions() {
+  const [hackathons, setHackathons] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHackathons = async () => {
+      try {
+        setLoading(true);
+        const data = await hackathonsApi.getHackathons();
+        const apiHackathons = extractArray(data);
+        if (apiHackathons.length > 0) {
+          setHackathons(apiHackathons.map(normalizeHackathon));
+        } else {
+          setHackathons(fallbackHackathons);
+        }
+      } catch (err) {
+        console.warn('API error, using fallback hackathons', err);
+        setHackathons(fallbackHackathons);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHackathons();
+  }, []);
+
+  const exportButton = (
+    <button type="button" onClick={() => exportCsv(hackathons, 'mentor-hackathons-soumissions.csv')} className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+      <svg className="-ml-1 mr-2 h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+      </svg>
+      Exporter les notes
+    </button>
+  );
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center p-8">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600"></div>
+          <p className="text-sm font-medium text-slate-500">Chargement des hackathons...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="dashboard-content">
-      {/* Topbar */}
-      <header className="dashboard-header-row" style={{ borderBottom: '1px solid var(--slate-200)', backgroundColor: 'white', padding: '1rem', marginLeft: '-1rem', marginRight: '-1rem', marginTop: '-2rem', marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--slate-900)' }}>Soumissions</span>
-        </div>
-      </header>
+    <div className="p-4 sm:p-6 lg:p-8 h-full">
+      <PageHeader title="Soumissions par Hackathon" description="Sélectionnez un hackathon pour évaluer les projets soumis par vos équipes." />
 
-      {/* Main scrollable area */}
-      <div>
-        
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-          <div>
-            <h1 className="dashboard-title">Soumissions par Hackathon</h1>
-            <p className="dashboard-subtitle">Sélectionnez un hackathon pour évaluer les projets soumis par vos équipes.</p>
-          </div>
-        </div>
+      <SearchFilterBar
+        searchPlaceholder="Chercher un projet, une équipe..."
+        filters={[{ label: 'Statut', options: ['Tous les statuts', 'Soumis', 'Évalué'] }]}
+        actions={exportButton}
+      />
 
-        {/* Filters */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem', alignItems: 'center' }}>
-          <div style={{ position: 'relative', width: '100%', maxWidth: '20rem' }}>
-            <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, paddingLeft: '0.75rem', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
-              <Search style={{ height: '1.25rem', width: '1.25rem', color: 'var(--slate-400)' }} />
-            </div>
-            <input type="text" className="form-input" style={{ paddingLeft: '2.5rem', width: '100%', boxSizing: 'border-box' }} placeholder="Chercher un projet, une équipe..." />
-          </div>
-          <select className="form-input" style={{ width: '100%', maxWidth: '12rem', paddingRight: '2rem' }}>
-            <option>Tous les statuts</option>
-            <option>Soumis</option>
-            <option>Évalué</option>
-          </select>
-          <button type="button" className="btn btn-secondary" style={{ marginLeft: 'auto' }}>
-            <Download style={{ marginLeft: '-0.25rem', marginRight: '0.5rem', height: '1.25rem', width: '1.25rem', color: 'var(--slate-400)' }} />
-            Exporter les notes
-          </button>
-        </div>
-
-        {/* Grid of Hackathons */}
-        <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
-          
-          {/* Hackathon Card 1 */}
-          <div className="card" style={{ padding: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', flex: 1, flexDirection: 'column', padding: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', height: '3rem', width: '3rem', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--border-radius-xl)', backgroundColor: 'var(--brand-100)', color: 'var(--brand-700)' }}>
-                  <span style={{ fontWeight: 700, fontSize: '1.125rem' }}>AI</span>
-                </div>
-                <span style={{ display: 'inline-flex', borderRadius: 'var(--border-radius-full)', backgroundColor: 'var(--green-100)', padding: '0.25rem 0.5rem', fontSize: '0.75rem', fontWeight: 600, lineHeight: 1.5, color: 'var(--green-800)', border: '1px solid rgba(22, 163, 74, 0.2)' }}>En cours</span>
+      <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {hackathons.map((h) => (
+          <div key={h.id} className="col-span-1 flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
+            <div className="flex flex-1 flex-col p-6">
+              <div className="flex items-center justify-between">
+                {h.icon}
+                <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold leading-5 ring-1 ring-inset ${h.statusClass}`}>{h.status}</span>
               </div>
-              <Link to="/mentor/hackathons/1" className="group" style={{ textDecoration: 'none' }}>
-                <h3 className="group-hover-text-brand-600" style={{ marginTop: '1rem', fontSize: '1.25rem', fontWeight: 700, color: 'var(--slate-900)', transition: 'color 0.2s' }}>AI for Climate Africa</h3>
+              <Link to={`/mentor/hackathons/${h.id}`} className="group">
+                <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-brand-600 transition-colors">{h.name}</h3>
               </Link>
-              <style>{`.group:hover .group-hover-text-brand-600 { color: var(--brand-600) !important; }`}</style>
-              <p style={{ marginTop: '0.25rem', fontSize: '0.875rem', color: 'var(--slate-500)', margin: 0 }}>Hybride · Dakar</p>
+              <p className="mt-1 text-sm text-slate-500">{h.location}</p>
               
-              <div style={{ marginTop: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '1rem', borderTop: '1px solid var(--slate-100)', paddingTop: '1rem' }}>
+              <div className="mt-6 grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
                 <div>
-                  <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>Vos équipes</p>
-                  <p style={{ marginTop: '0.25rem', fontSize: '1.125rem', fontWeight: 600, color: 'var(--slate-900)', margin: 0 }}>2</p>
+                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Vos équipes</p>
+                  <p className="mt-1 text-lg font-semibold text-slate-900">{h.teamsCount}</p>
                 </div>
                 <div>
-                  <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>Soumissions</p>
-                  <p style={{ marginTop: '0.25rem', fontSize: '1.125rem', fontWeight: 600, color: 'var(--brand-600)', margin: 0 }}>2 <span style={{ fontSize: '0.875rem', fontWeight: 400, color: 'var(--slate-500)' }}>à évaluer</span></p>
+                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Soumissions</p>
+                  <p className="mt-1 text-lg font-semibold text-brand-600">
+                    {h.submissionsCount} {h.needsEvaluation ? <span className="text-sm font-normal text-slate-500">à évaluer</span> : <span className="text-sm font-normal text-slate-500">évaluée</span>}
+                  </p>
                 </div>
               </div>
             </div>
             
-            <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem', borderTop: '1px solid var(--slate-200)', display: 'flex', gap: '0.5rem' }}>
-              <Link to="/mentor/hackathons/1" className="btn btn-secondary" style={{ flex: 1, textDecoration: 'none', textAlign: 'center' }}>
+            <div className="bg-slate-50 p-4 rounded-b-xl border-t border-slate-200 flex gap-2">
+              <Link to={`/mentor/hackathons/${h.id}`} className="flex flex-1 items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
                 Détails
               </Link>
-              <Link to="/mentor/hackathons/1/submissions" className="btn btn-primary" style={{ flex: 1, textDecoration: 'none', textAlign: 'center' }}>
-                Soumissions
-                <ChevronRight style={{ marginLeft: '0.5rem', marginRight: '-0.25rem', height: '1rem', width: '1rem' }} />
+              <Link to={`/mentor/hackathons/${h.id}/submissions`} className="flex flex-1 items-center justify-center rounded-md border border-transparent bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                {h.needsEvaluation ? 'Soumissions' : 'Consulter les notes'}
+                {h.needsEvaluation && (
+                  <svg className="ml-2 -mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                )}
               </Link>
             </div>
           </div>
-
-          {/* Hackathon Card 2 */}
-          <div className="card" style={{ padding: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', flex: 1, flexDirection: 'column', padding: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', height: '3rem', width: '3rem', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--border-radius-xl)', backgroundColor: '#DBEAFE', color: '#1D4ED8' }}>
-                  <span style={{ fontWeight: 700, fontSize: '1.125rem' }}>HT</span>
-                </div>
-                <span style={{ display: 'inline-flex', borderRadius: 'var(--border-radius-full)', backgroundColor: 'var(--slate-100)', padding: '0.25rem 0.5rem', fontSize: '0.75rem', fontWeight: 600, lineHeight: 1.5, color: 'var(--slate-800)', border: '1px solid rgba(100, 116, 139, 0.1)' }}>Terminé</span>
-              </div>
-              <h3 style={{ marginTop: '1rem', fontSize: '1.25rem', fontWeight: 700, color: 'var(--slate-900)' }}>HealthTech Dakar 2025</h3>
-              <p style={{ marginTop: '0.25rem', fontSize: '0.875rem', color: 'var(--slate-500)', margin: 0 }}>Présentiel · Dakar</p>
-              
-              <div style={{ marginTop: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '1rem', borderTop: '1px solid var(--slate-100)', paddingTop: '1rem' }}>
-                <div>
-                  <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>Vos équipes</p>
-                  <p style={{ marginTop: '0.25rem', fontSize: '1.125rem', fontWeight: 600, color: 'var(--slate-900)', margin: 0 }}>1</p>
-                </div>
-                <div>
-                  <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>Soumissions</p>
-                  <p style={{ marginTop: '0.25rem', fontSize: '1.125rem', fontWeight: 600, color: 'var(--slate-500)', margin: 0 }}>1 <span style={{ fontSize: '0.875rem', fontWeight: 400, color: 'var(--slate-500)' }}>évaluée</span></p>
-                </div>
-              </div>
-            </div>
-            
-            <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem', borderTop: '1px solid var(--slate-200)', display: 'flex', gap: '0.5rem' }}>
-              <Link to="/mentor/hackathons/2" className="btn btn-secondary" style={{ flex: 1, textDecoration: 'none', textAlign: 'center' }}>
-                Détails
-              </Link>
-              <Link to="/mentor/hackathons/2/submissions" className="btn btn-secondary" style={{ flex: 1, textDecoration: 'none', textAlign: 'center' }}>
-                Consulter les notes
-              </Link>
-            </div>
-          </div>
-
-        </div>
-
+        ))}
       </div>
     </div>
   );

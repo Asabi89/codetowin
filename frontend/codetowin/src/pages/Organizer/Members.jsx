@@ -1,43 +1,103 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { MEMBERS_MOCK } from '../../mockdata/organizer';
+import { usersApi } from '../../api/users';
+import { useToast } from '../../context/ToastContext';
 
-const MEMBERS_MOCK = [
-  {
-    id: 1,
-    name: 'Emmanuel D.',
-    email: 'emmanuel@techhub.com',
-    avatar: 'https://ui-avatars.com/api/?name=Emmanuel+D&background=047857&color=fff',
-    role: 'Propriétaire',
-    status: 'Actif',
+const roleLabels = {
+  organizer: 'Administrateur',
+  admin: 'Administrateur',
+  editor: 'Éditeur',
+  evaluator: 'Évaluateur',
+  viewer: 'Évaluateur',
+};
+
+const roleDefinitions = {
+  Administrateur: {
+    description: 'Accès total au dashboard organisateur.',
+    permissions: 'Hackathons, membres, mentors, participants, soumissions, résultats, annonces, messages et paramètres.',
   },
-  {
-    id: 2,
-    name: 'Aïssatou S.',
-    email: 'aissatou@techhub.com',
-    avatar: 'https://ui-avatars.com/api/?name=Aissatou+S&background=cbd5e1&color=334155',
-    role: 'Éditeur',
-    status: 'Actif',
+  Éditeur: {
+    description: 'Gestion opérationnelle des hackathons.',
+    permissions: 'Créer/modifier des hackathons, gérer les contenus, ressources, annonces, participants et équipes.',
   },
-  {
-    id: 3,
-    name: 'Moussa K.',
-    email: 'moussa@gmail.com',
-    avatar: '', // To use the initials block
-    initials: 'M',
-    role: 'Administrateur',
-    status: 'Invitation en attente',
+  Évaluateur: {
+    description: 'Accès centré sur les projets et la notation.',
+    permissions: 'Voir les équipes, consulter les soumissions, noter les projets et suivre les résultats.',
   },
-];
+};
+
+const mapUserToMember = (user, index) => ({
+  id: user.id || user._id || `member-${index}`,
+  name: user.name || user.full_name || user.username || user.email || 'Membre',
+  email: user.email || '',
+  avatar: user.avatar || user.profile_picture || '',
+  initials: (user.name || user.email || 'M').charAt(0).toUpperCase(),
+  role: roleLabels[user.role] || user.role || 'Éditeur',
+  status: user.status === 'pending' ? 'Invitation en attente' : 'Actif',
+});
 
 export default function OrganizerMembers() {
+  const { showToast } = useToast();
   const [members, setMembers] = useState(MEMBERS_MOCK);
+  const [loading, setLoading] = useState(true);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('editor');
 
+  const handleRoleChange = (memberId, nextRole) => {
+    setMembers(prev => prev.map(member => (
+      member.id === memberId ? { ...member, role: nextRole } : member
+    )));
+    showToast(`Rôle mis à jour : ${nextRole}.`, 'success');
+  };
+
+  const handleResendInvitation = (member) => {
+    showToast(`Invitation renvoyée à ${member.email} !`, 'success');
+  };
+
+  const handleCancelInvitation = (member) => {
+    setMembers(prev => prev.filter(item => item.id !== member.id));
+    showToast(`Invitation annulée pour ${member.email}.`, 'warning');
+  };
+
+  const handleRemoveMember = (member) => {
+    setMembers(prev => prev.filter(item => item.id !== member.id));
+    showToast(`${member.name} a été retiré de l'espace organisateur.`, 'danger');
+  };
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        setLoading(true);
+        const data = await usersApi.getTalents({ role: 'organizer' });
+        if (Array.isArray(data) && data.length > 0) {
+          setMembers(data.map(mapUserToMember));
+        } else {
+          setMembers(MEMBERS_MOCK);
+        }
+      } catch (err) {
+        console.warn("Erreur lors du chargement des membres via l'API, utilisation du fallback mocké.", err);
+        setMembers(MEMBERS_MOCK);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMembers();
+  }, []);
+
   const handleInvite = (e) => {
     e.preventDefault();
     if (inviteEmail) {
-      alert(`Invitation envoyée à ${inviteEmail} !`);
+      setMembers(prev => [...prev, {
+        id: Date.now(),
+        name: inviteEmail,
+        email: inviteEmail,
+        avatar: '',
+        initials: inviteEmail.charAt(0).toUpperCase(),
+        role: roleLabels[inviteRole],
+        status: 'Invitation en attente',
+      }]);
+      showToast(`Invitation envoyée à ${inviteEmail} !`, 'success');
       setIsInviteModalOpen(false);
       setInviteEmail('');
     }
@@ -58,6 +118,16 @@ export default function OrganizerMembers() {
       <div className="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
         
         <div className="mt-8 space-y-6">
+          <div className="grid gap-4 md:grid-cols-3">
+            {Object.entries(roleDefinitions).map(([roleName, definition]) => (
+              <div key={roleName} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h3 className="text-sm font-bold text-slate-900">{roleName}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{definition.description}</p>
+                <p className="mt-3 text-xs leading-5 text-slate-500">{definition.permissions}</p>
+              </div>
+            ))}
+          </div>
+
           <div className="bg-white shadow sm:rounded-xl">
             <div className="px-4 py-6 sm:p-8">
               <div className="sm:flex sm:items-center sm:justify-between">
@@ -91,7 +161,13 @@ export default function OrganizerMembers() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-200">
-                        {members.map((member) => (
+                        {loading ? (
+                          <tr>
+                            <td colSpan="4" className="py-8 text-center text-sm text-slate-500">
+                              Chargement des membres...
+                            </td>
+                          </tr>
+                        ) : members.map((member) => (
                           <tr key={member.id}>
                             <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                               <div className="flex items-center">
@@ -115,12 +191,13 @@ export default function OrganizerMembers() {
                                 <div className="text-slate-900">Propriétaire</div>
                               ) : (
                                 <select 
-                                  defaultValue={member.role}
+                                  value={member.role}
+                                  onChange={(e) => handleRoleChange(member.id, e.target.value)}
                                   className="rounded-md border-0 py-1.5 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6"
                                 >
-                                  <option>Administrateur</option>
-                                  <option>Éditeur</option>
-                                  <option>Évaluateur</option>
+                                  {Object.keys(roleDefinitions).map(roleName => (
+                                    <option key={roleName}>{roleName}</option>
+                                  ))}
                                 </select>
                               )}
                             </td>
@@ -132,12 +209,12 @@ export default function OrganizerMembers() {
                                 <>
                                   {member.status === 'Invitation en attente' ? (
                                     <>
-                                      <button className="text-brand-600 hover:text-brand-900">Renvoyer</button>
+                                      <button type="button" onClick={() => handleResendInvitation(member)} className="text-brand-600 hover:text-brand-900">Renvoyer</button>
                                       <span className="mx-2 text-slate-300">|</span>
-                                      <button className="text-red-600 hover:text-red-900">Annuler</button>
+                                      <button type="button" onClick={() => handleCancelInvitation(member)} className="text-red-600 hover:text-red-900">Annuler</button>
                                     </>
                                   ) : (
-                                    <button className="text-red-600 hover:text-red-900">Retirer</button>
+                                    <button type="button" onClick={() => handleRemoveMember(member)} className="text-red-600 hover:text-red-900">Retirer</button>
                                   )}
                                 </>
                               )}

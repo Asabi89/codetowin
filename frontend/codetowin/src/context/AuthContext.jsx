@@ -7,6 +7,7 @@ const STORAGE_KEY = 'hack_agent_workspace_state';
 const initialDefaultState = {
   registered: false,
   profile: null,
+  role: 'participant',
   currentStep: 1,
   projectName: "",
   projectPitch: "",
@@ -21,6 +22,21 @@ const initialDefaultState = {
   questionSecurity: "",
   submitted: false,
   previewActive: false
+};
+
+const inferRole = (value = '', fallback = 'participant') => {
+  const text = String(value).toLowerCase();
+  if (text.includes('mentor')) return 'mentor';
+  if (
+    text.includes('organizer') ||
+    text.includes('organisateur') ||
+    text.includes('admin') ||
+    text.includes('org@') ||
+    text.startsWith('org')
+  ) {
+    return 'organizer';
+  }
+  return fallback;
 };
 
 export const AuthProvider = ({ children }) => {
@@ -40,7 +56,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
-  const login = (email) => {
+  const login = (email, options = {}) => {
     // Mimic login by registering a mock user if profile doesn't exist
     setState(prev => {
       const mockProfile = prev.profile || {
@@ -74,10 +90,13 @@ export const AuthProvider = ({ children }) => {
         }
       ];
 
+      const assignedRole = options.role || inferRole(email, prev.role || 'participant');
+
       return {
         ...prev,
         registered: true,
         profile: mockProfile,
+        role: assignedRole,
         teammates: newTeammates
       };
     });
@@ -116,6 +135,7 @@ export const AuthProvider = ({ children }) => {
         ...prev,
         registered: true,
         profile: profileData,
+        role: profileData.role || inferRole(profileData.email, prev.role || 'participant'),
         teammates: updatedTeammates
       };
     });
@@ -152,6 +172,7 @@ export const AuthProvider = ({ children }) => {
       workspaceState: state,
       registered: state.registered,
       profile: state.profile,
+      role: state.role,
       login,
       registerUser,
       logout,

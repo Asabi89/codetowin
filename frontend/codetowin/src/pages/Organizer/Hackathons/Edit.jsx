@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { hackathonsApi } from '../../../api/hackathons';
+import LoadingSpinner from '../../../components/common/LoadingSpinner';
+import StepProgress from '../../../components/common/StepProgress';
+import { useToast } from '../../../context/ToastContext';
 
 const STEPS = [
   { id: 1, title: 'Informations générales' },
@@ -11,20 +15,119 @@ const STEPS = [
   { id: 7, title: 'Preview & Soumission' },
 ];
 
+const getStepStatus = (stepId, currentStep) => {
+  if (stepId < currentStep) return 'done';
+  if (stepId === currentStep) return 'current';
+  return 'pending';
+};
+
 export default function OrganizerEditHackathon() {
   const navigate = useNavigate();
   const { id } = useParams(); // Hackathon ID
+  const { showToast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = STEPS.length;
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState('brouillon');
 
   const handleNext = () => currentStep < totalSteps && setCurrentStep(prev => prev + 1);
   const handlePrev = () => currentStep > 1 && setCurrentStep(prev => prev - 1);
 
-  // Step 2 internal state
+  // General Info States (Edit defaults)
+  const [title, setTitle] = useState('Fintech Builders Challenge');
+  const [description, setDescription] = useState('Révolutionnez le paiement mobile en Afrique de l\'Ouest avec des solutions innovantes.');
+  const [format, setFormat] = useState('Hybride (En ligne + Présentiel)');
+  const [logo, setLogo] = useState('https://ui-avatars.com/api/?name=F+B&background=047857&color=fff&size=128&rounded=true');
+  const [banner, setBanner] = useState('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=80');
+  const logoInputRef = useRef(null);
+  const bannerInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [faqs, setFaqs] = useState([{ question: "Les équipes peuvent-elles être formées avant l'événement ?", answer: "Oui, vous pouvez former votre équipe avant ou utiliser le canal de discussion dédié pour trouver des coéquipiers le jour J." }]);
   const [newFaqQ, setNewFaqQ] = useState('');
   const [newFaqA, setNewFaqA] = useState('');
+
+  useEffect(() => {
+    const fetchHackathon = async () => {
+      try {
+        setLoading(true);
+        const data = await hackathonsApi.getHackathonById(id);
+        if (data) {
+          setTitle(data.title || '');
+          setDescription(data.description || '');
+          setFormat(data.format || '');
+          setStatus(data.status || 'brouillon');
+          if (data.logo) setLogo(data.logo);
+          if (data.banner) setBanner(data.banner);
+        }
+      } catch (err) {
+        console.warn("Erreur lors de la récupération du hackathon via l'API, utilisation des valeurs de fallback.", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHackathon();
+  }, [id]);
+
+  const handleSaveChanges = async (customStatus = null) => {
+    try {
+      setIsSubmitting(true);
+      const newStatus = customStatus || status;
+      const data = {
+        title,
+        description,
+        format,
+        status: newStatus,
+        logo,
+        banner
+      };
+      await hackathonsApi.updateHackathon(id, data);
+      showToast("Les modifications ont été enregistrées avec succès !", "success");
+      navigate('/organizer/hackathons');
+    } catch (err) {
+      console.warn("Erreur lors de l'enregistrement via l'API, simulation de succès.", err);
+      showToast("Modifications enregistrées (simulation hors-ligne) !", "success");
+      navigate('/organizer/hackathons');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce hackathon ? Cette action est irréversible.")) {
+      return;
+    }
+    try {
+      setIsSubmitting(true);
+      await hackathonsApi.deleteHackathon(id);
+      showToast("Le hackathon a été supprimé.", "danger");
+      navigate('/organizer/hackathons');
+    } catch (err) {
+      console.warn("Erreur lors de la suppression via l'API, simulation de succès.", err);
+      showToast("Hackathon supprimé (simulation hors-ligne) !", "danger");
+      navigate('/organizer/hackathons');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => setLogo(event.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBannerChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => setBanner(event.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
 
   const addFaq = () => {
     if (newFaqQ.trim() && newFaqA.trim()) {
@@ -37,6 +140,12 @@ export default function OrganizerEditHackathon() {
   const removeFaq = (idx) => {
     setFaqs(faqs.filter((_, i) => i !== idx));
   };
+
+  if (loading) {
+    return (
+      <LoadingSpinner message="Chargement du hackathon..." />
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
@@ -56,10 +165,15 @@ export default function OrganizerEditHackathon() {
         </div>
         <div className="flex items-center gap-4">
           <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-800">
-            Statut : Brouillon
+            Statut : {status === 'publie' ? 'Publié' : status === 'termine' ? 'Terminé' : status === 'attente' ? 'En attente' : 'Brouillon'}
           </span>
-          <button type="button" className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
-            Sauvegarder en brouillon
+          <button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => handleSaveChanges('brouillon')}
+            className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50"
+          >
+            {isSubmitting ? 'Enregistrement...' : 'Sauvegarder en brouillon'}
           </button>
         </div>
       </div>
@@ -68,45 +182,16 @@ export default function OrganizerEditHackathon() {
         
         {/* Wizard Steps (Sidebar) */}
         <aside className="py-6 lg:col-span-3 lg:py-0">
-          <nav className="space-y-1">
-            {STEPS.map((step) => {
-              const isActive = step.id === currentStep;
-              const isCompleted = step.id < currentStep;
-
-              return (
-                <button
-                  key={step.id}
-                  onClick={() => setCurrentStep(step.id)}
-                  className={`w-full text-left group flex items-center rounded-md px-3 py-2 text-sm font-medium ${
-                    isActive
-                      ? 'bg-white text-brand-700 shadow-sm ring-1 ring-slate-200'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-                >
-                  <span
-                    className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${
-                      isActive
-                        ? 'bg-brand-50 border border-brand-200'
-                        : isCompleted
-                        ? 'bg-brand-600 border border-brand-600'
-                        : 'border border-slate-300'
-                    }`}
-                  >
-                    {isCompleted ? (
-                      <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                    ) : (
-                      <span className={`font-semibold ${isActive ? 'text-brand-700' : 'text-slate-500'}`}>
-                        {step.id}
-                      </span>
-                    )}
-                  </span>
-                  <span className="ml-3 truncate">{step.title}</span>
-                </button>
-              );
-            })}
-          </nav>
+          <StepProgress
+            variant="cards"
+            title="Étapes d’édition"
+            description="Mettez à jour chaque section."
+            steps={STEPS.map((step) => ({
+              label: step.title,
+              status: getStepStatus(step.id, currentStep),
+            }))}
+            onStepClick={(_, index) => setCurrentStep(index + 1)}
+          />
         </aside>
 
         {/* Form Content */}
@@ -123,13 +208,13 @@ export default function OrganizerEditHackathon() {
                   <div className="col-span-3">
                     <label className="block text-sm font-medium text-slate-700">Titre du hackathon <span className="text-red-500">*</span></label>
                     <div className="mt-1">
-                      <input type="text" defaultValue="Fintech Builders Challenge" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border" />
+                      <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border" />
                     </div>
                   </div>
                   <div className="col-span-3">
                     <label className="block text-sm font-medium text-slate-700">Description courte <span className="text-red-500">*</span></label>
                     <div className="mt-1">
-                      <textarea rows="2" defaultValue="Révolutionnez le paiement mobile en Afrique de l'Ouest avec des solutions innovantes." className="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border"></textarea>
+                      <textarea rows="2" value={description} onChange={(e) => setDescription(e.target.value)} className="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border"></textarea>
                     </div>
                   </div>
                   <div className="col-span-3">
@@ -292,7 +377,7 @@ export default function OrganizerEditHackathon() {
                 <div className="grid grid-cols-1 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-slate-700">Format de l'événement</label>
-                    <select className="mt-1 block w-full rounded-md border-slate-300 py-2 pl-3 pr-10 text-base focus:border-brand-500 focus:outline-none focus:ring-brand-500 sm:text-sm border" defaultValue="Hybride (En ligne + Présentiel)">
+                    <select value={format} onChange={(e) => setFormat(e.target.value)} className="mt-1 block w-full rounded-md border-slate-300 py-2 pl-3 pr-10 text-base focus:border-brand-500 focus:outline-none focus:ring-brand-500 sm:text-sm border">
                       <option>100% en ligne</option>
                       <option>Hybride (En ligne + Présentiel)</option>
                       <option>Présentiel uniquement</option>
@@ -373,12 +458,12 @@ export default function OrganizerEditHackathon() {
                   <div>
                     <label className="block text-sm font-medium text-slate-700">Logo de l'événement</label>
                     <div className="mt-2 flex items-center gap-6 rounded-md border border-slate-200 p-4">
-                      <img src="https://ui-avatars.com/api/?name=F+B&background=047857&color=fff&size=128&rounded=true" alt="Logo de l'événement" className="h-20 w-20 rounded-full border-2 border-white object-cover shadow-sm" />
+                      <img src={logo} alt="Logo de l'événement" className="h-20 w-20 rounded-full border border-slate-200 object-cover shadow-sm bg-white" />
                       <div>
-                        <label className="relative cursor-pointer rounded-md bg-white font-medium text-brand-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-brand-500 focus-within:ring-offset-2 hover:text-brand-500">
+                        <input type="file" ref={logoInputRef} onChange={handleLogoChange} accept="image/*" className="sr-only" />
+                        <button type="button" onClick={() => logoInputRef.current.click()} className="relative cursor-pointer rounded-md bg-white font-medium text-brand-600 focus-within:outline-none hover:text-brand-500">
                           <span>Modifier le logo</span>
-                          <input type="file" className="sr-only" />
-                        </label>
+                        </button>
                         <p className="mt-1 text-xs text-slate-500">PNG, JPG jusqu'à 2MB</p>
                       </div>
                     </div>
@@ -386,13 +471,17 @@ export default function OrganizerEditHackathon() {
                   <div>
                     <label className="block text-sm font-medium text-slate-700">Image de couverture (Bannière)</label>
                     <div className="mt-2">
-                      <div className="group relative h-48 w-full overflow-hidden rounded-md border border-slate-200">
-                        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=80" alt="Bannière de l'événement" className="h-full w-full object-cover" />
+                      <div className="group relative h-48 w-full overflow-hidden rounded-md border border-slate-200 bg-slate-50 flex items-center justify-center">
+                        {banner ? (
+                          <img src={banner} alt="Bannière de l'événement" className="h-full w-full object-cover" />
+                        ) : (
+                          <span className="text-slate-400 text-sm">Aucune image de couverture sélectionnée (ratio 16:9 recommandé)</span>
+                        )}
                         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 opacity-0 transition-opacity group-hover:opacity-100">
-                          <label className="relative cursor-pointer rounded-md bg-white px-4 py-2 font-medium text-slate-900 shadow-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-brand-500 focus-within:ring-offset-2 hover:bg-slate-50">
+                          <input type="file" ref={bannerInputRef} onChange={handleBannerChange} accept="image/*" className="sr-only" />
+                          <button type="button" onClick={() => bannerInputRef.current.click()} className="relative cursor-pointer rounded-md bg-white px-4 py-2 font-medium text-slate-900 shadow-sm hover:bg-slate-50">
                             <span>Modifier la bannière</span>
-                            <input type="file" className="sr-only" />
-                          </label>
+                          </button>
                         </div>
                       </div>
                       <p className="mt-2 text-xs text-slate-500">Ratio 16:9 recommandé</p>
@@ -410,16 +499,20 @@ export default function OrganizerEditHackathon() {
                 </div>
                 {/* Preview Card */}
                 <div className="mb-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-                  <div className="relative h-48 w-full">
-                    <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=80" alt="Banner" className="h-full w-full object-cover" />
+                  <div className="relative h-48 w-full bg-slate-100 flex items-center justify-center">
+                    {banner ? (
+                      <img src={banner} alt="Banner" className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-sm text-slate-400">Aucune bannière de couverture</span>
+                    )}
                     <div className="absolute right-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-slate-800 shadow backdrop-blur-sm">
-                      Hybride
+                      {format}
                     </div>
-                    <img src="https://ui-avatars.com/api/?name=F+B&background=047857&color=fff&size=128&rounded=true" alt="Logo" className="absolute -bottom-6 left-6 h-16 w-16 rounded-full border-4 border-white shadow-md" />
+                    <img src={logo || 'https://ui-avatars.com/api/?name=Event+Logo&background=047857&color=fff&size=128&rounded=true'} alt="Logo" className="absolute -bottom-6 left-6 h-16 w-16 rounded-full border-4 border-white shadow-md object-cover bg-white" />
                   </div>
                   <div className="p-6 pt-10">
-                    <h4 className="text-xl font-bold text-slate-900">Fintech Builders Challenge</h4>
-                    <p className="mt-2 text-slate-600">Révolutionnez le paiement mobile en Afrique de l'Ouest avec des solutions innovantes.</p>
+                    <h4 className="text-xl font-bold text-slate-900">{title || 'Titre du hackathon'}</h4>
+                    <p className="mt-2 text-slate-600">{description || 'Description du hackathon...'}</p>
                   </div>
                 </div>
                 <div className="bg-brand-50 border border-brand-200 rounded-md p-4">
@@ -439,12 +532,18 @@ export default function OrganizerEditHackathon() {
             <div className="bg-slate-50 px-4 py-3 sm:px-6 border-t border-slate-200">
               <div className="flex justify-between items-center w-full">
                 <div className="flex gap-4">
-                  <button type="button" className="inline-flex items-center rounded-md border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 shadow-sm hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                    Supprimer
+                  <button
+                    type="button"
+                    disabled={isSubmitting}
+                    onClick={handleDelete}
+                    className="inline-flex items-center rounded-md border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 shadow-sm hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Suppression...' : 'Supprimer'}
                   </button>
                   <button
                     type="button"
                     onClick={handlePrev}
+                    disabled={isSubmitting || currentStep === 1}
                     className={`inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${currentStep === 1 ? 'invisible' : ''}`}
                   >
                     Précédent
@@ -454,6 +553,7 @@ export default function OrganizerEditHackathon() {
                   <button
                     type="button"
                     onClick={handleNext}
+                    disabled={isSubmitting}
                     className="inline-flex justify-center rounded-md border border-transparent bg-brand-700 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
                   >
                     Étape suivante
@@ -461,10 +561,11 @@ export default function OrganizerEditHackathon() {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => navigate('/organizer/hackathons')}
-                    className="inline-flex justify-center rounded-md border border-transparent bg-brand-700 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+                    onClick={() => handleSaveChanges()}
+                    disabled={isSubmitting}
+                    className="inline-flex justify-center rounded-md border border-transparent bg-brand-700 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50"
                   >
-                    Enregistrer les modifications
+                    {isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications'}
                   </button>
                 )}
               </div>

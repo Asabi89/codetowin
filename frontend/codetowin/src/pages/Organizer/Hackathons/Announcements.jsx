@@ -1,28 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { ANNOUNCEMENTS_MOCK } from '../../../mockdata/organizer';
 
-const ANNOUNCEMENTS_MOCK = [
-  {
-    id: 1,
-    title: 'Rappel : Plus que 3 jours !',
-    status: 'Envoyée',
-    statusBg: 'bg-blue-100',
-    statusText: 'text-blue-800',
-    to: 'Toutes les équipes',
-    date: 'Envoyé hier à 14h30 via Email et In-app',
-    isDraft: false,
-  },
-  {
-    id: 2,
-    title: 'Cérémonie de clôture',
-    status: 'Brouillon',
-    statusBg: 'bg-slate-100',
-    statusText: 'text-slate-800',
-    to: 'Tous les participants',
-    date: 'Modifié il y a 2 jours',
-    isDraft: true,
-  }
-];
 
 export default function OrganizerAnnouncements() {
   const { id } = useParams();

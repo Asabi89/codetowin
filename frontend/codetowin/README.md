@@ -10,53 +10,61 @@ Pour respecter la séparation des préoccupations (Clean Architecture), le dossi
 
 ```text
 src/
-├── api/                  # COUCHE 4 : DONNÉES / INFRASTRUCTURE (Clients API, endpoints)
-│   ├── client.js         # Configuration d'Axios/Fetch (baseUrl, intercepteurs de tokens)
-│   ├── auth.js           # Endpoints d'authentification (login, signup)
-│   ├── hackathons.js     # Endpoints de gestion des hackathons
-│   └── user.js           # Endpoints de gestion des profils et participants
-│
-├── services/             # COUCHE 3 : APPLICATION / ORCHESTRATION (Logique applicative)
-│   ├── validation.js     # Fonctions de validation (formulaires, inputs)
-│   └── formatters.js     # Formateurs de dates, prix, statuts
-│
-├── context/              # COUCHE 2 : DOMAINE / ÉTAT GLOBAL (Partage d'état)
-│   ├── AuthContext.jsx   # État global de l'utilisateur connecté
-│   └── ProjectContext.jsx# État global du brouillon de projet (Wizard)
-│
-├── hooks/                # COUCHE 2 : DOMAINE / LOGIQUE MÉTIER (Hooks réutilisables)
-│   ├── useAuth.js        # Accès facile à l'état d'authentification
-│   └── useProject.js     # Gestion du wizard de soumission de projet (5 étapes)
-│
+├── assets/               # Images, icônes et illustrations
 ├── components/           # COUCHE 1 : PRÉSENTATION (Composants UI réutilisables)
-│   ├── common/           # Composants génériques (Atomiques & hautement réutilisables)
-│   │   ├── Button/       # Bouton principal, secondaire, réseaux sociaux
-│   │   ├── Card/         # Conteneur de carte générique
-│   │   ├── Input/        # Champ texte, email, mot de passe
-│   │   ├── Dropdown/     # Menu déroulant (ex: profil utilisateur)
-│   │   └── Modal/        # Fenêtres modales génériques
-│   │
-│   └── features/         # Composants liés à des fonctionnalités spécifiques
-│       ├── hackathon/    # HackathonCard, FilterChips, TeammatesList
-│       └── profile/      # SkillTag, SocialLinks, StatBlock
+│   ├── common/           # Composants génériques: Button, Card, Input, Badge, PageHeader, DashboardStatCard, SearchFilterBar
+│   └── features/         # Composants métier réutilisables
+│       ├── dashboard/    # Layouts: OrganizerSidebar, MentorSidebar, Topbar
+│       ├── mentor/       # TeamCard, InvitationCard
+│       ├── messaging/    # ChatLayout (découpé en ChatAvatar, ChatStatus, ChatListItem, HeaderMenu, MessageBubble)
+│       ├── notifications/# NotificationCenter partagé mentor/organizer
+│       ├── settings/     # SecuritySettings partagé mentor/organizer
+│       ├── submissions/  # SubmissionCard partagé mentor/organizer
+│       └── teams/        # TeamDetailsView partagé mentor/organizer
+│
+├── context/              # COUCHE 2 : DOMAINE / ÉTAT GLOBAL
+│   ├── AuthContext.jsx   # État global de l'utilisateur connecté
+│   ├── MentorContext.jsx # État métier mentor
+│   └── OrganizerContext.jsx # État métier organisateur
+│
+├── hooks/                # COUCHE 2 : Hooks réutilisables
+│   ├── useAuth.js
+│   └── useForm.js
 │
 ├── layouts/              # COUCHE 1 : PRÉSENTATION (Squelettes structurels)
-│   ├── MainLayout.jsx    # En-tête (Header) + Pied de page (Footer) avec navigation
-│   └── AuthLayout.jsx    # Layout épuré pour les formulaires d'authentification
+│   ├── MainLayout.jsx    # Header/footer public + participant connecté
+│   └── DashboardLayout.jsx # Sidebar/topbar mentor et organizer
 │
 ├── pages/                # COUCHE 1 : PRÉSENTATION (Vues complètes / Pages)
-│   ├── Home/             # Page d'accueil (anciennement home.html)
-│   ├── Login/            # Connexion (anciennement login.html)
-│   ├── Signup/           # Inscription (anciennement signup.html)
-│   ├── Hackathons/       # Explorateur (anciennement hackaton.html)
-│   ├── HackathonDetail/  # Détail d'un hackathon (anciennement hackaton-detail.html)
-│   ├── Profile/          # Formulaire d'édition de profil (anciennement profile.html)
-│   └── Participant/      # Profil public (anciennement participant.html)
+│   ├── Auth/             # Login, Signup, VerifyEmail
+│   ├── Participant/      # Home publique + pages participant: hackathons, détail, profil
+│   ├── Mentor/           # Espace mentor
+│   └── Organizer/        # Espace organisateur
 │
-├── assets/               # Images, icônes, illustrations et logos
+├── routes/               # Déclaration des routes et protection par rôle
+├── styles/               # Styles globaux, variables et styles de pages
+│   └── pages/            # CSS legacy reclassé par domaine: auth, participant
 ├── main.jsx              # Point d'entrée de l'application
-└── index.css             # Styles CSS globaux & configuration Tailwind CSS
+└── App.jsx               # Racine React
 ```
+
+### Organisation des pages
+
+- `src/pages/Auth/` contient uniquement le tunnel d'authentification: connexion, inscription, vérification email.
+- `src/pages/Participant/` contient les pages publiques et participant, car le template `froentend/participants/` couvre aussi la home publique.
+- `src/pages/Mentor/` et `src/pages/Organizer/` contiennent les vues propres à chaque dashboard.
+- `src/components/features/` reçoit les composants métier partagés quand une même interface existe dans plusieurs rôles, par exemple `NotificationCenter`, `ChatLayout` ou les composants dashboard.
+- `src/styles/pages/` contient les CSS issus des templates HTML quand ils restent spécifiques à une famille de pages.
+- Les URLs restent stables: déplacer un fichier ne doit pas changer une route publique.
+
+### Règles de classement
+
+- Une page ne doit contenir que l'assemblage de l'écran et ses données locales de démonstration.
+- Un bloc utilisé par plusieurs rôles va dans `src/components/features/<feature>/`.
+- Un élément UI sans logique métier va dans `src/components/common/`.
+- Un style CSS spécifique à une famille de pages va dans `src/styles/pages/<domaine>/`.
+- `src/assets/` reste réservé aux fichiers statiques: images, icônes, illustrations, logos.
+- Un déplacement de fichier doit être accompagné d'une mise à jour de `src/routes/AppRoutes.jsx` et des imports relatifs.
 
 ---
 
@@ -164,11 +172,12 @@ Pour migrer l'application existante vers cette structure React :
    - Copier les configurations communes et variables de style dans `src/index.css`.
    - Si Tailwind CSS est utilisé, s'assurer que `tailwind.config.js` est configuré et que les directives `@tailwind` sont en haut de `src/index.css`.
 
-2. **Création des composants communs (`common/`)** :
+2. **Création des composants communs (`common/` et `features/`)** :
    - Analyser les formulaires et boutons répétés (comme dans `login.html`, `signup.html`, et `profile.html`) et créer les composants `<Button />`, `<Input />`, et `<Modal />` réutilisables.
+   - Extraire les composants métier réutilisés par plusieurs rôles dans `src/components/features/` au lieu de dupliquer le JSX dans `pages/Mentor` et `pages/Organizer`.
 
 3. **Création des pages** :
-   - Transformer chaque fichier HTML en composant React fonctionnel dans `src/pages/` (ex: `c:\Users\admin\Documents\project\HACKafri\froentend\participants\hackaton.html` devient `src/pages/Hackathons/index.jsx`).
+   - Transformer chaque fichier HTML en composant React fonctionnel dans le dossier métier correspondant (ex: `froentend/participants/hackaton.html` devient `src/pages/Participant/Hackathons.jsx`).
    - Remplacer les structures répétées par les composants créés à l'étape 2.
 
 4. **Portage du JavaScript** :

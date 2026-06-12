@@ -1,15 +1,18 @@
 import React from 'react';
 
-export const Badge = ({ children, variant = 'default', className = '' }) => {
+export default function Badge({ children, variant = 'slate', className = '' }) {
   const variants = {
-    default: 'bg-slate-100 text-slate-800',
-    success: 'bg-green-100 text-green-800',
-    warning: 'bg-amber-100 text-amber-800',
-    info: 'bg-blue-100 text-blue-800',
+    slate: 'bg-slate-100 text-slate-800',
+    green: 'bg-green-100 text-green-800',
+    amber: 'bg-amber-100 text-amber-800',
+    brand: 'bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-600/20',
+    blue: 'bg-blue-100 text-blue-800',
+    red: 'bg-red-100 text-red-800',
   };
+
   return (
-    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold leading-5 ${variants[variant]} ${className}`}>
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${variants[variant] || variants.slate} ${className}`}>
       {children}
     </span>
   );
-};
+}

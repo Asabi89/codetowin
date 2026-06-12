@@ -1,89 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Trophy, FileText, Clock, CheckCircle } from 'lucide-react';
-
-const HACKATHONS_DATA = [
-  {
-    id: 1,
-    title: 'AI for Climate Africa',
-    type: 'Hybride',
-    location: 'Dakar',
-    status: 'publie',
-    participants: 89,
-    teams: 14,
-    submissions: '-',
-    deadline: 'Dans 12 jours',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-      </svg>
-    ),
-    iconColor: 'text-brand-700',
-    iconBg: 'bg-brand-100',
-  },
-  {
-    id: 2,
-    title: 'Fintech Builders Challenge',
-    type: 'En ligne',
-    location: '',
-    status: 'brouillon',
-    participants: '-',
-    teams: '-',
-    submissions: '-',
-    deadline: 'Pas de date',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
-    iconColor: 'text-slate-500',
-    iconBg: 'bg-slate-100',
-  },
-  {
-    id: 3,
-    title: 'AgriTech Youth Hack',
-    type: 'Hybride',
-    location: 'Abidjan',
-    status: 'attente',
-    participants: 12,
-    teams: 2,
-    submissions: '-',
-    deadline: 'Dans 3 jours',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
-    iconColor: 'text-amber-700',
-    iconBg: 'bg-amber-100',
-  },
-  {
-    id: 4,
-    title: 'HealthTech Dakar 2025',
-    type: 'Présentiel',
-    location: 'Dakar',
-    status: 'termine',
-    participants: 146,
-    teams: 22,
-    submissions: 18,
-    deadline: 'Passée',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-      </svg>
-    ),
-    iconColor: 'text-blue-700',
-    iconBg: 'bg-blue-100',
-  },
-];
-
-const TABS = [
-  { id: 'all', label: 'Tous', count: 4 },
-  { id: 'publie', label: 'Publiés', count: 1 },
-  { id: 'brouillon', label: 'Brouillons', count: 1 },
-  { id: 'attente', label: 'En attente', count: 1 },
-  { id: 'termine', label: 'Terminés', count: 1 },
-];
+import { hackathonsApi } from '../../../api/hackathons';
+import { HACKATHONS_DATA_MOCK } from '../../../mockdata/organizer';
 
 const STATUS_BADGE_MAP = {
   publie: { label: 'Publié', classes: 'bg-green-100 text-green-800' },
@@ -92,15 +11,105 @@ const STATUS_BADGE_MAP = {
   termine: { label: 'Terminé', classes: 'bg-blue-100 text-blue-800' },
 };
 
+const extractArray = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.hackathons)) return data.hackathons;
+  return [];
+};
+
+const normalizeStatus = (status = '') => {
+  const value = String(status).toLowerCase();
+  if (['active', 'published', 'publié', 'publie'].includes(value)) return 'publie';
+  if (['draft', 'brouillon'].includes(value)) return 'brouillon';
+  if (['pending', 'attente', 'en attente', 'pending_review'].includes(value)) return 'attente';
+  if (['completed', 'termine', 'terminé', 'finished'].includes(value)) return 'termine';
+  return status || 'brouillon';
+};
+
+const normalizeHackathon = (hackathon) => ({
+  ...hackathon,
+  id: hackathon.id || hackathon._id || hackathon.slug,
+  title: hackathon.title || hackathon.name || 'Hackathon sans titre',
+  type: hackathon.type || hackathon.format || (hackathon.online ? 'En ligne' : 'Présentiel'),
+  location: hackathon.location || hackathon.city || hackathon.country || '',
+  status: normalizeStatus(hackathon.status),
+  participants: hackathon.participants ?? hackathon.participants_count ?? hackathon.registrations_count ?? '-',
+  teams: hackathon.teams ?? hackathon.teams_count ?? '-',
+  submissions: hackathon.submissions ?? hackathon.submissions_count ?? '-',
+  deadline: hackathon.deadline || hackathon.submission_deadline || 'Non planifié',
+});
+
 const OrganizerHackathons = () => {
+  const [hackathons, setHackathons] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredHackathons = HACKATHONS_DATA.filter((hackathon) => {
+  useEffect(() => {
+    const fetchHackathons = async () => {
+      try {
+        setLoading(true);
+        const data = await hackathonsApi.getHackathons();
+        const apiHackathons = extractArray(data);
+        if (apiHackathons.length > 0) {
+          setHackathons(apiHackathons.map(normalizeHackathon));
+        } else {
+          setHackathons(HACKATHONS_DATA_MOCK);
+        }
+      } catch (err) {
+        console.warn("Erreur lors du chargement des hackathons via l'API, utilisation du fallback mocké.", err);
+        setHackathons(HACKATHONS_DATA_MOCK);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHackathons();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center p-8 flex-1">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600"></div>
+          <p className="text-sm font-medium text-slate-500">Chargement de vos hackathons...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Calcul dynamique des compteurs d'onglets
+  const tabCounts = {
+    all: hackathons.length,
+    publie: hackathons.filter(h => h.status === 'publie').length,
+    brouillon: hackathons.filter(h => h.status === 'brouillon').length,
+    attente: hackathons.filter(h => h.status === 'attente').length,
+    termine: hackathons.filter(h => h.status === 'termine').length,
+  };
+
+  const tabs = [
+    { id: 'all', label: 'Tous', count: tabCounts.all },
+    { id: 'publie', label: 'Publiés', count: tabCounts.publie },
+    { id: 'brouillon', label: 'Brouillons', count: tabCounts.brouillon },
+    { id: 'attente', label: 'En attente', count: tabCounts.attente },
+    { id: 'termine', label: 'Terminés', count: tabCounts.termine },
+  ];
+
+  const filteredHackathons = hackathons.filter((hackathon) => {
     const matchesTab = activeTab === 'all' || hackathon.status === activeTab;
     const matchesSearch = hackathon.title.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesTab && matchesSearch;
   });
+
+  const getDefaultIcon = (status) => {
+    switch (status) {
+      case 'publie': return <Trophy className="h-6 w-6" />;
+      case 'attente': return <Clock className="h-6 w-6" />;
+      case 'termine': return <CheckCircle className="h-6 w-6" />;
+      default: return <FileText className="h-6 w-6" />;
+    }
+  };
 
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
@@ -116,7 +125,7 @@ const OrganizerHackathons = () => {
       <div className="mt-6 sm:flex sm:items-center sm:justify-between">
         <div className="hidden sm:block overflow-x-auto pb-2 sm:pb-0">
           <nav className="flex space-x-4" aria-label="Tabs">
-            {TABS.map((tab) => {
+            {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
                 <button
@@ -172,14 +181,14 @@ const OrganizerHackathons = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-200">
                   {filteredHackathons.map((hackathon) => {
-                    const statusConfig = STATUS_BADGE_MAP[hackathon.status];
+                    const statusConfig = STATUS_BADGE_MAP[hackathon.status] || { label: hackathon.status, classes: 'bg-slate-100 text-slate-800' };
                     return (
                       <tr key={hackathon.id}>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 sm:pl-6">
                           <div className="flex items-center">
                             <div className="h-10 w-10 flex-shrink-0">
-                              <div className={`flex h-10 w-10 items-center justify-center rounded ${hackathon.iconBg} ${hackathon.iconColor}`}>
-                                {hackathon.icon}
+                              <div className={`flex h-10 w-10 items-center justify-center rounded ${hackathon.iconBg || 'bg-brand-50'} ${hackathon.iconColor || 'text-brand-700'}`}>
+                                {hackathon.icon || getDefaultIcon(hackathon.status)}
                               </div>
                             </div>
                             <div className="ml-4">
@@ -195,10 +204,10 @@ const OrganizerHackathons = () => {
                             {statusConfig.label}
                           </span>
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.participants}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.teams}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.submissions}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.deadline}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.participants || '-'}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.teams || '-'}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.submissions || '-'}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.deadline || 'Non planifié'}</td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                           {hackathon.status === 'brouillon' ? (
                             <Link to={`/organizer/hackathons/edit/${hackathon.id}`} className="text-brand-600 hover:text-brand-900">Éditer<span className="sr-only">, {hackathon.title}</span></Link>

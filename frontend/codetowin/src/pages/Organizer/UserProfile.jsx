@@ -7,46 +7,7 @@ export default function OrganizerUserProfile() {
   const [activeTab, setActiveTab] = useState('info');
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      {/* Topbar */}
-      <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
-        <div className="flex items-center">
-          <button className="text-slate-500 focus:outline-none sm:hidden">
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          
-          <nav className="hidden sm:flex" aria-label="Breadcrumb">
-            <ol className="flex items-center space-x-4">
-              <li>
-                <div className="flex">
-                  <Link to="/organizer/members" className="text-sm font-medium text-slate-500 hover:text-slate-700">Mentors</Link>
-                </div>
-              </li>
-              <li>
-                <div className="flex items-center">
-                  <ChevronRight className="h-5 w-5 flex-shrink-0 text-slate-400" aria-hidden="true" />
-                  <span className="ml-4 text-sm font-medium text-slate-900" aria-current="page">Profil de Dr. Ousmane Diop</span>
-                </div>
-              </li>
-            </ol>
-          </nav>
-        </div>
-        <div className="flex items-center gap-3">
-          <button type="button" className="inline-flex items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
-            <Mail className="-ml-0.5 mr-2 h-4 w-4 text-slate-400" aria-hidden="true" />
-            Contacter
-          </button>
-          <button type="button" className="inline-flex items-center justify-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
-            <UserPlus className="-ml-0.5 mr-2 h-4 w-4" aria-hidden="true" />
-            Assigner à une équipe
-          </button>
-        </div>
-      </header>
-
-      {/* Main scrollable area */}
-      <main className="flex-1 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto">
         
         {/* Profile Header Card */}
         <div className="bg-white shadow-sm border-b border-slate-200">
@@ -179,7 +140,7 @@ export default function OrganizerUserProfile() {
                             <p className="truncate text-xs text-slate-500">AI for Climate Africa</p>
                           </div>
                         </div>
-                        <a href="#" className="hidden sm:block text-sm font-medium text-brand-600 hover:text-brand-500">Voir</a>
+                        <Link to="/organizer/hackathons/1/teams/1" className="hidden sm:block text-sm font-medium text-brand-600 hover:text-brand-500">Voir</Link>
                       </li>
                       <li className="flex items-center justify-between gap-x-4 py-2">
                         <div className="flex items-center gap-x-4">
@@ -191,7 +152,7 @@ export default function OrganizerUserProfile() {
                             <p className="truncate text-xs text-slate-500">AI for Climate Africa</p>
                           </div>
                         </div>
-                        <a href="#" className="hidden sm:block text-sm font-medium text-brand-600 hover:text-brand-500">Voir</a>
+                        <Link to="/organizer/hackathons/1/teams/2" className="hidden sm:block text-sm font-medium text-brand-600 hover:text-brand-500">Voir</Link>
                       </li>
                     </ul>
                     <div className="mt-6">
@@ -209,11 +170,11 @@ export default function OrganizerUserProfile() {
                     <ul role="list" className="mt-4 space-y-3">
                       <li className="flex items-center gap-x-3">
                         <LinkIcon className="h-5 w-5 text-slate-400" aria-hidden="true" />
-                        <a href="#" className="text-sm font-medium text-brand-600 hover:text-brand-500">ousmanediop.com</a>
+                        <a href="https://ousmanediop.com" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-brand-600 hover:text-brand-500">ousmanediop.com</a>
                       </li>
                       <li className="flex items-center gap-x-3">
                         <Briefcase className="h-5 w-5 text-slate-400" aria-hidden="true" />
-                        <a href="#" className="text-sm font-medium text-slate-900 hover:text-slate-600">linkedin.com/in/ousmanediop</a>
+                        <a href="https://linkedin.com/in/ousmanediop" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-slate-900 hover:text-slate-600">linkedin.com/in/ousmanediop</a>
                       </li>
                     </ul>
                   </div>
@@ -230,7 +191,6 @@ export default function OrganizerUserProfile() {
           )}
 
         </div>
-      </main>
     </div>
   );
 }
