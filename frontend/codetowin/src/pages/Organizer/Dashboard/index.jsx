@@ -4,39 +4,12 @@ import DashboardStatCard from '../../../components/common/DashboardStatCard';
 import Badge from '../../../components/common/Badge';
 import { hackathonsApi } from '../../../api/hackathons';
 import { HACKATHONS_DATA_MOCK } from '../../../mockdata/organizer';
-
-const extractArray = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.hackathons)) return data.hackathons;
-  return [];
-};
-
-const normalizeStatus = (status = '') => {
-  const value = String(status).toLowerCase();
-  if (['active', 'published', 'publié', 'publie'].includes(value)) return 'publie';
-  if (['draft', 'brouillon'].includes(value)) return 'brouillon';
-  if (['pending', 'attente', 'en attente', 'pending_review'].includes(value)) return 'attente';
-  if (['completed', 'termine', 'terminé', 'finished'].includes(value)) return 'termine';
-  return status || 'brouillon';
-};
+import { extractArray, normalizeHackathon, normalizeStatus } from '../../../services/normalizers';
 
 const toNumber = (value) => {
   const number = Number(value);
   return Number.isFinite(number) ? number : 0;
 };
-
-const normalizeHackathon = (hackathon) => ({
-  ...hackathon,
-  id: hackathon.id || hackathon._id || hackathon.slug,
-  title: hackathon.title || hackathon.name || 'Hackathon sans titre',
-  status: normalizeStatus(hackathon.status),
-  participants: hackathon.participants ?? hackathon.participants_count ?? hackathon.registrations_count ?? 0,
-  teams: hackathon.teams ?? hackathon.teams_count ?? 0,
-  submissions: hackathon.submissions ?? hackathon.submissions_count ?? 0,
-  dates: hackathon.dates || [hackathon.start_date, hackathon.end_date].filter(Boolean).join(' - '),
-});
 
 const OrganizerDashboard = () => {
   const [hackathons, setHackathons] = useState([]);

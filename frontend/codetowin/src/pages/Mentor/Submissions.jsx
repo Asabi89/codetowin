@@ -3,14 +3,8 @@ import { Link } from 'react-router-dom';
 import PageHeader from '../../components/common/PageHeader';
 import SearchFilterBar from '../../components/common/SearchFilterBar';
 import { hackathonsApi } from '../../api/hackathons';
-
-const extractArray = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.hackathons)) return data.hackathons;
-  return [];
-};
+import { extractArray, normalizeHackathon } from '../../services/normalizers';
+import { useExportCSV } from '../../hooks/useExportCSV';
 
 const fallbackHackathons = [
   {
@@ -64,25 +58,10 @@ const exportCsv = (rows, filename) => {
   URL.revokeObjectURL(url);
 };
 
-const normalizeHackathon = (hackathon) => {
-  const status = String(hackathon.status || '').toLowerCase();
-  const active = ['active', 'published', 'publie', 'publié', 'ongoing'].includes(status);
-  return {
-    id: hackathon.id || hackathon._id || hackathon.slug,
-    name: hackathon.title || hackathon.name || 'Hackathon',
-    status: active ? 'En cours' : 'Terminé',
-    statusClass: active ? 'bg-green-100 text-green-800 ring-green-600/20' : 'bg-slate-100 text-slate-800 ring-slate-500/10',
-    location: `${hackathon.format || (hackathon.online ? 'En ligne' : 'Présentiel')} · ${hackathon.location || hackathon.city || 'Dakar'}`,
-    teamsCount: hackathon.teamsCount ?? hackathon.teams_count ?? hackathon.assigned_teams_count ?? 0,
-    submissionsCount: hackathon.submissionsCount ?? hackathon.submissions_count ?? 0,
-    needsEvaluation: hackathon.needsEvaluation ?? hackathon.needs_evaluation ?? active,
-    icon: active ? fallbackHackathons[0].icon : fallbackHackathons[1].icon,
-  };
-};
-
 export default function MentorSubmissions() {
   const [hackathons, setHackathons] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { exportCSV } = useExportCSV();
 
   useEffect(() => {
     const fetchHackathons = async () => {
@@ -106,7 +85,7 @@ export default function MentorSubmissions() {
   }, []);
 
   const exportButton = (
-    <button type="button" onClick={() => exportCsv(hackathons, 'mentor-hackathons-soumissions.csv')} className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+    <button type="button" onClick={() => exportCSV(hackathons, 'mentor-hackathons-soumissions.csv')} className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
       <svg className="-ml-1 mr-2 h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
         <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
       </svg>

@@ -2,24 +2,8 @@ import React, { useState, useEffect } from 'react';
 import NotificationCenter from '../../components/features/notifications/NotificationCenter';
 import { notificationsApi } from '../../api/notifications';
 import { MENTOR_NOTIFICATIONS_MOCK } from '../../mockdata/mentor';
-
-const extractArray = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.notifications)) return data.notifications;
-  return [];
-};
-
-const normalizeNotification = (notification) => ({
-  ...notification,
-  id: notification.id || notification._id,
-  title: notification.title || notification.subject || 'Notification',
-  description: notification.description || notification.message || notification.content || '',
-  time: notification.time || notification.created_at || '',
-  unread: notification.unread ?? !notification.read_at,
-  iconBg: notification.iconBg || 'bg-slate-100',
-});
+import { extractArray, normalizeNotification } from '../../services/normalizers';
+import { useNotifications } from '../../hooks/useNotifications';
 
 export default function MentorNotifications() {
   const [notifications, setNotifications] = useState([]);

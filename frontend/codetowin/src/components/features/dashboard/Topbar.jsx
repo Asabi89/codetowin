@@ -23,7 +23,21 @@ export default function Topbar({ role = 'organizer' }) {
     '/mentor/settings': 'Paramètres du Mentor',
     '/mentor/notifications': 'Centre de notifications',
   };
-  const title = role === 'mentor' ? (mentorTitles[location.pathname] || 'Dashboard Mentor') : (organizerTitles[location.pathname] || 'Dashboard');
+  const participantTitles = {
+    '/participant': 'Dashboard Participant',
+    '/participant/hackathons': 'Mes Hackathons',
+    '/participant/team': 'Mon Équipe',
+    '/participant/team/create': 'Créer ou rejoindre une équipe',
+    '/participant/submission': 'Soumission du projet',
+    '/participant/certificates': 'Mes Certificats',
+    '/participant/profile': 'Mon Profil Talent',
+    '/participant/notifications': 'Notifications',
+  };
+  const title = role === 'mentor'
+    ? (mentorTitles[location.pathname] || 'Dashboard Mentor')
+    : role === 'participant'
+      ? (participantTitles[location.pathname] || 'Espace Participant')
+      : (organizerTitles[location.pathname] || 'Dashboard');
   const isMentorHackathonDetail = role === 'mentor' && /^\/mentor\/hackathons\/[^/]+$/.test(location.pathname);
   const isMentorHackathonSubmissions = role === 'mentor' && /^\/mentor\/hackathons\/[^/]+\/submissions$/.test(location.pathname);
   const isMentorTeamDetail = role === 'mentor' && /^\/mentor\/teams\/[^/]+$/.test(location.pathname);

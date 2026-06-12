@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useToast } from '../../../context/ToastContext';
+import { AuthContext } from '../../../context/AuthContext';
 
 export default function SecuritySettings({ isOrganization = false, onDeleteAccount }) {
   const { showToast } = useToast();
+  const auth = useContext(AuthContext);
+  const userRole = auth?.role || (isOrganization ? 'organizer' : 'mentor');
 
   const handleDelete = (e) => {
     e.preventDefault();
     if (onDeleteAccount) {
       onDeleteAccount();
     } else {
-      showToast(isOrganization ? "Suppression de l'organisation demandée." : "Suppression du compte demandée.", "warning");
+      showToast(userRole === 'organizer' ? "Suppression de l'organisation demandée." : "Suppression du compte demandée.", "warning");
     }
   };
 
@@ -70,19 +73,25 @@ export default function SecuritySettings({ isOrganization = false, onDeleteAccou
       </div>
 
       {/* Zone de Danger */}
-      <div className={`bg-white shadow sm:rounded-xl border ${isOrganization ? 'bg-red-50 border-red-200' : 'border-red-100'}`}>
+      <div className={`bg-white shadow sm:rounded-xl border ${userRole === 'organizer' ? 'bg-red-50 border-red-200' : 'border-red-100'}`}>
         <div className="px-4 py-6 sm:p-8">
           <div>
-            <h2 className={`text-base font-semibold leading-7 ${isOrganization ? 'text-red-600' : 'text-red-600'}`}>Zone de Danger</h2>
-            <p className={`mt-1 text-sm leading-6 ${isOrganization ? 'text-red-500' : 'text-slate-500'}`}>Actions irréversibles concernant votre compte et votre organisation.</p>
+            <h2 className="text-base font-semibold leading-7 text-red-600">Zone de Danger</h2>
+            <p className="mt-1 text-sm leading-6 text-slate-500">
+              {userRole === 'organizer' 
+                ? "Actions irréversibles concernant l'organisation."
+                : "Actions irréversibles concernant votre compte utilisateur."}
+            </p>
           </div>
-          <div className={`mt-6 flex flex-col sm:flex-row sm:items-center justify-between border-t ${isOrganization ? 'border-red-200' : 'border-slate-100'} pt-6 gap-4`}>
+          <div className={`mt-6 flex flex-col sm:flex-row sm:items-center justify-between border-t ${userRole === 'organizer' ? 'border-red-200' : 'border-slate-100'} pt-6 gap-4`}>
             <div>
-              <h3 className="text-sm font-medium text-slate-900">{isOrganization ? "Supprimer l'organisation" : "Supprimer mon compte"}</h3>
+              <h3 className="text-sm font-medium text-slate-900">
+                {userRole === 'organizer' ? "Supprimer l'organisation" : "Supprimer mon compte"}
+              </h3>
               <p className="mt-1 text-sm text-slate-500 max-w-2xl">
-                {isOrganization 
-                  ? "La suppression de l'organisation entraînera la perte de toutes les données liées, y compris les hackathons, les membres et les soumissions. Cette action est définitive et irréversible."
-                  : "La suppression de votre compte effacera de façon permanente votre profil et votre participation à toutes les équipes de mentorat. Cette action est définitive et irréversible."}
+                {userRole === 'organizer' && "La suppression de l'organisation entraînera la perte de toutes les données liées, y compris les hackathons, les membres et les soumissions. Cette action est définitive et irréversible."}
+                {userRole === 'mentor' && "La suppression de votre compte effacera de façon permanente votre profil et votre participation à toutes les équipes de mentorat. Cette action est définitive et irréversible."}
+                {userRole === 'participant' && "La suppression de votre compte effacera de façon permanente votre profil, votre équipe et votre participation aux hackathons. Cette action est définitive et irréversible."}
               </p>
             </div>
             <button 
@@ -90,7 +99,7 @@ export default function SecuritySettings({ isOrganization = false, onDeleteAccou
               onClick={handleDelete}
               className="flex-shrink-0 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
             >
-              {isOrganization ? "Supprimer l'organisation" : "Supprimer mon compte"}
+              {userRole === 'organizer' ? "Supprimer l'organisation" : "Supprimer mon compte"}
             </button>
           </div>
         </div>

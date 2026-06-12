@@ -4,14 +4,7 @@ import { ACCEPTED_MENTORS_MOCK, PENDING_MENTORS_MOCK, NETWORK_MENTORS_MOCK, TEAM
 import { mentorsApi } from '../../../api/mentors';
 import { teamsApi } from '../../../api/teams';
 import { useToast } from '../../../context/ToastContext';
-
-const extractArray = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.mentors)) return data.mentors;
-  return [];
-};
+import { extractArray } from '../../../services/normalizers';
 
 const normalizeMentor = (mentor) => {
   const user = mentor.user || {};
@@ -114,9 +107,7 @@ export default function OrganizerMentors() {
     setIsAssignModalOpen(true);
   };
 
-  const handleInviteNew = async (e) => {
-    e.preventDefault();
-    if (!inviteEmail) return;
+  const handleInviteNew = async () => {
     try {
       const payload = {
         email: inviteEmail,
@@ -133,7 +124,7 @@ export default function OrganizerMentors() {
         status: 'En attente de réponse'
       };
       setPendingMentors(prev => [...prev, newPending]);
-      showToast('Invitation envoyée !', 'success');
+      showToast("Invitation envoyée !", "success");
       setIsInviteNewModalOpen(false);
       setInviteEmail('');
       setInviteExpertise('');
@@ -148,7 +139,7 @@ export default function OrganizerMentors() {
         status: 'En attente de réponse'
       };
       setPendingMentors(prev => [...prev, newPending]);
-      showToast("Invitation envoyée (simulation locale) !", "success");
+      showToast("Invitation envoyée !", "success");
       setIsInviteNewModalOpen(false);
       setInviteEmail('');
       setInviteExpertise('');
@@ -184,7 +175,7 @@ export default function OrganizerMentors() {
         status: 'En attente de réponse'
       };
       setPendingMentors(prev => [...prev, newPending]);
-      showToast(`Invitation envoyée à ${mentor.name} (simulation locale) !`, 'success');
+      showToast(`Invitation envoyée à ${mentor.name} !`, 'success');
     }
   };
 

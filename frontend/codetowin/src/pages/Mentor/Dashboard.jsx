@@ -4,35 +4,12 @@ import useAuth from '../../hooks/useAuth';
 import { mentorsApi } from '../../api/mentors';
 import { notificationsApi } from '../../api/notifications';
 import { usersApi } from '../../api/users';
+import { extractArray, normalizeNotification, normalizeTeam } from '../../services/normalizers';
 import {
   MENTOR_NOTIFICATIONS_MOCK,
   MENTOR_TEAMS_MOCK,
   MENTOR_INVITATIONS_MOCK
 } from '../../mockdata/mentor';
-
-const extractArray = (data, key) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.[key])) return data[key];
-  return [];
-};
-
-const normalizeTeam = (team) => ({
-  ...team,
-  id: team.id || team._id,
-  name: team.name || 'Équipe',
-  description: team.description || 'Pas de description fournie.',
-  detailPath: team.detailPath || `/mentor/teams/${team.id || team._id}`,
-  status: team.status || (team.submission ? 'Soumission en cours' : 'Pas encore de projet'),
-});
-
-const normalizeNotification = (notification) => ({
-  ...notification,
-  id: notification.id || notification._id,
-  title: notification.title || notification.subject || 'Notification',
-  unread: notification.unread ?? !notification.read_at,
-});
 
 export default function MentorDashboard() {
   const { profile } = useAuth();

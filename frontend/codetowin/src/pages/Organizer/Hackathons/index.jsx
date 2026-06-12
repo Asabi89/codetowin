@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, Trophy, FileText, Clock, CheckCircle } from 'lucide-react';
 import { hackathonsApi } from '../../../api/hackathons';
 import { HACKATHONS_DATA_MOCK } from '../../../mockdata/organizer';
+import { extractArray, normalizeHackathon, normalizeStatus } from '../../../services/normalizers';
 
 const STATUS_BADGE_MAP = {
   publie: { label: 'Publié', classes: 'bg-green-100 text-green-800' },
@@ -10,36 +11,6 @@ const STATUS_BADGE_MAP = {
   attente: { label: 'En attente', classes: 'bg-amber-100 text-amber-800' },
   termine: { label: 'Terminé', classes: 'bg-blue-100 text-blue-800' },
 };
-
-const extractArray = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.hackathons)) return data.hackathons;
-  return [];
-};
-
-const normalizeStatus = (status = '') => {
-  const value = String(status).toLowerCase();
-  if (['active', 'published', 'publié', 'publie'].includes(value)) return 'publie';
-  if (['draft', 'brouillon'].includes(value)) return 'brouillon';
-  if (['pending', 'attente', 'en attente', 'pending_review'].includes(value)) return 'attente';
-  if (['completed', 'termine', 'terminé', 'finished'].includes(value)) return 'termine';
-  return status || 'brouillon';
-};
-
-const normalizeHackathon = (hackathon) => ({
-  ...hackathon,
-  id: hackathon.id || hackathon._id || hackathon.slug,
-  title: hackathon.title || hackathon.name || 'Hackathon sans titre',
-  type: hackathon.type || hackathon.format || (hackathon.online ? 'En ligne' : 'Présentiel'),
-  location: hackathon.location || hackathon.city || hackathon.country || '',
-  status: normalizeStatus(hackathon.status),
-  participants: hackathon.participants ?? hackathon.participants_count ?? hackathon.registrations_count ?? '-',
-  teams: hackathon.teams ?? hackathon.teams_count ?? '-',
-  submissions: hackathon.submissions ?? hackathon.submissions_count ?? '-',
-  deadline: hackathon.deadline || hackathon.submission_deadline || 'Non planifié',
-});
 
 const OrganizerHackathons = () => {
   const [hackathons, setHackathons] = useState([]);

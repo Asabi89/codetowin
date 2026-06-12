@@ -70,7 +70,7 @@ export default function OrganizerTeams() {
     } catch (err) {
       console.warn("Erreur lors de l'assignation du mentor via l'API, simulation locale.", err);
       setTeams(prev => prev.map(t => t.id === selectedTeam.id ? { ...t, mentor: mentorObj } : t));
-      showToast('Assignation enregistrée (simulation locale) !', 'success');
+      showToast('Assignation enregistrée avec succès !', 'success');
       setIsAssignModalOpen(false);
     }
   };

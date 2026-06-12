@@ -140,17 +140,28 @@ export default function VerifyEmail() {
           github: '',
           linkedin: '',
           website: '',
+          visibility: 'public',
+          isPublic: true,
           avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
         });
         
         setIsVerifying(false);
-        // Direct to the corresponding role dashboard
-        if (userRole === 'organizer') {
+        showToast("Votre email a été vérifié et votre inscription est maintenant finalisée !", "success");
+        if (!signupData?.hasExplicitRole) {
+          navigate('/choose-role', {
+            replace: true,
+            state: {
+              fromSignup: true,
+              email: email || 'user@codetowin.com',
+              username: username || 'User',
+            },
+          });
+        } else if (userRole === 'organizer') {
           navigate('/organizer/hackathons/create');
         } else if (userRole === 'mentor') {
           navigate('/mentor');
         } else {
-          navigate('/profile');
+          navigate('/participant');
         }
       } else {
         setIsVerifying(false);

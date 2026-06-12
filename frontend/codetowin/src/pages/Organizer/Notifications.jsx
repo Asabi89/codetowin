@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import NotificationCenter from '../../components/features/notifications/NotificationCenter';
 import { ORGANIZER_NOTIFICATIONS_MOCK } from '../../mockdata/organizer';
 import { notificationsApi } from '../../api/notifications';
+import { useNotifications } from '../../hooks/useNotifications';
 
 export default function OrganizerNotifications() {
   const [notifications, setNotifications] = useState(ORGANIZER_NOTIFICATIONS_MOCK);

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { initialHackathons } from '../../mockdata/hackathons';
+import { formatDateRange } from '../../services/formatters';
 import '../../styles/pages/participant/hackaton.css';
 
 
@@ -103,13 +104,6 @@ export default function Hackathons() {
     }
     const firstWord = val.split(/[,\s]+/)[0];
     return firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
-  };
-
-  const formatDateRange = (startVal, endVal) => {
-    const formatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit' });
-    const start = new Date(`${startVal}T00:00:00`);
-    const end = new Date(`${endVal}T00:00:00`);
-    return `${formatter.format(start)} - ${formatter.format(end)}`;
   };
 
   // Close menus on outside click

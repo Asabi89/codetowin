@@ -179,6 +179,73 @@
   background: rgba(5, 150, 105, 0.15);
 }
 
+.profile-visibility-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  border: 1.5px solid #bbf7d0;
+  background: #f0fdf4;
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+.profile-visibility-card p {
+  margin-top: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.profile-visibility-card .visibility-note {
+  color: #166534;
+  font-weight: 600;
+}
+
+.visibility-switch {
+  position: relative;
+  display: inline-flex;
+  width: 3.25rem;
+  height: 1.8rem;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.visibility-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.visibility-slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: #cbd5e1;
+  transition: background-color 180ms ease;
+}
+
+.visibility-slider::before {
+  content: "";
+  position: absolute;
+  height: 1.35rem;
+  width: 1.35rem;
+  left: 0.225rem;
+  top: 0.225rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+  transition: transform 180ms ease;
+}
+
+.visibility-switch input:checked + .visibility-slider {
+  background: var(--green);
+}
+
+.visibility-switch input:checked + .visibility-slider::before {
+  transform: translateX(1.45rem);
+}
+
 @keyframes scaleIn {
   from {
     transform: scale(0.9);
@@ -382,4 +449,42 @@
 
 .footer-link:hover {
   color: var(--text);
+}
+
+/* Tabs styling inside participant settings */
+.settings-tabs {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.settings-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.settings-tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.75rem 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 150ms ease;
+}
+
+.settings-tab-btn:hover {
+  color: var(--text);
+  border-bottom-color: #cbd5e1;
+}
+
+.settings-tab-btn.active {
+  color: var(--green);
+  border-bottom-color: var(--green);
+  font-weight: 700;
 }

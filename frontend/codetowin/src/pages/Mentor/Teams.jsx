@@ -4,31 +4,7 @@ import SearchFilterBar from '../../components/common/SearchFilterBar';
 import TeamCard from '../../components/features/mentor/TeamCard';
 import { mentorsApi } from '../../api/mentors';
 import { MENTOR_TEAMS_MOCK } from '../../mockdata/mentor';
-
-const extractArray = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.teams)) return data.teams;
-  return [];
-};
-
-const normalizeTeam = (team) => ({
-  ...team,
-  id: team.id || team._id,
-  name: team.name || 'Équipe',
-  description: team.description || 'Pas de description fournie.',
-  memberCount: team.memberCount ?? team.member_count ?? team.members?.length ?? 0,
-  detailPath: team.detailPath || `/mentor/teams/${team.id || team._id}`,
-  members: (team.members || []).map((member, index) => (
-    typeof member === 'string'
-      ? { avatar: member }
-      : { ...member, avatar: member.avatar || member.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name || `M${index + 1}`)}&background=random` }
-  )),
-  mentor: team.mentor || { name: 'Vous', avatar: 'https://ui-avatars.com/api/?name=Vous&background=047857&color=fff' },
-  status: team.status || (team.submission ? 'Soumission en cours' : 'Pas encore de projet'),
-  statusTone: team.statusTone || (team.submission ? 'amber' : 'slate'),
-});
+import { extractArray, normalizeTeam } from '../../services/normalizers';
 
 export default function MentorTeams() {
   const [teams, setTeams] = useState([]);

@@ -9,7 +9,8 @@ export const mockTalents = [
     skills: ['React.js', 'Node.js', 'PostgreSQL', 'Docker'],
     wins: 2,
     certificatesCount: 3,
-    available: true
+    available: true,
+    visibility: 'public'
   },
   {
     id: 'aminata-diop',
@@ -21,7 +22,8 @@ export const mockTalents = [
     skills: ['Figma', 'Product Design', 'HTML/CSS', 'User Research'],
     wins: 1,
     certificatesCount: 2,
-    available: true
+    available: true,
+    visibility: 'public'
   },
   {
     id: 'emeka-okafor',
@@ -33,7 +35,8 @@ export const mockTalents = [
     skills: ['Python', 'TensorFlow', 'SQL', 'Data Analytics'],
     wins: 3,
     certificatesCount: 4,
-    available: false
+    available: false,
+    visibility: 'public'
   },
   {
     id: 'kwame-mensah',
@@ -45,7 +48,8 @@ export const mockTalents = [
     skills: ['AWS', 'Kubernetes', 'Terraform', 'CI/CD'],
     wins: 0,
     certificatesCount: 1,
-    available: true
+    available: true,
+    visibility: 'public'
   },
   {
     id: 'fatou-sow',
@@ -57,7 +61,8 @@ export const mockTalents = [
     skills: ['FastAPI', 'Python', 'MongoDB', 'Redis'],
     wins: 1,
     certificatesCount: 2,
-    available: true
+    available: true,
+    visibility: 'public'
   }
 ];
 
@@ -74,6 +79,7 @@ export const mockTalentsDetails = {
     website: 'https://seydou.dev',
     skills: ['React.js', 'Node.js', 'PostgreSQL', 'Docker', 'FastAPI', 'GraphQL'],
     available: true,
+    visibility: 'public',
     hackathons: [
       {
         id: 'google-cloud-rapid-agent',
@@ -105,6 +111,7 @@ export const mockTalentsDetails = {
     website: 'https://aminatadesign.com',
     skills: ['Figma', 'Product Design', 'HTML/CSS', 'User Research', 'Design Systems', 'Webflow'],
     available: true,
+    visibility: 'public',
     hackathons: [
       {
         id: 'google-cloud-rapid-agent',

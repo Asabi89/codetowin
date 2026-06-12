@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import { useImagePreview } from '../../hooks/useImagePreview';
 import '../../styles/pages/participant/profile.css';
 
 export default function Profile() {
   const { profile, registerUser } = useContext(AuthContext);
   const navigate = useNavigate();
-  const photoInputRef = useRef(null);
 
   // ── Form state ──────────────────────────────────────────────
   const [firstName, setFirstName]       = useState('');
@@ -23,7 +23,8 @@ export default function Profile() {
   const [github,    setGithub]          = useState('');
   const [linkedin,  setLinkedin]        = useState('');
   const [website,   setWebsite]         = useState('');
-  const [avatar,    setAvatar]          = useState(
+
+  const { url: avatar, setUrl: setAvatar, inputRef: photoInputRef, handleChange: handlePhotoChange } = useImagePreview(
     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
   );
 
@@ -50,6 +51,7 @@ export default function Profile() {
       setGithub(profile.github   || '');
       setLinkedin(profile.linkedin || '');
       setWebsite(profile.website   || '');
+
       if (profile.avatar) setAvatar(profile.avatar);
     }
   }, [profile]);
@@ -77,13 +79,7 @@ export default function Profile() {
   };
 
   // ── Photo upload ─────────────────────────────────────────────
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => setAvatar(ev.target.result);
-    reader.readAsDataURL(file);
-  };
+  // handlePhotoChange is managed by useImagePreview
 
   // ── Submit ───────────────────────────────────────────────────
   const handleSubmit = (e) => {
@@ -93,6 +89,8 @@ export default function Profile() {
       skills: skills.join(', '),
       interests: interests.join(', '),
       city, country, github, linkedin, website, avatar,
+      visibility: profile?.visibility || 'public',
+      isPublic: profile?.isPublic !== undefined ? profile.isPublic : true,
     });
     navigate('/participant');
   };
@@ -328,6 +326,8 @@ export default function Profile() {
                 value={website} onChange={e => setWebsite(e.target.value)}
               />
             </div>
+
+
 
           </div>{/* /form-grid */}
 

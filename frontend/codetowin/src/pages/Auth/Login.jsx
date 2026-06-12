@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
+import { DEMO_ACCOUNTS, getDemoAccount, getRoleHome } from '../../mockdata/demoAccounts';
 import '../../styles/pages/auth/login.css';
 
 const roleFromPath = (pathname = '') => {
@@ -14,22 +14,39 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useContext(AuthContext);
-  const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
 
+  const resolveRedirect = (loginEmail) => {
+    const demoAccount = getDemoAccount(loginEmail);
+    if (from && from !== '/' && from !== '/login') {
+      return from;
+    }
+    return demoAccount?.redirectTo || getRoleHome(demoAccount?.role || roleFromPath(from) || 'participant');
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate login using AuthContext
-    login(email || 'developpeur@codetowin.com', { role: roleFromPath(from) });
-    navigate(from, { replace: true });
+    const loginEmail = email || 'participant@codetowin.com';
+    const demoAccount = getDemoAccount(loginEmail);
+    login(loginEmail, { role: roleFromPath(from) || demoAccount?.role });
+    navigate(resolveRedirect(loginEmail), { replace: true });
   };
 
   const handleSocialLogin = (provider) => {
     // Simulate social login
-    login(`${provider.toLowerCase()}user@codetowin.com`, { role: roleFromPath(from) });
-    navigate(from, { replace: true });
+    const loginEmail = `${provider.toLowerCase()}user@codetowin.com`;
+    const targetRole = roleFromPath(from) || 'participant';
+    login(loginEmail, { role: targetRole });
+    navigate(from && from !== '/' ? from : getRoleHome(targetRole), { replace: true });
+  };
+
+  const handleDemoLogin = (account) => {
+    setEmail(account.email);
+    setPassword(account.password);
+    login(account.email, { role: account.role });
+    navigate(account.redirectTo || getRoleHome(account.role), { replace: true });
   };
 
   return (
@@ -63,6 +80,26 @@ export default function Login() {
 
         <div className="divider">ou avec un email, à l'ancienne</div>
 
+        <div className="mb-5 rounded-xl border border-emerald-100 bg-emerald-50 p-3">
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-emerald-800">
+            Comptes de démo
+          </p>
+          <div className="grid gap-2">
+            {DEMO_ACCOUNTS.map((account) => (
+              <button
+                key={account.id}
+                type="button"
+                onClick={() => handleDemoLogin(account)}
+                className="flex items-center justify-between rounded-lg border border-emerald-100 bg-white px-3 py-2 text-left text-sm font-semibold text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50"
+              >
+                <span>{account.label}</span>
+                <span className="text-xs font-medium text-slate-500">{account.email}</span>
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-emerald-700">Mot de passe : demo1234</p>
+        </div>
+
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email" className="form-label">Email ou pseudo</label>
@@ -80,9 +117,9 @@ export default function Login() {
           <div className="form-group">
             <div className="form-header-group">
               <label htmlFor="password" className="form-label">Mot de passe</label>
-              <a href="#forgot" className="forgot-link" onClick={(e) => { e.preventDefault(); showToast("Fonctionnalité bientôt disponible !", "warning"); }}>
+              <Link to="/forgot-password" className="forgot-link">
                 Mot de passe oublié ?
-              </a>
+              </Link>
             </div>
             <input
               type="password"

@@ -10,8 +10,8 @@ const roleLabels = {
   participant: {
     title: 'Développeur',
     heading: 'Rejoins-nous !',
-    subtitle: 'Crée ton compte et commence à bâtir.',
-    redirectTo: '/profile',
+    subtitle: 'Crée ton compte, puis choisis l’espace qui correspond à ton usage.',
+    redirectTo: '/choose-role',
   },
   organizer: {
     title: 'Organisateur',
@@ -37,7 +37,8 @@ export default function Signup() {
   const navigate = useNavigate();
   const location = useLocation();
   const requestedRole = new URLSearchParams(location.search).get('role');
-  const role = validSignupRoles.includes(requestedRole) ? requestedRole : 'participant';
+  const hasExplicitRole = validSignupRoles.includes(requestedRole);
+  const role = hasExplicitRole ? requestedRole : 'participant';
   const roleContext = roleLabels[role];
 
   const handleSubmit = (e) => {
@@ -49,15 +50,29 @@ export default function Signup() {
     // Generate a 6-digit verification code
     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // Redirect to verify email, passing state
-    navigate('/verify-email', {
-      state: {
-        email: email,
-        username: username,
-        otpCode: generatedOtp,
-        role: role
-      }
-    });
+    if (hasExplicitRole) {
+      // Redirect to verify email, passing state
+      navigate('/verify-email', {
+        state: {
+          email: email,
+          username: username,
+          otpCode: generatedOtp,
+          role: role,
+          hasExplicitRole: true
+        }
+      });
+    } else {
+      // Redirect to choose role first
+      navigate('/choose-role', {
+        state: {
+          email: email,
+          username: username,
+          otpCode: generatedOtp,
+          fromSignup: true,
+          hasExplicitRole: false
+        }
+      });
+    }
   };
 
   const handleSocialSignup = (provider) => {
@@ -71,7 +86,7 @@ export default function Signup() {
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
     });
     
-    navigate(roleContext.redirectTo);
+    navigate(hasExplicitRole ? roleContext.redirectTo : '/choose-role');
   };
 
   return (

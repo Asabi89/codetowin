@@ -1,9 +1,18 @@
 import React from 'react';
-import { Link, NavLink, useLocation, matchPath } from 'react-router-dom';
-import { LayoutDashboard, Calendar, PlusSquare, Users, MessageSquare, Settings } from 'lucide-react';
+import { Link, NavLink, useLocation, matchPath, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Calendar, PlusSquare, Users, MessageSquare, Settings, LogOut } from 'lucide-react';
+import useAuth from '../../../hooks/useAuth';
 
 export default function OrganizerSidebar() {
+  const { logout, profile } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   
   // Determine if we are in a hackathon context
   let activeHackathonId = null;
@@ -86,11 +95,19 @@ export default function OrganizerSidebar() {
           ))}
         </nav>
       </div>
-      <div className="border-t border-slate-200 p-4">
+      <div className="border-t border-slate-200 p-4 space-y-1">
         <Link to="/organizer/settings" className="group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900">
-          <img src="https://ui-avatars.com/api/?name=TechHub+Senegal&background=047857&color=fff" alt="" className="mr-3 h-8 w-8 rounded-full" />
-          <span className="truncate">TechHub Sénégal</span>
+          <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent((profile?.firstName || 'O') + '+' + (profile?.lastName || ''))}&background=047857&color=fff`} alt="" className="mr-3 h-8 w-8 rounded-full" />
+          <span className="truncate">{profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Organisateur'}</span>
         </Link>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="group flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+        >
+          <LogOut className="mr-3 h-5 w-5 flex-shrink-0 text-red-400 group-hover:text-red-600" />
+          <span>Déconnexion</span>
+        </button>
       </div>
     </aside>
   );

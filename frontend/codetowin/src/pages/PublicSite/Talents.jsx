@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockTalents } from '../../mockdata/talents';
 import useAuth from '../../hooks/useAuth';
+import { getVisibilityLabel, isProfileDiscoverable } from '../../services/profileVisibility';
 
 export default function Talents() {
   const navigate = useNavigate();
@@ -10,12 +11,13 @@ export default function Talents() {
   const [selectedCountry, setSelectedCountry] = useState('all');
   const [selectedSkill, setSelectedSkill] = useState('all');
   const [onlyAvailable, setOnlyAvailable] = useState(false);
+  const discoverableTalents = mockTalents.filter(isProfileDiscoverable);
 
   // Extract all unique countries and skills for filter options
-  const countries = ['all', ...new Set(mockTalents.map(t => t.country))];
-  const allSkills = ['all', ...new Set(mockTalents.flatMap(t => t.skills))];
+  const countries = ['all', ...new Set(discoverableTalents.map(t => t.country))];
+  const allSkills = ['all', ...new Set(discoverableTalents.flatMap(t => t.skills))];
 
-  const filteredTalents = mockTalents.filter(t => {
+  const filteredTalents = discoverableTalents.filter(t => {
     const matchesSearch = t.fullName.toLowerCase().includes(search.toLowerCase()) || 
                           t.title.toLowerCase().includes(search.toLowerCase());
     const matchesCountry = selectedCountry === 'all' || t.country === selectedCountry;
@@ -180,6 +182,20 @@ export default function Talents() {
                   display: 'inline-block'
                 }} />
                 {talent.available ? 'Disponible' : 'Indisponible'}
+              </div>
+
+              <div style={{
+                position: 'absolute',
+                top: '3.3rem',
+                right: '1.25rem',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                color: talent.visibility === 'members' ? '#0369a1' : '#047857',
+                backgroundColor: talent.visibility === 'members' ? '#e0f2fe' : '#ecfdf5',
+                padding: '0.2rem 0.5rem',
+                borderRadius: '100px'
+              }}>
+                {getVisibilityLabel(talent)}
               </div>
 
               {/* Avatar & Basic Info */}

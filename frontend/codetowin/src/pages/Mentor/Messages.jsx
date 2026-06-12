@@ -2,67 +2,11 @@ import React, { useState, useEffect } from 'react';
 import ChatLayout from '../../components/features/messaging/ChatLayout';
 import { messagesApi } from '../../api/messages';
 import { MENTOR_TABS_MOCK, MENTOR_CHATS_MOCK } from '../../mockdata/mentor';
-
-const extractArray = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.conversations)) return data.conversations;
-  return [];
-};
-
-const normalizeConversation = (conversation) => ({
-  id: conversation.id || conversation._id,
-  name: conversation.name || conversation.title || conversation.team?.name || 'Conversation',
-  headerName: conversation.headerName || conversation.name || conversation.team?.name,
-  role: conversation.role || conversation.context || conversation.hackathon?.title || 'Conversation mentor',
-  category: conversation.category || (conversation.organizer ? 'organisation' : 'equipes'),
-  isGroup: conversation.isGroup ?? conversation.is_group ?? Boolean(conversation.team),
-  avatar: conversation.avatar || conversation.team?.initials || conversation.name?.slice(0, 2).toUpperCase() || 'CT',
-  avatarBgColor: conversation.avatarBgColor || 'bg-emerald-100',
-  avatarTextColor: conversation.avatarTextColor || 'text-emerald-600',
-  avatarBorderColor: conversation.avatarBorderColor || 'border-emerald-200',
-  status: conversation.status || 'offline',
-  unread: conversation.unread ?? conversation.unread_count ?? 0,
-  lastTime: conversation.lastTime || conversation.last_message_at || '',
-  lastMessage: conversation.lastMessage || conversation.last_message || '',
-  messages: extractArray(conversation.messages).map((message) => ({
-    id: message.id || message._id,
-    sender: message.sender || (message.is_me ? 'me' : 'them'),
-    senderName: message.senderName || message.sender_name || message.user?.name || 'Participant',
-    text: message.text || message.content || '',
-    time: message.time || message.created_at || '',
-  })),
-});
+import { extractArray, normalizeConversation } from '../../services/normalizers';
+import { useRoleConversations } from '../../hooks/useRoleConversations';
 
 export default function MentorMessages() {
-  const [tabs, setTabs] = useState([]);
-  const [chats, setChats] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadChats = async () => {
-      try {
-        setLoading(true);
-        const data = await messagesApi.getConversations({ role: 'mentor' });
-        const conversations = extractArray(data);
-        if (conversations.length > 0) {
-          setTabs(MENTOR_TABS_MOCK);
-          setChats(conversations.map(normalizeConversation));
-        } else {
-          setTabs(MENTOR_TABS_MOCK);
-          setChats(MENTOR_CHATS_MOCK);
-        }
-      } catch (err) {
-        console.warn('Erreur lors du chargement des conversations depuis l\'API, utilisation du fallback.', err);
-        setTabs(MENTOR_TABS_MOCK);
-        setChats(MENTOR_CHATS_MOCK);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadChats();
-  }, []);
+  const { tabs, chats, loading } = useRoleConversations('mentor', { mockChats: MENTOR_CHATS_MOCK, mockTabs: MENTOR_TABS_MOCK });
 
   if (loading) {
     return (

@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import useAuth from '../../hooks/useAuth';
 import { usersApi } from '../../api/users';
 import { mentorsApi } from '../../api/mentors';
+import { useImagePreview } from '../../hooks/useImagePreview';
+import InputModal from '../../components/common/InputModal';
 
 export default function MentorProfile() {
   const { profile, registerUser } = useAuth();
@@ -14,12 +16,22 @@ export default function MentorProfile() {
   const [lastName, setLastName] = useState('');
   const [title, setTitle] = useState('');
   const [bio, setBio] = useState('');
-  const [avatar, setAvatar] = useState('https://ui-avatars.com/api/?name=Seydou+Kane&background=047857&color=fff&size=128');
+  const { url: avatar, setUrl: setAvatar, inputRef: fileInputRef, handleChange: handleFileChange } = useImagePreview(
+    'https://ui-avatars.com/api/?name=Seydou+Kane&background=047857&color=fff&size=128'
+  );
   
   const [expertises, setExpertises] = useState(["Intelligence Artificielle", "Data Science", "Product Management"]);
   const [skills, setSkills] = useState(["Python", "TensorFlow"]);
 
-  const fileInputRef = useRef(null);
+  // État modale
+  const [modal, setModal] = useState({ open: false, type: null });
+  const openModal = (type) => setModal({ open: true, type });
+  const closeModal = () => setModal({ open: false, type: null });
+  const handleModalConfirm = (value) => {
+    if (modal.type === 'expertise') setExpertises(prev => [...prev, value]);
+    if (modal.type === 'skill') setSkills(prev => [...prev, value]);
+    closeModal();
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -55,17 +67,8 @@ export default function MentorProfile() {
     };
     fetchProfile();
   }, [profile]);
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setAvatar(event.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  
+  // handleFileChange is managed by useImagePreview
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -265,10 +268,7 @@ export default function MentorProfile() {
                   ))}
                   <button
                     type="button"
-                    onClick={() => {
-                      const newExp = prompt("Entrez un domaine d'expertise :");
-                      if (newExp) setExpertises([...expertises, newExp]);
-                    }}
+                    onClick={() => openModal('expertise')}
                     className="inline-flex items-center rounded-md border border-dashed border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-500 hover:border-brand-500 hover:text-brand-500"
                   >
                     + Ajouter un domaine
@@ -297,10 +297,7 @@ export default function MentorProfile() {
                   ))}
                   <button
                     type="button"
-                    onClick={() => {
-                      const newSkill = prompt("Entrez une compétence/technologie :");
-                      if (newSkill) setSkills([...skills, newSkill]);
-                    }}
+                    onClick={() => openModal('skill')}
                     className="inline-flex items-center rounded-md border border-dashed border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-500 hover:border-brand-500 hover:text-brand-500"
                   >
                     + Ajouter une compétence
@@ -322,6 +319,18 @@ export default function MentorProfile() {
           </button>
         </div>
       </form>
+
+      {/* Modale stylée — remplace window.prompt() */}
+      <InputModal
+        isOpen={modal.open}
+        title={modal.type === 'expertise' ? "Ajouter un domaine d'expertise" : 'Ajouter une compétence'}
+        label={modal.type === 'expertise' ? "Domaine d'expertise" : 'Compétence / Technologie'}
+        placeholder={modal.type === 'expertise' ? 'Ex : Machine Learning, UX Design…' : 'Ex : React, Docker, Python…'}
+        hint={modal.type === 'skill' ? 'Exemple : Photoshop, HTML5, SEO…' : ''}
+        tags={modal.type === 'expertise' ? expertises : skills}
+        onConfirm={handleModalConfirm}
+        onClose={closeModal}
+      />
     </div>
   );
 }

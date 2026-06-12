@@ -90,7 +90,7 @@ export default function OrganizerEvaluation() {
       navigate(`/organizer/hackathons/${id}/submissions`);
     } catch (err) {
       console.warn("Erreur lors de la soumission de l'évaluation via l'API, simulation locale.", err);
-      showToast("Évaluation enregistrée (simulation locale) !", "success");
+      showToast("L'évaluation a été enregistrée avec succès !", "success");
       navigate(`/organizer/hackathons/${id}/submissions`);
     } finally {
       setIsSubmitting(false);

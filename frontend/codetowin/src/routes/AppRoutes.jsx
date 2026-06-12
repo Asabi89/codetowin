@@ -1,6 +1,5 @@
 import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
 import {
-  Link,
   Navigate,
   Routes,
   Route,
@@ -9,32 +8,49 @@ import {
 } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
+import ParticipantLayout from "../layouts/ParticipantLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import useAuth from "../hooks/useAuth";
 import LoadingSpinner, { SpinnerIcon } from "../components/common/LoadingSpinner";
 import ScrollToTop from "../components/common/ScrollToTop";
+import EmbeddedPublicView from "../components/common/EmbeddedPublicView";
 
-const Home = lazy(() => import("../pages/Participant/Home"));
+const Home = lazy(() => import("../pages/PublicSite/Home"));
 const Login = lazy(() => import("../pages/Auth/Login"));
 const Signup = lazy(() => import("../pages/Auth/Signup"));
+const ForgotPassword = lazy(() => import("../pages/Auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("../pages/Auth/ResetPassword"));
+const ChooseRole = lazy(() => import("../pages/Auth/ChooseRole"));
 const VerifyEmail = lazy(() => import("../pages/Auth/VerifyEmail"));
 const Profile = lazy(() => import("../pages/Participant/Profile"));
-const Participant = lazy(() => import("../pages/Participant"));
-const Hackathons = lazy(() => import("../pages/Participant/Hackathons"));
+const ParticipantProfile = lazy(() => import("../pages/Participant/index"));
+const ParticipantDashboard = lazy(() => import("../pages/Participant/Dashboard"));
+const ParticipantHackathons = lazy(() => import("../pages/Participant/MyHackathons"));
+const ParticipantJoinHackathon = lazy(() => import("../pages/Participant/JoinHackathon"));
+const ParticipantTeam = lazy(() => import("../pages/Participant/Team"));
+const ParticipantTeamCreate = lazy(() => import("../pages/Participant/TeamCreate"));
+const ParticipantSubmission = lazy(() => import("../pages/Participant/Submission"));
+const ParticipantCertificates = lazy(() => import("../pages/Participant/Certificates"));
+const ParticipantNotifications = lazy(() => import("../pages/Participant/Notifications"));
+const ParticipantSettings = lazy(() => import("../pages/Participant/Settings"));
+const ParticipantMessages = lazy(() => import("../pages/Participant/Messages"));
+const Hackathons = lazy(() => import("../pages/PublicSite/Hackathons"));
 const HackathonDetail = lazy(
-  () => import("../pages/Participant/HackathonDetail"),
+  () => import("../pages/PublicSite/HackathonDetail"),
 );
-const About = lazy(() => import("../pages/Participant/About"));
-const Contact = lazy(() => import("../pages/Participant/Contact"));
+const About = lazy(() => import("../pages/PublicSite/About"));
+const Contact = lazy(() => import("../pages/PublicSite/Contact"));
 const CertificateVerification = lazy(
-  () => import("../pages/Participant/CertificateVerification"),
+  () => import("../pages/PublicSite/CertificateVerification"),
 );
-const Talents = lazy(() => import("../pages/Participant/Talents"));
-const TalentProfile = lazy(() => import("../pages/Participant/TalentProfile"));
-const PublicProfile = lazy(() => import("../pages/Participant/PublicProfile"));
-const Conditions = lazy(() => import("../pages/Info/Conditions"));
-const Politique = lazy(() => import("../pages/Info/Politique"));
-const Aide = lazy(() => import("../pages/Info/Aide"));
+const Talents = lazy(() => import("../pages/PublicSite/Talents"));
+const TalentProfile = lazy(() => import("../pages/PublicSite/TalentProfile"));
+const PublicProfile = lazy(() => import("../pages/PublicSite/PublicProfile"));
+const Conditions = lazy(() => import("../pages/PublicSite/Conditions"));
+const Politique = lazy(() => import("../pages/PublicSite/Politique"));
+const Aide = lazy(() => import("../pages/PublicSite/Aide"));
+const Participate = lazy(() => import("../pages/PublicSite/Participate"));
+const Organize = lazy(() => import("../pages/PublicSite/Organize"));
 const NotFound = lazy(() => import("../pages/Error/NotFound"));
 const Forbidden = lazy(() => import("../pages/Error/Forbidden"));
 const ServerError = lazy(() => import("../pages/Error/ServerError"));
@@ -198,22 +214,9 @@ function HomeRoute() {
 
 function EmbeddedTalentProfile({ backTo, backLabel }) {
   return (
-    <div className="bg-slate-50 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl">
-        <div className="mb-5 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-800">
-          <strong className="font-semibold">Lecture publique sécurisée.</strong>{" "}
-          Vous consultez ce profil sans quitter votre espace dashboard.
-        </div>
-        <Link
-          to={backTo}
-          className="inline-flex items-center text-sm font-semibold text-brand-700 hover:text-brand-800"
-        >
-          <span className="mr-2">←</span>
-          {backLabel}
-        </Link>
-      </div>
-      <TalentProfile />
-    </div>
+    <EmbeddedPublicView embedded backTo={backTo} backLabel={backLabel} maxWidth="max-w-6xl">
+      <TalentProfile embedded showBackLink={false} />
+    </EmbeddedPublicView>
   );
 }
 
@@ -272,6 +275,10 @@ export default function AppRoutes() {
         {/* Auth routes without global layout */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/register" element={<Signup />} />
+        <Route path="/choose-role" element={<ChooseRole />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
 
         {/* Standard routes with MainLayout */}
@@ -290,26 +297,6 @@ export default function AppRoutes() {
               <Profile />
             </MainLayout>
           }
-        />
-        <Route
-          path="/participant"
-          element={
-            <MainLayout>
-              <Participant />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/participant/public/organizers/:id"
-          element={<ParticipantEmbeddedProfileRoute type="organizers" />}
-        />
-        <Route
-          path="/participant/public/mentors/:id"
-          element={<ParticipantEmbeddedProfileRoute type="mentors" />}
-        />
-        <Route
-          path="/participant/public/talents/:id"
-          element={<ParticipantEmbeddedTalentRoute />}
         />
         <Route
           path="/hackathons"
@@ -360,6 +347,22 @@ export default function AppRoutes() {
           }
         />
         <Route
+          path="/participer"
+          element={
+            <MainLayout>
+              <Participate />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/organiser"
+          element={
+            <MainLayout>
+              <Organize />
+            </MainLayout>
+          }
+        />
+        <Route
           path="/aide"
           element={
             <MainLayout>
@@ -392,6 +395,41 @@ export default function AppRoutes() {
           path="/mentors/:id"
           element={<PublicProfileRoute type="mentors" />}
         />
+
+        {/* Participant Routes */}
+        <Route
+          path="/participant"
+          element={
+            <ProtectedRoute allowedRoles={["participant"]}>
+              <ParticipantLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<ParticipantDashboard />} />
+          <Route path="dashboard" element={<ParticipantDashboard />} />
+          <Route path="hackathons" element={<ParticipantHackathons />} />
+          <Route path="join/:id" element={<ParticipantJoinHackathon />} />
+          <Route path="team" element={<ParticipantTeam />} />
+          <Route path="team/create" element={<ParticipantTeamCreate />} />
+          <Route path="submission" element={<ParticipantSubmission />} />
+          <Route path="messages" element={<ParticipantMessages />} />
+          <Route path="certificates" element={<ParticipantCertificates />} />
+          <Route path="profile" element={<ParticipantProfile />} />
+          <Route path="settings" element={<ParticipantSettings />} />
+          <Route path="notifications" element={<ParticipantNotifications />} />
+          <Route
+            path="public/organizers/:id"
+            element={<ParticipantEmbeddedProfileRoute type="organizers" />}
+          />
+          <Route
+            path="public/mentors/:id"
+            element={<ParticipantEmbeddedProfileRoute type="mentors" />}
+          />
+          <Route
+            path="public/talents/:id"
+            element={<ParticipantEmbeddedTalentRoute />}
+          />
+        </Route>
 
         {/* Organizer Routes */}
         <Route

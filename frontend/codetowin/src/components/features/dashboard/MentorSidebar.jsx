@@ -1,8 +1,17 @@
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { LayoutDashboard, Mail, Users, FileText, MessageSquare, User, Settings } from 'lucide-react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Mail, Users, FileText, MessageSquare, User, Settings, LogOut } from 'lucide-react';
+import useAuth from '../../../hooks/useAuth';
 
 export default function MentorSidebar() {
+  const { logout, profile } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   const navItems = [
     { name: 'Dashboard', path: '/mentor', icon: LayoutDashboard },
     { name: 'Invitations', path: '/mentor/invitations', icon: Mail, badge: 2, badgeClass: 'bg-brand-100 px-2.5 font-medium text-brand-800' },
@@ -52,11 +61,19 @@ export default function MentorSidebar() {
           ))}
         </nav>
       </div>
-      <div className="border-t border-slate-200 p-4">
+      <div className="border-t border-slate-200 p-4 space-y-1">
         <Link to="/mentor/profile" className="group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900">
-          <img src="https://ui-avatars.com/api/?name=Seydou+Kane&background=047857&color=fff" alt="" className="mr-3 h-8 w-8 rounded-full" />
-          <span className="truncate">Seydou Kane</span>
+          <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent((profile?.firstName || 'M') + '+' + (profile?.lastName || ''))}&background=047857&color=fff`} alt="" className="mr-3 h-8 w-8 rounded-full" />
+          <span className="truncate">{profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Mentor'}</span>
         </Link>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="group flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+        >
+          <LogOut className="mr-3 h-5 w-5 flex-shrink-0 text-red-400 group-hover:text-red-600" />
+          <span>Déconnexion</span>
+        </button>
       </div>
     </aside>
   );

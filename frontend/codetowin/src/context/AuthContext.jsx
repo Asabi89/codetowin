@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { getDemoAccount } from '../mockdata/demoAccounts';
 
 export const AuthContext = createContext();
 
@@ -26,6 +27,8 @@ const initialDefaultState = {
 
 const inferRole = (value = '', fallback = 'participant') => {
   const text = String(value).toLowerCase();
+  const demoAccount = getDemoAccount(text);
+  if (demoAccount?.role) return demoAccount.role;
   if (text.includes('mentor')) return 'mentor';
   if (
     text.includes('organizer') ||
@@ -59,9 +62,12 @@ export const AuthProvider = ({ children }) => {
   const login = (email, options = {}) => {
     // Mimic login by registering a mock user if profile doesn't exist
     setState(prev => {
-      const mockProfile = prev.profile || {
-        firstName: email.split('@')[0],
+      const loginEmail = email || 'participant@codetowin.com';
+      const demoAccount = getDemoAccount(loginEmail);
+      const mockProfile = demoAccount?.profile || {
+        firstName: loginEmail.split('@')[0],
         lastName: '',
+        email: loginEmail,
         title: 'Developer',
         about: '',
         bio: '',
@@ -72,6 +78,8 @@ export const AuthProvider = ({ children }) => {
         github: '',
         linkedin: '',
         website: '',
+        visibility: 'public',
+        isPublic: true,
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
       };
       
@@ -90,13 +98,14 @@ export const AuthProvider = ({ children }) => {
         }
       ];
 
-      const assignedRole = options.role || inferRole(email, prev.role || 'participant');
+      const assignedRole = options.role || demoAccount?.role || inferRole(loginEmail, prev.role || 'participant');
 
       return {
         ...prev,
         registered: true,
         profile: mockProfile,
         role: assignedRole,
+        memberRole: demoAccount?.memberRole || null,
         teammates: newTeammates
       };
     });

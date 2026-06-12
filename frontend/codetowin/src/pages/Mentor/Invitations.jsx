@@ -3,14 +3,7 @@ import PageHeader from '../../components/common/PageHeader';
 import InvitationCard from '../../components/features/mentor/InvitationCard';
 import { MENTOR_INVITATIONS_MOCK } from '../../mockdata/mentor';
 import { mentorsApi } from '../../api/mentors';
-
-const extractArray = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.invitations)) return data.invitations;
-  return [];
-};
+import { extractArray } from '../../services/normalizers';
 
 const normalizeInvitation = (invitation) => {
   const hackathon = invitation.hackathon || {};

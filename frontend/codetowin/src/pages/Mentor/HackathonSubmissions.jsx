@@ -5,6 +5,8 @@ import SearchFilterBar from '../../components/common/SearchFilterBar';
 import SubmissionCard from '../../components/features/submissions/SubmissionCard';
 import { submissionsApi } from '../../api/submissions';
 import { MENTOR_SUBMISSIONS_MOCK } from '../../mockdata/mentor';
+import { extractArray, normalizeSubmission } from '../../services/normalizers';
+import { useExportCSV } from '../../hooks/useExportCSV';
 
 const exportCsv = (rows, filename) => {
   const csvRows = [
@@ -21,38 +23,9 @@ const exportCsv = (rows, filename) => {
   URL.revokeObjectURL(url);
 };
 
-const extractArray = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.submissions)) return data.submissions;
-  return [];
-};
-
-const normalizeSubmission = (submission) => {
-  const team = submission.team || {};
-  const status = String(submission.status || '').toLowerCase();
-  const evaluated = ['evaluated', 'évalué', 'evalue', 'reviewed'].includes(status);
-  return {
-    ...submission,
-    id: submission.id || submission._id,
-    teamName: submission.teamName || submission.team_name || team.name || 'Équipe',
-    projectName: submission.projectName || submission.project_name || submission.title || 'Projet sans titre',
-    status: evaluated ? 'evaluated' : 'submitted',
-    statusLabel: evaluated ? 'Évalué' : 'Soumis',
-    description: submission.description || 'Pas de description fournie.',
-    tags: submission.tags || submission.technologies || [],
-    repoLink: submission.repoLink || submission.repository_url || submission.github_url || '#',
-    demoLink: submission.demoLink || submission.demo_url || submission.video_url || '#',
-    score: submission.score ?? submission.total_score ?? null,
-    feedbackPath: submission.feedbackPath || `/mentor/teams/${team.id || submission.team_id || submission.id}/feedback`,
-    actionLabel: evaluated ? 'Modifier note' : 'Évaluer',
-  };
-};
-
 function ExportGradesButton({ submissions }) {
   return (
-    <button type="button" onClick={() => exportCsv(submissions, 'mentor-notes-soumissions.csv')} className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+    <button type="button" onClick={() => exportCSV(submissions, 'mentor-notes-soumissions.csv')} className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
       <svg className="-ml-1 mr-2 h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
         <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
       </svg>
@@ -64,6 +37,7 @@ function ExportGradesButton({ submissions }) {
 export default function MentorHackathonSubmissions() {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { exportCSV } = useExportCSV();
 
   useEffect(() => {
     const fetchSubmissions = async () => {

@@ -3,36 +3,12 @@ import { Link, useParams } from 'react-router-dom';
 import SubmissionCard from '../../../components/features/submissions/SubmissionCard';
 import { SUBMISSIONS_MOCK } from '../../../mockdata/organizer';
 import { submissionsApi } from '../../../api/submissions';
-
-const extractArray = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.submissions)) return data.submissions;
-  return [];
-};
+import { extractArray, normalizeSubmission } from '../../../services/normalizers';
 
 const normalizeStatus = (status = '') => {
   const value = String(status).toLowerCase();
   if (['evaluated', 'évalué', 'evalue', 'reviewed'].includes(value)) return 'Évalué';
   return 'Soumis';
-};
-
-const normalizeSubmission = (submission) => {
-  const team = submission.team || {};
-  const project = submission.project || {};
-  return {
-    ...submission,
-    id: submission.id || submission._id,
-    teamName: submission.teamName || submission.team_name || team.name || 'Équipe',
-    projectName: submission.projectName || submission.project_name || submission.title || project.name || 'Projet sans titre',
-    description: submission.description || project.description || 'Pas de description fournie.',
-    tags: submission.tags || submission.technologies || project.tags || [],
-    repoLink: submission.repoLink || submission.repository_url || submission.github_url || submission.githubUrl || '#',
-    demoLink: submission.demoLink || submission.demo_url || submission.demoUrl || submission.video_url || '#',
-    status: normalizeStatus(submission.status),
-    score: submission.score ?? submission.total_score ?? submission.final_score ?? null,
-  };
 };
 
 export default function OrganizerSubmissions() {

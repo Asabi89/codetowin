@@ -7,10 +7,11 @@ import '../styles/dashboard.css';
 
 export default function DashboardLayout({ role = 'organizer' }) {
   const location = useLocation();
+  const Sidebar = role === 'mentor' ? MentorSidebar : OrganizerSidebar;
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50">
-      {role === 'organizer' ? <OrganizerSidebar /> : <MentorSidebar />}
+      <Sidebar />
       
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar role={role} />

@@ -27,6 +27,14 @@ export const MEMBERS_MOCK = [
     role: 'Administrateur',
     status: 'Invitation en attente',
   },
+  {
+    id: 4,
+    name: 'Nadia Ba',
+    email: 'member@codetowin.com',
+    avatar: 'https://ui-avatars.com/api/?name=Nadia+Ba&background=0f766e&color=fff',
+    role: 'Évaluateur',
+    status: 'Actif',
+  },
 ];
 
 export const PARTICIPANTS_MOCK = [

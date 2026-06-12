@@ -2,37 +2,8 @@ import React, { useEffect, useState } from 'react';
 import ChatLayout from '../../components/features/messaging/ChatLayout';
 import { messagesApi } from '../../api/messages';
 import { ORGANIZER_TABS_MOCK, ORGANIZER_CHATS_MOCK } from '../../mockdata/organizer';
-
-const extractArray = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.conversations)) return data.conversations;
-  return [];
-};
-
-const normalizeConversation = (conversation) => ({
-  id: conversation.id || conversation._id,
-  name: conversation.name || conversation.title || conversation.team?.name || 'Conversation',
-  role: conversation.role || conversation.context || conversation.hackathon?.title || 'Conversation organisateur',
-  category: conversation.category || (conversation.mentor ? 'mentors' : 'participants'),
-  isGroup: conversation.isGroup ?? conversation.is_group ?? Boolean(conversation.team),
-  avatar: conversation.avatar || conversation.name?.slice(0, 2).toUpperCase() || 'CT',
-  avatarBgColor: conversation.avatarBgColor || 'bg-emerald-100',
-  avatarTextColor: conversation.avatarTextColor || 'text-emerald-600',
-  avatarBorderColor: conversation.avatarBorderColor || 'border-emerald-200',
-  status: conversation.status || 'offline',
-  unread: conversation.unread ?? conversation.unread_count ?? 0,
-  lastTime: conversation.lastTime || conversation.last_message_at || '',
-  lastMessage: conversation.lastMessage || conversation.last_message || '',
-  messages: extractArray(conversation.messages).map((message) => ({
-    id: message.id || message._id,
-    sender: message.sender || (message.is_me ? 'me' : 'them'),
-    senderName: message.senderName || message.sender_name || message.user?.name || 'Participant',
-    text: message.text || message.content || '',
-    time: message.time || message.created_at || '',
-  })),
-});
+import { extractArray, normalizeConversation } from '../../services/normalizers';
+import { useRoleConversations } from '../../hooks/useRoleConversations';
 
 export default function OrganizerMessages() {
   const [tabs, setTabs] = useState(ORGANIZER_TABS_MOCK);

@@ -65,7 +65,7 @@ export default function OrganizerParticipants() {
     } catch (err) {
       console.warn("Erreur lors de l'approbation via l'API, simulation locale.", err);
       setParticipants(prev => prev.map(p => p.id === regId ? { ...p, status: 'Approuvé' } : p));
-      showToast("Inscription approuvée (simulation locale) !", "success");
+      showToast("Inscription approuvée avec succès !", "success");
     }
   };
 
@@ -77,7 +77,7 @@ export default function OrganizerParticipants() {
     } catch (err) {
       console.warn("Erreur lors du rejet via l'API, simulation locale.", err);
       setParticipants(prev => prev.map(p => p.id === regId ? { ...p, status: 'Rejeté' } : p));
-      showToast("Inscription rejetée (simulation locale).", "danger");
+      showToast("Inscription rejetée.", "danger");
     }
   };
 

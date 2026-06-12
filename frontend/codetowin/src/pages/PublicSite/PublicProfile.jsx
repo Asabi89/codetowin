@@ -4,7 +4,6 @@ import {
   Mail, 
   MapPin, 
   Star, 
-  ChevronLeft, 
   Award, 
   BookOpen, 
   Calendar, 
@@ -15,6 +14,14 @@ import {
 } from 'lucide-react';
 import { mentorsApi } from '../../api/mentors';
 import { usersApi } from '../../api/users';
+import EmbeddedPublicView from '../../components/common/EmbeddedPublicView';
+import useAuth from '../../hooks/useAuth';
+import {
+  canViewFullProfile,
+  canViewSensitiveProfileInfo,
+  getVisibilityLabel,
+  isProfileDiscoverable,
+} from '../../services/profileVisibility';
 
 const Linkedin = (props) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -28,6 +35,7 @@ const publicProfiles = {
   organizers: {
     'techhub-senegal': {
       role: 'organizer',
+      visibility: 'public',
       name: 'TechHub Sénégal',
       title: "Incubateur d'innovations numériques",
       location: 'Dakar, Sénégal',
@@ -57,6 +65,7 @@ const publicProfiles = {
   mentors: {
     'dr-ousmane-diop': {
       role: 'mentor',
+      visibility: 'public',
       name: 'Dr. Ousmane Diop',
       title: 'Expert IA & Data Science',
       location: 'Dakar, Sénégal',
@@ -84,6 +93,7 @@ const publicProfiles = {
     },
     'marie-kone': {
       role: 'mentor',
+      visibility: 'public',
       name: 'Marie Koné',
       title: 'Lead Product Designer',
       location: 'Abidjan, Côte d’Ivoire',
@@ -126,6 +136,7 @@ const getName = (data) => {
 const normalizeProfile = (data, type, fallback) => ({
   ...fallback,
   role: type === 'organizers' ? 'organizer' : 'mentor',
+  visibility: data?.visibility || fallback.visibility,
   name: getName(data) || fallback.name,
   title: data?.title || data?.headline || data?.role || data?.specialty || fallback.title,
   location: data?.location || data?.city || data?.country || fallback.location,
@@ -150,10 +161,14 @@ export default function PublicProfile({
 }) {
   const { id } = useParams();
   const location = useLocation();
+  const { registered, role } = useAuth();
   const profileType = forcedProfileType || (location.pathname.includes('/organizers/') ? 'organizers' : 'mentors');
   const fallback = publicProfiles[profileType]?.[id] || fallbackByType[profileType];
   const [profile, setProfile] = useState(fallback);
   const [loading, setLoading] = useState(true);
+  const viewer = { registered, role, embedded };
+  const canViewFull = canViewFullProfile(profile, viewer);
+  const canViewSensitive = canViewSensitiveProfileInfo(profile, viewer);
 
   const backLink = useMemo(() => (
     backTo && backLabel
@@ -184,25 +199,31 @@ export default function PublicProfile({
 
   const roleLabel = profile.role === 'organizer' ? 'Organisateur' : 'Mentor';
 
+  if (!isProfileDiscoverable(profile) && !canViewFull) {
+    return (
+      <EmbeddedPublicView
+        embedded={embedded}
+        backTo={backLink.to}
+        backLabel={backLink.label}
+        notice="Ce profil est privé."
+      >
+        <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <h1 className="font-display text-2xl font-extrabold text-slate-900">Profil privé</h1>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-slate-600">
+            Cette personne ou organisation ne rend pas son profil visible publiquement.
+          </p>
+        </div>
+      </EmbeddedPublicView>
+    );
+  }
+
   return (
-    <div className={`${embedded ? 'bg-slate-50/50 px-4 py-6 sm:px-6 lg:px-8' : 'min-h-screen bg-slate-50/50 px-4 py-12 sm:px-6 lg:px-8'}`}>
-      <div className="mx-auto max-w-5xl">
-        {embedded && (
-          <div className="mb-6 rounded-xl border border-brand-100 bg-brand-50/60 px-4 py-3 text-sm text-brand-800 backdrop-blur-sm flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="flex h-2 w-2 rounded-full bg-brand-600 animate-pulse"></span>
-              <span>
-                <strong className="font-semibold text-brand-900">Lecture publique sécurisée.</strong> Vous consultez ce profil en tant qu'organisateur.
-              </span>
-            </div>
-          </div>
-        )}
-
-        <Link to={backLink.to} className="group inline-flex items-center text-sm font-semibold text-slate-600 hover:text-brand-700 transition-colors">
-          <ChevronLeft className="mr-1 h-4 w-4 transition-transform group-hover:-translate-x-1" />
-          {backLink.label}
-        </Link>
-
+    <EmbeddedPublicView
+      embedded={embedded}
+      backTo={backLink.to}
+      backLabel={backLink.label}
+      notice="Vous consultez ce profil sans quitter votre espace dashboard."
+    >
         {/* Profile Card Header */}
         <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md">
           {/* Banner Section */}
@@ -214,6 +235,9 @@ export default function PublicProfile({
               <span className="inline-flex items-center gap-1 rounded-full bg-white/95 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-brand-700 shadow-md backdrop-blur-md">
                 <span className="h-1.5 w-1.5 rounded-full bg-brand-600"></span>
                 {roleLabel}
+              </span>
+              <span className="inline-flex items-center rounded-full bg-white/95 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-700 shadow-md backdrop-blur-md">
+                {getVisibilityLabel(profile)}
               </span>
             </div>
 
@@ -254,11 +278,11 @@ export default function PublicProfile({
               <div className="max-w-xl">
                 <h2 className="text-lg font-bold text-slate-900">{profile.title}</h2>
                 <p className="mt-1.5 text-sm leading-relaxed text-slate-500">
-                  {profile.bio ? profile.bio.substring(0, 120) + '...' : ''}
+                  {canViewFull && profile.bio ? profile.bio.substring(0, 120) + '...' : 'Identité publique visible. Les détails complets dépendent des paramètres de visibilité.'}
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                {profile.socials?.linkedin && (
+                {canViewSensitive && profile.socials?.linkedin && (
                   <a 
                     href={profile.socials.linkedin} 
                     target="_blank" 
@@ -288,6 +312,13 @@ export default function PublicProfile({
           </div>
         </div>
 
+        {!canViewFull && (
+          <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            <strong className="font-semibold">Profil complet réservé aux membres autorisés.</strong>{" "}
+            Vous voyez l’identité publique. Connectez-vous ou ouvrez ce profil depuis un dashboard lié pour voir les détails.
+          </div>
+        )}
+
         {loading && (
           <div className="mt-8 flex justify-center py-6">
             <div className="flex items-center gap-2 text-slate-500">
@@ -298,7 +329,7 @@ export default function PublicProfile({
         )}
 
         {/* Profile Main Grid Content */}
-        <div className="mt-6 grid gap-6 md:grid-cols-3">
+        {canViewFull && <div className="mt-6 grid gap-6 md:grid-cols-3">
           {/* Bio Column */}
           <div className="md:col-span-2 space-y-6">
             <section className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
@@ -380,7 +411,7 @@ export default function PublicProfile({
               </h3>
               
               <div className="mt-5 space-y-3.5">
-                {profile.socials?.email && (
+                {canViewSensitive && profile.socials?.email && (
                   <div className="flex items-center gap-3 text-sm text-slate-600">
                     <Mail className="h-4 w-4 text-slate-400 shrink-0" />
                     <a href={`mailto:${profile.socials.email}`} className="hover:text-brand-600 truncate transition-colors">
@@ -388,7 +419,7 @@ export default function PublicProfile({
                     </a>
                   </div>
                 )}
-                {profile.socials?.website && (
+                {canViewSensitive && profile.socials?.website && (
                   <div className="flex items-center gap-3 text-sm text-slate-600">
                     <ExternalLink className="h-4 w-4 text-slate-400 shrink-0" />
                     <a 
@@ -401,7 +432,7 @@ export default function PublicProfile({
                     </a>
                   </div>
                 )}
-                {profile.socials?.linkedin && (
+                {canViewSensitive && profile.socials?.linkedin && (
                   <div className="flex items-center gap-3 text-sm text-slate-600">
                     <Linkedin className="h-4 w-4 text-slate-400 shrink-0" />
                     <a 
@@ -417,8 +448,7 @@ export default function PublicProfile({
               </div>
             </section>
           </div>
-        </div>
-      </div>
-    </div>
+        </div>}
+    </EmbeddedPublicView>
   );
 }
