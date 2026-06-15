@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { initialHackathons } from '../../mockdata/hackathons';
+import { hackathonsApi } from '../../api/hackathons';
 import { formatDateRange } from '../../services/formatters';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 import '../../styles/pages/participant/hackaton.css';
 
 
@@ -17,6 +18,9 @@ export default function Hackathons() {
   });
 
   const [hackathons, setHackathons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [locations, setLocations] = useState(['all']);
+  const [interests, setInterests] = useState(['all']);
 
   // Normalize text for search comparison
   const normalizeText = (val) => {
@@ -53,23 +57,36 @@ export default function Hackathons() {
     };
   };
 
-  // Build the list of available locations and themes (interests)
-  const locations = ['all', ...new Set(initialHackathons.map(h => h.location))];
-  const interests = ['all', ...new Set(initialHackathons.map(h => h.interest))];
-
   useEffect(() => {
-    const enriched = initialHackathons.map(h => {
-      const statusInfo = getStatusFromDates(h.start, h.end);
-      return {
-        ...h,
-        statusFilter: statusInfo.filter,
-        statusLabel: statusInfo.label,
-        searchStr: normalizeText(
-          [h.keywords, h.title, h.prize, h.location, h.interest].join(' ')
-        )
-      };
-    });
-    setHackathons(enriched);
+    const fetchHackathons = async () => {
+      try {
+        const response = await hackathonsApi.getHackathons();
+        const data = response.data || [];
+        
+        // Build the list of available locations and themes (interests)
+        setLocations(['all', ...new Set(data.map(h => h.location))]);
+        setInterests(['all', ...new Set(data.map(h => h.interest))]);
+
+        const enriched = data.map(h => {
+          const statusInfo = getStatusFromDates(h.start, h.end);
+          return {
+            ...h,
+            statusFilter: statusInfo.filter,
+            statusLabel: statusInfo.label,
+            searchStr: normalizeText(
+              [h.keywords, h.title, h.prize, h.location, h.interest].join(' ')
+            )
+          };
+        });
+        setHackathons(enriched);
+      } catch (error) {
+        console.error("Failed to fetch hackathons:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHackathons();
   }, []);
 
   // Filter logic
@@ -268,39 +285,47 @@ export default function Hackathons() {
         {/* Results Heading */}
         <section className="section-heading">
           <h2>Tous les hackathons</h2>
-          <span className="section-count">{filteredHackathons.length} hackathon{filteredHackathons.length === 1 ? '' : 's'}</span>
+          {!loading && <span className="section-count">{filteredHackathons.length} hackathon{filteredHackathons.length === 1 ? '' : 's'}</span>}
         </section>
 
-        {/* Cards list */}
-        <section className="cards">
-          {filteredHackathons.map((hackathon) => (
-            <article
-              key={hackathon.id}
-              className="card cursor-pointer hover:shadow-md transition"
-              onClick={() => navigate(`/hackathons/${hackathon.id}`)}
-            >
-              <div className="card-top">
-                <div className="card-logo" aria-hidden="true"><span>{hackathon.logoText}</span></div>
-                <div className="card-location">
-                  <span className="card-location-status">{hackathon.online ? 'Online' : 'In person'}</span>
-                  <span className="card-location-place">{hackathon.location}</span>
-                </div>
-              </div>
-              <h3>{hackathon.title}</h3>
-              <div className="card-meta">
-                <span className={`badge ${hackathon.statusFilter}`}>{hackathon.statusLabel}</span>
-                <span className="participant-stat"><strong>{hackathon.participants}</strong> participants</span>
-                <span className="date-range">{formatDateRange(hackathon.start, hackathon.end)}</span>
-                <span className="prize"><strong>{hackathon.prize}</strong> prize</span>
-              </div>
-            </article>
-          ))}
-        </section>
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem 0' }}>
+            <LoadingSpinner message="Chargement des hackathons..." />
+          </div>
+        ) : (
+          <>
+            {/* Cards list */}
+            <section className="cards">
+              {filteredHackathons.map((hackathon) => (
+                <article
+                  key={hackathon.id}
+                  className="card cursor-pointer hover:shadow-md transition"
+                  onClick={() => navigate(`/hackathons/${hackathon.id}`)}
+                >
+                  <div className="card-top">
+                    <div className="card-logo" aria-hidden="true"><span>{hackathon.logoText}</span></div>
+                    <div className="card-location">
+                      <span className="card-location-status">{hackathon.online ? 'Online' : 'In person'}</span>
+                      <span className="card-location-place">{hackathon.location}</span>
+                    </div>
+                  </div>
+                  <h3>{hackathon.title}</h3>
+                  <div className="card-meta">
+                    <span className={`badge ${hackathon.statusFilter}`}>{hackathon.statusLabel}</span>
+                    <span className="participant-stat"><strong>{hackathon.participants}</strong> participants</span>
+                    <span className="date-range">{formatDateRange(hackathon.start, hackathon.end)}</span>
+                    <span className="prize"><strong>{hackathon.prize}</strong> prize</span>
+                  </div>
+                </article>
+              ))}
+            </section>
 
-        {filteredHackathons.length === 0 && (
-          <p className="empty-state is-visible" style={{ display: 'block' }}>
-            Aucun hackathon ne correspond à votre recherche ou à vos filtres.
-          </p>
+            {filteredHackathons.length === 0 && (
+              <p className="empty-state is-visible" style={{ display: 'block' }}>
+                Aucun hackathon ne correspond à votre recherche ou à vos filtres.
+              </p>
+            )}
+          </>
         )}
       </main>
     </div>

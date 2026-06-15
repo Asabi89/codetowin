@@ -27,6 +27,10 @@ export const normalizeConversation = (conversation) => ({
   unread: conversation.unread ?? conversation.unread_count ?? 0,
   lastTime: conversation.lastTime || conversation.last_message_at || '',
   lastMessage: conversation.lastMessage || conversation.last_message || '',
+  about: conversation.about || '',
+  members: conversation.members || null,
+  email: conversation.email || '',
+  region: conversation.region || '',
   messages: extractArray(conversation.messages).map((message) => ({
     id: message.id || message._id,
     sender: message.sender || (message.is_me ? 'me' : 'them'),

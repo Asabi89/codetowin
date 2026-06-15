@@ -1,28 +1,40 @@
 import React, { useState } from 'react';
 import { useToast } from '../../../../context/ToastContext';
+import { teamsApi } from '../../../../api/teams';
 
 export default function TeamInvitePanel({ workspaceState, updateWorkspaceState, handleJumpToStep }) {
   const [inviteEmail, setInviteEmail] = useState('');
+  const [inviting, setInviting] = useState(false);
   const { showToast } = useToast();
 
-  const handleSendInvite = () => {
+  const handleSendInvite = async () => {
     if (inviteEmail && inviteEmail.includes('@')) {
-      const mockName = inviteEmail.split('@')[0].replace(/[._-]/g, ' ');
-      const formattedName = mockName.charAt(0).toUpperCase() + mockName.slice(1);
+      setInviting(true);
+      try {
+        const teamId = workspaceState.teamId || 'team_1';
+        await teamsApi.inviteMember(teamId, { email: inviteEmail });
 
-      const updatedTeammates = [
-        ...(workspaceState.teammates || []),
-        {
-          name: formattedName,
-          avatar: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80`,
-          role: 'Developer',
-          status: 'pending'
-        }
-      ];
+        const mockName = inviteEmail.split('@')[0].replace(/[._-]/g, ' ');
+        const formattedName = mockName.charAt(0).toUpperCase() + mockName.slice(1);
 
-      updateWorkspaceState({ teammates: updatedTeammates });
-      setInviteEmail('');
-      showToast(`Invitation email successfully sent to ${inviteEmail}!`, 'success');
+        const updatedTeammates = [
+          ...(workspaceState.teammates || []),
+          {
+            name: formattedName,
+            avatar: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80`,
+            role: 'Developer',
+            status: 'pending'
+          }
+        ];
+
+        updateWorkspaceState({ teammates: updatedTeammates });
+        setInviteEmail('');
+        showToast(`Invitation email successfully sent to ${inviteEmail}!`, 'success');
+      } catch (error) {
+        showToast("Erreur lors de l'envoi de l'invitation.", "error");
+      } finally {
+        setInviting(false);
+      }
     } else {
       showToast('Veuillez entrer une adresse email valide.', 'warning');
     }
@@ -41,6 +53,18 @@ export default function TeamInvitePanel({ workspaceState, updateWorkspaceState, 
       </div>
       <div className="form-grid">
         <div className="form-group">
+          <label className="form-label" htmlFor="team-name">Nom de l'équipe</label>
+          <input
+            type="text"
+            id="team-name"
+            className="form-input"
+            placeholder="ex: Les Génies du Code"
+            value={workspaceState.teamName || ''}
+            onChange={(e) => updateWorkspaceState({ teamName: e.target.value })}
+          />
+        </div>
+
+        <div className="form-group">
           <label className="form-label">Inviter par email</label>
           <div className="invite-input-row">
             <input
@@ -50,7 +74,9 @@ export default function TeamInvitePanel({ workspaceState, updateWorkspaceState, 
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
             />
-            <button type="button" className="btn-action-primary invite-btn" onClick={handleSendInvite}>Inviter</button>
+            <button type="button" className="btn-action-primary invite-btn" onClick={handleSendInvite} disabled={inviting}>
+              {inviting ? 'Envoi...' : 'Inviter'}
+            </button>
           </div>
         </div>
 

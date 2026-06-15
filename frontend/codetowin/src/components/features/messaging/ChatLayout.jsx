@@ -45,6 +45,7 @@ export default function ChatLayout({
         size: formatFileSize(file.size),
         url: URL.createObjectURL(file),
         type: file.type,
+        raw: file,
       });
     }
   };
@@ -107,20 +108,17 @@ export default function ChatLayout({
     event.preventDefault();
     event.stopPropagation();
     
-    // Find closest relative parent container
-    const container = event.currentTarget.closest('.relative');
-    const containerRect = container ? container.getBoundingClientRect() : { top: 0, left: 0 };
-    
     const rect = event.currentTarget.getBoundingClientRect();
-    const relativeTop = rect.top - containerRect.top;
-    const relativeLeft = rect.left - containerRect.left;
-    const relativeBottom = rect.bottom - containerRect.top;
-    const relativeRight = rect.right - containerRect.left;
     
-    const top = window.innerHeight - rect.bottom < 250 ? relativeTop - 250 : relativeBottom + 5;
-    const left = Math.max(relativeRight - 224, 10);
+    const top = window.innerHeight - rect.bottom < 250 ? rect.top - 250 : rect.bottom + 5;
+    const left = Math.max(rect.right - 224, 10);
     
-    setContextMenu({ show: true, x: left, y: top, msgIndex, sender });
+    setContextMenu((current) => {
+      if (current.show && current.msgIndex === msgIndex) {
+        return { ...current, show: false };
+      }
+      return { show: true, x: left, y: top, msgIndex, sender };
+    });
   };
 
   const handleReplyClick = (event) => {
@@ -268,7 +266,7 @@ export default function ChatLayout({
                 >
                   <Info className="h-5 w-5" />
                 </button>
-                <HeaderMenu options={menuOptions} open={showHeaderActions} onToggle={() => setShowHeaderActions((value) => !value)} />
+                <HeaderMenu options={menuOptions} open={showHeaderActions} onToggle={() => setShowHeaderActions((value) => !value)} onClose={() => setShowHeaderActions(false)} />
               </div>
             </div>
 
@@ -395,9 +393,9 @@ export default function ChatLayout({
                 <div className="border-t border-slate-200 pt-4">
                   <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider">À propos</h5>
                   <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-                    {activeChat.isGroup
+                    {activeChat.about || (activeChat.isGroup
                       ? "Groupe d'équipe pour la collaboration et l'échange de ressources avec le mentor."
-                      : "Conversation privée pour le mentorat direct et le suivi individuel."}
+                      : "Conversation privée pour le mentorat direct et le suivi individuel.")}
                   </p>
                 </div>
 
@@ -405,12 +403,12 @@ export default function ChatLayout({
                   <div className="border-t border-slate-200 pt-4">
                     <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Membres</h5>
                     <div className="mt-3 space-y-3">
-                      {[
+                      {(activeChat.members || [
                         { name: 'Moussa Diop', title: 'Développeur Fullstack', leader: true },
                         { name: 'Aisha Fall', title: 'UX/UI Designer' },
                         { name: 'Kofi Mensah', title: 'Data Engineer' },
                         { name: 'Amadou Diallo', title: 'Développeur Mobile' }
-                      ].map((m) => (
+                      ]).map((m) => (
                         <div key={m.name} className="flex items-center space-x-3">
                           <div className="h-8 w-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs font-bold border border-emerald-100">
                             {m.name.slice(0, 2).toUpperCase()}
@@ -432,12 +430,12 @@ export default function ChatLayout({
                     <div>
                       <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Email</span>
                       <span className="text-slate-600 font-medium block mt-0.5 truncate">
-                        {activeChat.id === 'techhub' ? 'contact@techhub.sn' : 'paul.diop@codetowin.com'}
+                        {activeChat.email || (activeChat.id === 'techhub' ? 'contact@techhub.sn' : 'paul.diop@codetowin.com')}
                       </span>
                     </div>
                     <div>
                       <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Région</span>
-                      <span className="text-slate-600 font-medium block mt-0.5">Afrique de l'Ouest</span>
+                      <span className="text-slate-600 font-medium block mt-0.5">{activeChat.region || "Afrique de l'Ouest"}</span>
                     </div>
                   </div>
                 )}
@@ -455,7 +453,7 @@ export default function ChatLayout({
 
       {contextMenu.show && (
         <div
-          className="absolute z-[100] w-56 rounded-lg bg-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] ring-1 ring-slate-200 transition-opacity"
+          className="fixed z-[100] w-56 rounded-lg bg-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] ring-1 ring-slate-200 transition-opacity"
           style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
           onClick={(event) => event.stopPropagation()}
         >
@@ -483,10 +481,12 @@ export default function ChatLayout({
                 Signaler
               </button>
             )}
-            <button type="button" onClick={() => handleDeleteMessage(contextMenu.msgIndex)} className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 focus:outline-none">
-              <Trash2 className="mr-3 h-4 w-4 text-red-500" />
-              Supprimer
-            </button>
+            {contextMenu.sender === 'me' && (
+              <button type="button" onClick={() => handleDeleteMessage(contextMenu.msgIndex)} className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 focus:outline-none">
+                <Trash2 className="mr-3 h-4 w-4 text-red-500" />
+                Supprimer
+              </button>
+            )}
           </div>
         </div>
       )}

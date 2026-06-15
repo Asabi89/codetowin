@@ -24,13 +24,7 @@ const ChooseRole = lazy(() => import("../pages/Auth/ChooseRole"));
 const VerifyEmail = lazy(() => import("../pages/Auth/VerifyEmail"));
 const Profile = lazy(() => import("../pages/Participant/Profile"));
 const ParticipantProfile = lazy(() => import("../pages/Participant/index"));
-const ParticipantDashboard = lazy(() => import("../pages/Participant/Dashboard"));
-const ParticipantHackathons = lazy(() => import("../pages/Participant/MyHackathons"));
 const ParticipantJoinHackathon = lazy(() => import("../pages/Participant/JoinHackathon"));
-const ParticipantTeam = lazy(() => import("../pages/Participant/Team"));
-const ParticipantTeamCreate = lazy(() => import("../pages/Participant/TeamCreate"));
-const ParticipantSubmission = lazy(() => import("../pages/Participant/Submission"));
-const ParticipantCertificates = lazy(() => import("../pages/Participant/Certificates"));
 const ParticipantNotifications = lazy(() => import("../pages/Participant/Notifications"));
 const ParticipantSettings = lazy(() => import("../pages/Participant/Settings"));
 const ParticipantMessages = lazy(() => import("../pages/Participant/Messages"));
@@ -405,15 +399,9 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<ParticipantDashboard />} />
-          <Route path="dashboard" element={<ParticipantDashboard />} />
-          <Route path="hackathons" element={<ParticipantHackathons />} />
+          <Route index element={<Navigate to="profile" replace />} />
           <Route path="join/:id" element={<ParticipantJoinHackathon />} />
-          <Route path="team" element={<ParticipantTeam />} />
-          <Route path="team/create" element={<ParticipantTeamCreate />} />
-          <Route path="submission" element={<ParticipantSubmission />} />
           <Route path="messages" element={<ParticipantMessages />} />
-          <Route path="certificates" element={<ParticipantCertificates />} />
           <Route path="profile" element={<ParticipantProfile />} />
           <Route path="settings" element={<ParticipantSettings />} />
           <Route path="notifications" element={<ParticipantNotifications />} />

@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { MoreVertical } from 'lucide-react';
 
-export default function HeaderMenu({ options = [], open, onToggle }) {
+export default function HeaderMenu({ options = [], open, onToggle, onClose }) {
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (open && menuRef.current && !menuRef.current.contains(event.target)) {
+        if (onClose) onClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open, onClose]);
+
   if (options.length === 0) return null;
 
   return (
-    <div className="relative">
+    <div className="relative" ref={menuRef}>
       <button
         type="button"
         onClick={onToggle}

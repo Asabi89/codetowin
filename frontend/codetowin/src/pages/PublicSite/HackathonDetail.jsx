@@ -1,7 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { hackathonsApi } from '../../api/hackathons';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import '../../styles/pages/participant/hackaton-detail.css';
 
@@ -15,9 +17,16 @@ export default function HackathonDetail() {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams();
 
   const [activeTab, setActiveTab] = useState('overview');
   const [confirmResetOpen, setConfirmResetOpen] = useState(false);
+  const [hackathon, setHackathon] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  const [participants, setParticipants] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [loadingData, setLoadingData] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -26,6 +35,45 @@ export default function HackathonDetail() {
       setActiveTab(tabParam);
     }
   }, [location]);
+
+  useEffect(() => {
+    const fetchHackathonData = async () => {
+      setLoading(true);
+      try {
+        const response = await hackathonsApi.getHackathonById(id || '1');
+        setHackathon(response.data);
+      } catch (error) {
+        console.error("Hackathon details failed to load", error);
+        showToast("Impossible de charger les détails de ce hackathon.", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHackathonData();
+  }, [id, showToast]);
+
+  useEffect(() => {
+    if (!hackathon) return;
+    
+    const fetchTabData = async () => {
+      setLoadingData(true);
+      try {
+        if (activeTab === 'participants') {
+          const res = await hackathonsApi.getRegistrations(hackathon.id);
+          setParticipants(res.data || []);
+        } else if (activeTab === 'updates') {
+          const res = await hackathonsApi.getAnnouncements(hackathon.id);
+          setAnnouncements(res.data || []);
+        }
+      } catch (error) {
+        console.error("Failed to load tab data", error);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+
+    fetchTabData();
+  }, [activeTab, hackathon]);
 
   const handleOnboardingJoin = () => {
     navigate('/profile');
@@ -48,19 +96,26 @@ export default function HackathonDetail() {
   return (
     <>
     <div>
-      <HackathonHero 
-        registered={registered} 
-        setActiveTab={setActiveTab} 
-        handleOnboardingJoin={handleOnboardingJoin} 
-      />
+      {loading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '10rem 0' }}>
+          <LoadingSpinner message="Chargement des détails du hackathon..." />
+        </div>
+      ) : hackathon ? (
+        <>
+          <HackathonHero 
+            registered={registered} 
+            setActiveTab={setActiveTab} 
+            handleOnboardingJoin={handleOnboardingJoin} 
+            hackathon={hackathon}
+          />
 
-      <div className="layout-wrapper">
-        <main className="content-pane">
-          <HackathonTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="layout-wrapper">
+            <main className="content-pane">
+              <HackathonTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-          <div className="screens-container">
-            
-            {/* OVERVIEW SCREEN */}
+              <div className="screens-container">
+                
+                {/* OVERVIEW SCREEN */}
             {activeTab === 'overview' && (
               <div className="tab-screen active">
                 <div className="section-slice">
@@ -127,53 +182,31 @@ export default function HackathonDetail() {
                   </div>
 
                   <div className="users-grid">
-                    <div className="user-profile-card">
-                      <div className="user-avatar-wrap">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Sarah Chen" className="profile-avatar" />
-                        <span className="user-status-dot"></span>
+                    {loadingData ? (
+                      <div style={{ gridColumn: '1 / -1', padding: '3rem', textAlign: 'center' }}>
+                        <LoadingSpinner message="Chargement des participants..." />
                       </div>
-                      <div className="user-profile-details">
-                        <span className="profile-name">Sarah Chen</span>
-                        <span className="profile-role">AI Developer • Montreal</span>
-                        <div className="profile-skills-tags">
-                          <span className="skill-tag">Python</span>
-                          <span className="skill-tag">Gemini API</span>
-                          <span className="skill-tag">LangChain</span>
+                    ) : participants.length > 0 ? (
+                      participants.map(reg => (
+                        <div className="user-profile-card" key={reg.id}>
+                          <div className="user-avatar-wrap">
+                            <img src={reg.user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(reg.user.name)}&background=random`} alt={reg.user.name} className="profile-avatar" />
+                            <span className="user-status-dot"></span>
+                          </div>
+                          <div className="user-profile-details">
+                            <span className="profile-name">{reg.user.name}</span>
+                            <span className="profile-role">{reg.user.role || 'Participant'}</span>
+                            <div className="profile-skills-tags">
+                              {reg.user.skills?.map(skill => (
+                                <span className="skill-tag" key={skill}>{skill}</span>
+                              ))}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-
-                    <div className="user-profile-card">
-                      <div className="user-avatar-wrap">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80" alt="Marcus Vance" className="profile-avatar" />
-                        <span className="user-status-dot"></span>
-                      </div>
-                      <div className="user-profile-details">
-                        <span className="profile-name">Marcus Vance</span>
-                        <span className="profile-role">Product Designer • SF</span>
-                        <div className="profile-skills-tags">
-                          <span className="skill-tag">Figma</span>
-                          <span className="skill-tag">UX Research</span>
-                          <span className="skill-tag">HTML/CSS</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="user-profile-card">
-                      <div className="user-avatar-wrap">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=80&h=80&q=80" alt="Elena Rostova" className="profile-avatar" />
-                        <span className="user-status-dot"></span>
-                      </div>
-                      <div className="user-profile-details">
-                        <span className="profile-name">Elena Rostova</span>
-                        <span className="profile-role">Data Scientist • Berlin</span>
-                        <div className="profile-skills-tags">
-                          <span className="skill-tag">PyTorch</span>
-                          <span className="skill-tag">MongoDB</span>
-                          <span className="skill-tag">Vector Search</span>
-                        </div>
-                      </div>
-                    </div>
+                      ))
+                    ) : (
+                      <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: 'var(--text-muted)' }}>Aucun participant pour le moment.</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -227,21 +260,23 @@ export default function HackathonDetail() {
                 <div className="section-slice">
                   <h2 className="slice-title">Les actus croustillantes 📰</h2>
                   <div className="updates-timeline">
-                    <div className="update-item">
-                      <span className="update-node"></span>
-                      <div className="update-date">5 Juin 2026</div>
-                      <h3 className="update-title">Cadeaux Google Cloud distribués !</h3>
-                      <span className="update-author">par Sarah Chen • Organisatrice</span>
-                      <p className="update-body-text">Regarde tes emails ! On t'a envoyé un super code promo pour tester Vertex. Profites-en bien avant le 11 juin !</p>
-                    </div>
-
-                    <div className="update-item">
-                      <span className="update-node"></span>
-                      <div className="update-date">1 Juin 2026</div>
-                      <h3 className="update-title">Petits webinaires sympas</h3>
-                      <span className="update-author">par l'Équipe</span>
-                      <p className="update-body-text">On lance des vidéos en direct demain. Les pros de MongoDB, Arize et GitLab vont t'expliquer des trucs cools sur les serveurs MCP.</p>
-                    </div>
+                    {loadingData ? (
+                      <div style={{ padding: '3rem', textAlign: 'center' }}>
+                        <LoadingSpinner message="Chargement des actus..." />
+                      </div>
+                    ) : announcements.length > 0 ? (
+                      announcements.map(ann => (
+                        <div className="update-item" key={ann.id}>
+                          <span className="update-node"></span>
+                          <div className="update-date">{new Date(ann.date).toLocaleDateString()}</div>
+                          <h3 className="update-title">{ann.title}</h3>
+                          <span className="update-author">par {ann.author || 'l\'Équipe'}</span>
+                          <p className="update-body-text">{ann.content}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Aucune actualité pour le moment.</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -299,6 +334,13 @@ export default function HackathonDetail() {
           </div>
         </main>
       </div>
+        </>
+      ) : (
+        <div style={{ textAlign: 'center', padding: '10rem 0' }}>
+          <h2>Hackathon introuvable</h2>
+          <p>Le hackathon que vous cherchez n'existe pas ou a été supprimé.</p>
+        </div>
+      )}
     </div>
 
     {/* Modale de confirmation réinitialisation workspace */}

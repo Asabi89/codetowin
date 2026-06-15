@@ -3,7 +3,7 @@
   --green-dark: #065f46;
   --green-light: #f0fdf4;
   --green-bg-subtle: #f6fdfa;
-  --bg: #ffffff;
+  --bg: #F2F2F2;
   --bg-subtle: #f8fafc;
   --text: #0f172a;
   --text-muted: #64748b;
@@ -41,10 +41,13 @@ body.menu-open {
 
 
 
+.profile-container {
+  width: min(1100px, calc(100% - 2rem));
+  margin: 3.5rem auto 6rem;
+}
+
 /* Profile Page Identity */
 .profile-identity-wrap {
-  width: min(1200px, calc(100% - 2rem));
-  margin: 3.5rem auto 0;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -194,8 +197,7 @@ body.menu-open {
 
 /* Profile Content Panel Grid */
 .profile-main {
-  width: min(1200px, calc(100% - 2rem));
-  margin: 2.5rem auto 6rem;
+  margin-top: 2.5rem;
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
@@ -459,13 +461,7 @@ body.menu-open {
   background: var(--bg-subtle);
   border-radius: 11px;
   overflow: hidden;
-  transition: transform 180ms ease, box-shadow 180ms ease;
   cursor: pointer;
-}
-
-.project-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
 }
 
 .project-card-thumb {

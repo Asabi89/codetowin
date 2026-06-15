@@ -1,12 +1,83 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useToast } from '../../../context/ToastContext';
 import { AuthContext } from '../../../context/AuthContext';
+import { usersApi } from '../../../api/users';
 
 export default function SecuritySettings({ isOrganization = false, onDeleteAccount }) {
   const { showToast } = useToast();
   const auth = useContext(AuthContext);
   const userRole = auth?.role || (isOrganization ? 'organizer' : 'mentor');
 
+  // Form states for password
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
+  // State for 2FA
+  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [isToggling2FA, setIsToggling2FA] = useState(false);
+
+  // Handle password form changes
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Handle password submission
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validations
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      showToast("Veuillez remplir tous les champs.", "error");
+      return;
+    }
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      showToast("Les nouveaux mots de passe ne correspondent pas.", "error");
+      return;
+    }
+    
+    if (passwordData.newPassword.length < 8) {
+      showToast("Le nouveau mot de passe doit contenir au moins 8 caractères.", "error");
+      return;
+    }
+
+    setIsUpdatingPassword(true);
+    try {
+      await usersApi.updatePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword
+      });
+      showToast("Mot de passe mis à jour avec succès !", "success");
+      // Reset form
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (error) {
+      showToast("Erreur lors de la mise à jour du mot de passe.", "error");
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
+
+  // Handle 2FA Toggle
+  const handleToggle2FA = async () => {
+    setIsToggling2FA(true);
+    try {
+      const newStatus = !is2FAEnabled;
+      await usersApi.toggle2FA(newStatus);
+      setIs2FAEnabled(newStatus);
+      showToast(newStatus ? "Authentification à deux facteurs activée." : "Authentification à deux facteurs désactivée.", "success");
+    } catch (error) {
+      showToast("Erreur lors du changement de l'A2F.", "error");
+    } finally {
+      setIsToggling2FA(false);
+    }
+  };
+
+  // Handle Account Deletion
   const handleDelete = (e) => {
     e.preventDefault();
     if (onDeleteAccount) {
@@ -26,30 +97,62 @@ export default function SecuritySettings({ isOrganization = false, onDeleteAccou
             <p className="mt-1 text-sm leading-6 text-slate-500">Assurez-vous de choisir un mot de passe robuste.</p>
           </div>
 
-          <form className="mt-6 space-y-6">
+          <form className="mt-6 space-y-6" onSubmit={handlePasswordSubmit}>
             <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
               <div className="col-span-full">
-                <label htmlFor="current-password" className="block text-sm font-medium leading-6 text-slate-900">Mot de passe actuel</label>
+                <label htmlFor="currentPassword" className="block text-sm font-medium leading-6 text-slate-900">Mot de passe actuel</label>
                 <div className="mt-2">
-                  <input type="password" name="current-password" id="current-password" className="block w-full max-w-md rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6 px-3" />
+                  <input 
+                    type="password" 
+                    name="currentPassword" 
+                    id="currentPassword" 
+                    value={passwordData.currentPassword}
+                    onChange={handlePasswordChange}
+                    className="block w-full max-w-md rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6 px-3" 
+                  />
                 </div>
               </div>
               <div className="col-span-full">
-                <label htmlFor="new-password" className="block text-sm font-medium leading-6 text-slate-900">Nouveau mot de passe</label>
+                <label htmlFor="newPassword" className="block text-sm font-medium leading-6 text-slate-900">Nouveau mot de passe</label>
                 <div className="mt-2">
-                  <input type="password" name="new-password" id="new-password" className="block w-full max-w-md rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6 px-3" />
+                  <input 
+                    type="password" 
+                    name="newPassword" 
+                    id="newPassword" 
+                    value={passwordData.newPassword}
+                    onChange={handlePasswordChange}
+                    className="block w-full max-w-md rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6 px-3" 
+                  />
                 </div>
               </div>
               <div className="col-span-full">
-                <label htmlFor="confirm-password" className="block text-sm font-medium leading-6 text-slate-900">Confirmer le nouveau mot de passe</label>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium leading-6 text-slate-900">Confirmer le nouveau mot de passe</label>
                 <div className="mt-2">
-                  <input type="password" name="confirm-password" id="confirm-password" className="block w-full max-w-md rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6 px-3" />
+                  <input 
+                    type="password" 
+                    name="confirmPassword" 
+                    id="confirmPassword" 
+                    value={passwordData.confirmPassword}
+                    onChange={handlePasswordChange}
+                    className="block w-full max-w-md rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6 px-3" 
+                  />
                 </div>
               </div>
             </div>
             
             <div className="flex justify-start">
-              <button type="button" className="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500">Mettre à jour le mot de passe</button>
+              <button 
+                type="submit" 
+                disabled={isUpdatingPassword}
+                className="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isUpdatingPassword ? (
+                  <>
+                    <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div>
+                    Mise à jour...
+                  </>
+                ) : "Mettre à jour le mot de passe"}
+              </button>
             </div>
           </form>
         </div>
@@ -65,9 +168,22 @@ export default function SecuritySettings({ isOrganization = false, onDeleteAccou
           <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-6">
             <div>
               <h3 className="text-sm font-medium text-slate-900">Status A2F</h3>
-              <p className="text-sm text-slate-500">L'authentification à deux facteurs est actuellement <span className="font-semibold text-slate-900">désactivée</span>.</p>
+              <p className="text-sm text-slate-500">
+                L'authentification à deux facteurs est actuellement <span className="font-semibold text-slate-900">{is2FAEnabled ? 'activée' : 'désactivée'}</span>.
+              </p>
             </div>
-            <button type="button" className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">Activer l'A2F</button>
+            <button 
+              type="button" 
+              onClick={handleToggle2FA}
+              disabled={isToggling2FA}
+              className={`rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2
+                ${is2FAEnabled 
+                  ? 'bg-red-50 text-red-700 ring-red-200 hover:bg-red-100' 
+                  : 'bg-white text-slate-900 ring-slate-300 hover:bg-slate-50'}`}
+            >
+              {isToggling2FA && <div className={`w-4 h-4 rounded-full border-2 border-t-transparent animate-spin ${is2FAEnabled ? 'border-red-700' : 'border-slate-900'}`}></div>}
+              {is2FAEnabled ? "Désactiver l'A2F" : "Activer l'A2F"}
+            </button>
           </div>
         </div>
       </div>

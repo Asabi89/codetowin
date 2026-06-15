@@ -1,12 +1,12 @@
-import React, { useMemo, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
 import PageHeader from "../../components/common/PageHeader";
 import StepProgress from "../../components/common/StepProgress";
-import { participantHackathons } from "../../mockdata/participant";
 import { useToast } from "../../context/ToastContext";
+import { hackathonsApi } from "../../api/hackathons";
 
 const steps = ["Confirmation", "Équipe", "Compétences", "Résumé"];
 
@@ -14,10 +14,27 @@ export default function JoinHackathon() {
   const { id } = useParams();
   const { showToast } = useToast();
   const [step, setStep] = useState(1);
-  const hackathon = useMemo(
-    () => participantHackathons.find((item) => item.id === id) || participantHackathons[0],
-    [id],
-  );
+  const [hackathon, setHackathon] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHackathon = async () => {
+      try {
+        setLoading(true);
+        // On récupère via la fausse API
+        const response = await hackathonsApi.getHackathons();
+        const data = response?.data || response || [];
+        const found = Array.isArray(data) ? data.find(h => h.id === id) : null;
+        setHackathon(found || (Array.isArray(data) && data[0]) || { title: "Hackathon inconnu", deadline: "N/A" });
+      } catch (err) {
+        showToast("Erreur lors du chargement des informations du hackathon", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchHackathon();
+  }, [id, showToast]);
 
   const nextStep = () => {
     if (step < steps.length) {
@@ -26,6 +43,17 @@ export default function JoinHackathon() {
     }
     showToast("Inscription au hackathon confirmée. Ton espace participant est prêt.", "success");
   };
+
+  if (loading) {
+    return (
+      <div className="dashboard-content flex h-[50vh] items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600"></div>
+          <p className="text-sm font-medium text-slate-500">Chargement des détails...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-content">

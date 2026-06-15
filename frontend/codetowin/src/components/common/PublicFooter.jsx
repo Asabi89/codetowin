@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Send } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
+import { contactApi } from '../../api/contact';
 
 export default function PublicFooter() {
   const { showToast } = useToast();
   const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleNewsletterSubmit = (e) => {
+  const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
     if (email.trim()) {
-      showToast("Inscription à la newsletter validée avec succès !", "success");
-      setEmail('');
+      setIsSubmitting(true);
+      try {
+        await contactApi.subscribeNewsletter(email.trim());
+        showToast("Inscription à la newsletter validée avec succès !", "success");
+        setEmail('');
+      } catch (error) {
+        showToast("Erreur lors de l'inscription.", "error");
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -151,10 +161,11 @@ export default function PublicFooter() {
               />
               <button 
                 type="submit" 
-                className="bg-brand-600 hover:bg-brand-500 text-white px-4 py-2.5 transition-colors duration-200 flex items-center justify-center shrink-0"
+                disabled={isSubmitting}
+                className={`bg-brand-600 hover:bg-brand-500 text-white px-4 py-2.5 transition-colors duration-200 flex items-center justify-center shrink-0 ${isSubmitting ? 'opacity-80 cursor-not-allowed' : ''}`}
                 aria-label="S'inscrire à la newsletter"
               >
-                <Send className="h-4 w-4" />
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </button>
             </form>
           </div>

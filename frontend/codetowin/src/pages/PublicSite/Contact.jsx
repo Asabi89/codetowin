@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, MapPin, Clock, MessageSquare, Check, AlertCircle } from 'lucide-react';
 import { validateEmail, validateRequired } from '../../services/validation';
+import { contactApi } from '../../api/contact';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ export default function Contact() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
@@ -48,9 +49,8 @@ export default function Contact() {
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await contactApi.submitContactForm(formData);
       setSubmitted(true);
       setFormData({
         name: '',
@@ -62,7 +62,12 @@ export default function Contact() {
       setTimeout(() => {
         setSubmitted(false);
       }, 5000);
-    }, 1000);
+    } catch (error) {
+      // Error handling can go here, e.g., a toast or generic error state
+      console.error("Failed to submit contact form", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

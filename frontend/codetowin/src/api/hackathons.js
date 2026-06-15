@@ -1,20 +1,35 @@
 import { apiClient } from './client';
+import { initialHackathons } from '../mockdata/hackathons';
 
 export const hackathonsApi = {
   /**
    * Récupère la liste de tous les hackathons avec filtres optionnels
    * @param {object} params { search, country, status, theme, page }
    */
-  getHackathons: (params = {}) => {
-    const query = new URLSearchParams(params).toString();
-    return apiClient.get(`/hackathons?${query}`);
+  getHackathons: async (params = {}) => {
+    try {
+      const query = new URLSearchParams(params).toString();
+      return await apiClient.get(`/hackathons?${query}`);
+    } catch (error) {
+      console.warn("API unavailable, returning mock hackathons", error);
+      return { data: initialHackathons, total: initialHackathons.length };
+    }
   },
 
   /**
    * Récupère les détails d'un hackathon par son ID ou slug
    * @param {string} id
    */
-  getHackathonById: (id) => apiClient.get(`/hackathons/${id}`),
+  getHackathonById: async (id) => {
+    try {
+      return await apiClient.get(`/hackathons/${id}`);
+    } catch (error) {
+      console.warn("API unavailable, mocking getHackathonById", error);
+      const hackathon = initialHackathons.find(h => String(h.id) === String(id));
+      if (!hackathon) throw new Error("Hackathon not found", { cause: error });
+      return { data: hackathon };
+    }
+  },
 
   /**
    * Crée un nouveau hackathon (Organisateur uniquement)
@@ -49,10 +64,41 @@ export const hackathonsApi = {
   register: (id, registrationData = {}) => apiClient.post(`/hackathons/${id}/register`, registrationData),
 
   /**
-   * Récupère toutes les inscriptions à un hackathon (Organisateur uniquement)
+   * Récupère toutes les inscriptions à un hackathon (Organisateur/Participant public)
    * @param {string} id
    */
-  getRegistrations: (id) => apiClient.get(`/hackathons/${id}/registrations`),
+  getRegistrations: async (id) => {
+    try {
+      return await apiClient.get(`/hackathons/${id}/registrations`);
+    } catch (error) {
+      console.warn("API unavailable, mocking getRegistrations", error);
+      // We import mockTalents lazily to avoid circular dependencies if any, 
+      // or we can just return a basic mock list.
+      return { 
+        data: [
+          { id: '1', user: { name: 'Sarah Chen', role: 'AI Developer', skills: ['Python', 'Gemini API'] } },
+          { id: '2', user: { name: 'Marcus Vance', role: 'Product Designer', skills: ['Figma', 'UX'] } },
+        ] 
+      };
+    }
+  },
+
+  /**
+   * Récupère les actualités d'un hackathon
+   */
+  getAnnouncements: async (id) => {
+    try {
+      return await apiClient.get(`/hackathons/${id}/announcements`);
+    } catch (error) {
+      console.warn("API unavailable, mocking getAnnouncements", error);
+      return {
+        data: [
+          { id: 'a1', title: 'Coup d\'envoi !', content: 'Le hackathon est officiellement lancé !', date: new Date().toISOString() },
+          { id: 'a2', title: 'Nouveau prix ajouté', content: 'Le sponsor X vient de rajouter 5000$ au prize pool.', date: new Date().toISOString() }
+        ]
+      };
+    }
+  },
 
   /**
    * Approuve l'inscription d'un participant (Organisateur uniquement)

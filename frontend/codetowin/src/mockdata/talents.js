@@ -97,6 +97,26 @@ export const mockTalentsDetails = {
         status: 'Terminé',
         certificateCode: 'VALID-FINALIST-202'
       }
+    ],
+    portfolio: [
+      {
+        id: 'ecotrack-ai',
+        title: 'EcoTrack AI',
+        description: 'Une plateforme d\'intelligence artificielle pour analyser et réduire l\'empreinte carbone des entreprises industrielles africaines en temps réel.',
+        image: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?auto=format&fit=crop&w=600&q=80',
+        tags: ['React', 'Python', 'Machine Learning'],
+        hackathon: 'CodeToWin Africa AI Sprint',
+        link: '/hackathons/google-cloud-rapid-agent?tab=projects'
+      },
+      {
+        id: 'bantu-design',
+        title: 'Bantu Design System',
+        description: 'Un système de design open-source intégrant des motifs et éléments de l\'art africain, prêt à être utilisé dans des applications React et Figma.',
+        image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=600&q=80',
+        tags: ['Design System', 'React', 'CSS'],
+        hackathon: 'Product Design Hack Weekend',
+        link: '/hackathons/product-design-hack-weekend?tab=projects'
+      }
     ]
   },
   'aminata-diop': {
@@ -120,6 +140,17 @@ export const mockTalentsDetails = {
         project: 'EcoTrack AI',
         status: 'Terminé',
         certificateCode: 'VALID-FINALIST-202'
+      }
+    ],
+    portfolio: [
+      {
+        id: 'ecotrack-ai-design',
+        title: 'EcoTrack AI (UI/UX)',
+        description: 'Conception complète de l\'interface utilisateur pour la plateforme EcoTrack AI. Création du prototype Figma et des interactions utilisateur.',
+        image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?auto=format&fit=crop&w=600&q=80',
+        tags: ['Figma', 'Prototyping', 'User Research'],
+        hackathon: 'CodeToWin Africa AI Sprint',
+        link: '/hackathons/google-cloud-rapid-agent?tab=projects'
       }
     ]
   }

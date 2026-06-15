@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import StepProgress from '../../../common/StepProgress';
 import ProjectPreview from './ProjectPreview';
 import TeamInvitePanel from './TeamInvitePanel';
+import { submissionsApi } from '../../../../api/submissions';
+import { useToast } from '../../../../context/ToastContext';
+import LoadingSpinner from '../../../common/LoadingSpinner';
 
 export default function ProjectWorkspace({
   workspaceState,
@@ -21,6 +24,8 @@ export default function ProjectWorkspace({
   
   const [agreeGuidelines, setAgreeGuidelines] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const { showToast } = useToast();
 
   const handleUpdateField = (field, value) => {
     updateWorkspaceState({ [field]: value });
@@ -71,21 +76,33 @@ export default function ProjectWorkspace({
     setTechList(techList.filter((_, index) => index !== indexToRemove));
   };
 
-  const handleSubmitProject = () => {
+  const handleSubmitProject = async () => {
     if (!agreeGuidelines || !agreeTerms) {
-      alert("Veuillez accepter les conditions avant de soumettre.");
+      showToast("Veuillez accepter les conditions avant de soumettre.", "warning");
       return;
     }
-    setIsSubmitted(true);
-    setPreviewActive(true);
+    
+    setSubmitting(true);
+    try {
+      // Create drafting / saving process
+      const submissionId = workspaceState.id || 'draft_1';
+      await submissionsApi.submitProject(submissionId);
+      setIsSubmitted(true);
+      setPreviewActive(true);
+      showToast("Projet soumis avec succès !", "success");
+    } catch (error) {
+      showToast("Erreur lors de la soumission.", "error");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const projectSteps = [
-    { label: 'Idée', shortLabel: 'Idée', status: step > 1 || isSubmitted ? 'done' : step === 1 ? 'current' : 'pending' },
-    { label: 'Équipe', shortLabel: 'Équipe', status: step > 2 || isSubmitted ? 'done' : step === 2 ? 'current' : 'pending' },
-    { label: 'Détails', shortLabel: 'Détails', status: step > 3 || isSubmitted ? 'done' : step === 3 ? 'current' : 'pending' },
-    { label: 'Questions', shortLabel: 'Questions', status: step > 4 || isSubmitted ? 'done' : step === 4 ? 'current' : 'pending' },
-    { label: 'Envoi', shortLabel: 'Envoi', status: isSubmitted ? 'done' : step === 5 ? 'current' : 'pending' },
+    { label: 'Idée', shortLabel: 'Idée', status: step === 1 ? 'current' : (step > 1 ? 'done' : 'pending') },
+    { label: 'Équipe', shortLabel: 'Équipe', status: step === 2 ? 'current' : (step > 2 ? 'done' : 'pending') },
+    { label: 'Détails', shortLabel: 'Détails', status: step === 3 ? 'current' : (step > 3 ? 'done' : 'pending') },
+    { label: 'Questions', shortLabel: 'Questions', status: step === 4 ? 'current' : (step > 4 ? 'done' : 'pending') },
+    { label: 'Envoi', shortLabel: 'Envoi', status: step === 5 ? 'current' : 'pending' },
   ];
 
   const progressText = isSubmitted ? "100% completed" : "Step " + step + " of 5";
@@ -392,7 +409,9 @@ export default function ProjectWorkspace({
                       </div>
                       <div>
                         <span style={{ color: 'var(--text-muted)', display: 'block' }}>Équipe</span>
-                        <strong style={{ color: 'var(--text)' }}>{(workspaceState.teammates || []).length} Builders</strong>
+                        <strong style={{ color: 'var(--text)' }}>
+                          {workspaceState.teamName ? `${workspaceState.teamName} (${(workspaceState.teammates || []).length} membres)` : `${(workspaceState.teammates || []).length} Builders`}
+                        </strong>
                       </div>
                       <div>
                         <span style={{ color: 'var(--text-muted)', display: 'block' }}>Statut</span>
@@ -434,10 +453,12 @@ export default function ProjectWorkspace({
                   </div>
 
                   <div className="step-actions-footer">
-                    <button type="button" className="btn-action-secondary" onClick={() => handleJumpToStep(4)}>Retour</button>
+                    <button type="button" className="btn-action-secondary" onClick={() => handleJumpToStep(4)} disabled={submitting}>Retour</button>
                     <div className="step-actions-right">
                       <span style={{ alignSelf: 'center', fontSize: '0.82rem', color: 'var(--text-muted)', marginRight: '0.5rem' }}>Tu pourras encore modifier avant la fin du chrono.</span>
-                      <button type="button" className="btn-action-primary" style={{ padding: '0.75rem 2rem' }} onClick={handleSubmitProject}>Soumettre !</button>
+                      <button type="button" className="btn-action-primary" style={{ padding: '0.75rem 2rem' }} onClick={handleSubmitProject} disabled={submitting}>
+                        {submitting ? 'Envoi en cours...' : 'Soumettre !'}
+                      </button>
                     </div>
                   </div>
                 </div>

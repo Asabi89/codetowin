@@ -2,11 +2,15 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useImagePreview } from '../../hooks/useImagePreview';
+import { usersApi } from '../../api/users';
+import { countriesApi } from '../../api/countries';
+import { useToast } from '../../context/ToastContext';
 import '../../styles/pages/participant/profile.css';
 
 export default function Profile() {
   const { profile, registerUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   // ── Form state ──────────────────────────────────────────────
   const [firstName, setFirstName]       = useState('');
@@ -23,10 +27,31 @@ export default function Profile() {
   const [github,    setGithub]          = useState('');
   const [linkedin,  setLinkedin]        = useState('');
   const [website,   setWebsite]         = useState('');
+  const [saving,    setSaving]          = useState(false);
+  const [countriesList, setCountriesList] = useState([]);
+  const [loadingCountries, setLoadingCountries] = useState(true);
+  const [countrySearch, setCountrySearch] = useState('');
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+  const countryDropdownRef = React.useRef(null);
 
   const { url: avatar, setUrl: setAvatar, inputRef: photoInputRef, handleChange: handlePhotoChange } = useImagePreview(
     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
   );
+
+  // Fetch countries
+  useEffect(() => {
+    const loadCountries = async () => {
+      try {
+        const data = await countriesApi.getCountries();
+        setCountriesList(data);
+      } catch (error) {
+        console.error("Failed to load countries:", error);
+      } finally {
+        setLoadingCountries(false);
+      }
+    };
+    loadCountries();
+  }, []);
 
   // Pre-fill from context if editing existing profile
   useEffect(() => {
@@ -36,25 +61,27 @@ export default function Profile() {
       setTitle(profile.title         || '');
       setAbout(profile.about         || '');
       setBio(profile.bio             || '');
-      setSkills(
-        typeof profile.skills === 'string'
-          ? profile.skills.split(',').map(s => s.trim()).filter(Boolean)
-          : (profile.skills || [])
-      );
-      setInterests(
-        typeof profile.interests === 'string'
-          ? profile.interests.split(',').map(i => i.trim()).filter(Boolean)
-          : (profile.interests || [])
-      );
-      setCity(profile.city       || '');
-      setCountry(profile.country || '');
-      setGithub(profile.github   || '');
-      setLinkedin(profile.linkedin || '');
-      setWebsite(profile.website   || '');
-
+      setSkills(profile.skills ? profile.skills.split(',').map(s => s.trim()) : []);
+      setInterests(profile.interests ? profile.interests.split(',').map(i => i.trim()) : []);
+      setCity(profile.city           || '');
+      setCountry(profile.country     || '');
+      setGithub(profile.github       || '');
+      setLinkedin(profile.linkedin   || '');
+      setWebsite(profile.website     || '');
       if (profile.avatar) setAvatar(profile.avatar);
     }
   }, [profile]);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (countryDropdownRef.current && !countryDropdownRef.current.contains(event.target)) {
+        setIsCountryDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // ── Tag helpers ──────────────────────────────────────────────
   const addTag = (val, list, setList) => {
@@ -82,17 +109,29 @@ export default function Profile() {
   // handlePhotoChange is managed by useImagePreview
 
   // ── Submit ───────────────────────────────────────────────────
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    registerUser({
+    setSaving(true);
+    const profileData = {
       firstName, lastName, title, about, bio,
       skills: skills.join(', '),
       interests: interests.join(', '),
       city, country, github, linkedin, website, avatar,
       visibility: profile?.visibility || 'public',
       isPublic: profile?.isPublic !== undefined ? profile.isPublic : true,
-    });
-    navigate('/participant');
+    };
+
+    try {
+      await usersApi.updateProfile(profileData);
+      registerUser(profileData);
+      showToast("Profil enregistré avec succès !", "success");
+      navigate('/participant');
+    } catch (error) {
+      console.error(error);
+      showToast("Erreur lors de l'enregistrement du profil.", "error");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -267,33 +306,61 @@ export default function Profile() {
                 <label htmlFor="profile-country" className="form-label">
                   Pays<span className="required-asterisk">*</span>
                 </label>
-                <select
-                  id="profile-country" className="form-select" required
-                  value={country} onChange={e => setCountry(e.target.value)}
-                >
-                  <option value="" disabled>Choisis ton pays</option>
-                  <option>United States</option>
-                  <option>Canada</option>
-                  <option>United Kingdom</option>
-                  <option>Germany</option>
-                  <option>France</option>
-                  <option>Nigeria</option>
-                  <option>Kenya</option>
-                  <option>South Africa</option>
-                  <option>Senegal</option>
-                  <option>Ghana</option>
-                  <option>Côte d'Ivoire</option>
-                  <option>Egypt</option>
-                  <option>Morocco</option>
-                  <option>Ethiopia</option>
-                  <option>India</option>
-                  <option>China</option>
-                  <option>Japan</option>
-                  <option>Australia</option>
-                  <option>Brazil</option>
-                  <option>Mexico</option>
-                  <option>Other</option>
-                </select>
+                <div className="custom-select-wrapper" ref={countryDropdownRef}>
+                  <div
+                    className={`form-input custom-select-trigger ${!country ? 'placeholder' : ''} ${isCountryDropdownOpen ? 'open' : ''} ${loadingCountries ? 'disabled' : ''}`}
+                    onClick={() => !loadingCountries && setIsCountryDropdownOpen(!isCountryDropdownOpen)}
+                  >
+                    <span>{country || (loadingCountries ? 'Chargement des pays...' : 'Choisis ton pays')}</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="select-chevron">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                  {isCountryDropdownOpen && (
+                    <div className="custom-select-menu">
+                      <div className="custom-select-search-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="search-icon">
+                          <circle cx="11" cy="11" r="8"></circle>
+                          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input
+                          type="text"
+                          className="custom-select-search"
+                          placeholder="Rechercher un pays..."
+                          value={countrySearch}
+                          onChange={(e) => setCountrySearch(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          autoFocus
+                        />
+                      </div>
+                      <div className="custom-select-options">
+                        {countriesList
+                          .filter(c => c.toLowerCase().includes(countrySearch.toLowerCase()))
+                          .map(c => (
+                            <div
+                              key={c}
+                              className={`custom-select-option ${c === country ? 'selected' : ''}`}
+                              onClick={() => {
+                                setCountry(c);
+                                setIsCountryDropdownOpen(false);
+                                setCountrySearch('');
+                              }}
+                            >
+                              {c}
+                              {c === country && (
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="check-icon">
+                                  <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                              )}
+                            </div>
+                          ))}
+                        {countriesList.filter(c => c.toLowerCase().includes(countrySearch.toLowerCase())).length === 0 && (
+                          <div className="custom-select-empty">Aucun pays trouvé</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -333,11 +400,11 @@ export default function Profile() {
 
           {/* ── Action buttons ── */}
           <div className="form-actions">
-            <button type="button" className="btn-action-secondary" onClick={() => navigate(-1)}>
+            <button type="button" className="btn-action-secondary" onClick={() => navigate(-1)} disabled={saving}>
               Annuler
             </button>
-            <button type="submit" className="btn-action-primary">
-              {profile && profile.about ? "Enregistrer les modifications" : "Enregistrer et s'inscrire"}
+            <button type="submit" className="btn-action-primary" disabled={saving}>
+              {saving ? "Enregistrement..." : (profile && profile.about ? "Enregistrer les modifications" : "Enregistrer et s'inscrire")}
             </button>
           </div>
         </form>

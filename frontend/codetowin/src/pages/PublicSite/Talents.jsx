@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockTalents } from '../../mockdata/talents';
 import useAuth from '../../hooks/useAuth';
+import { usersApi } from '../../api/users';
 import { getVisibilityLabel, isProfileDiscoverable } from '../../services/profileVisibility';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 export default function Talents() {
   const navigate = useNavigate();
@@ -11,7 +12,26 @@ export default function Talents() {
   const [selectedCountry, setSelectedCountry] = useState('all');
   const [selectedSkill, setSelectedSkill] = useState('all');
   const [onlyAvailable, setOnlyAvailable] = useState(false);
-  const discoverableTalents = mockTalents.filter(isProfileDiscoverable);
+  
+  const [talents, setTalents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTalents = async () => {
+      try {
+        const response = await usersApi.getTalents();
+        const data = response.data || [];
+        setTalents(data);
+      } catch (error) {
+        console.error("Failed to load talents:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTalents();
+  }, []);
+
+  const discoverableTalents = talents.filter(isProfileDiscoverable);
 
   // Extract all unique countries and skills for filter options
   const countries = ['all', ...new Set(discoverableTalents.map(t => t.country))];
@@ -26,6 +46,7 @@ export default function Talents() {
 
     return matchesSearch && matchesCountry && matchesSkill && matchesAvailability;
   });
+  
   const profileBasePath = registered && ['participant', 'mentor', 'organizer'].includes(role)
     ? `/${role}/public/talents`
     : '/talents';
@@ -139,13 +160,18 @@ export default function Talents() {
         </div>
 
         {/* Talents Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-          gap: '1.5rem'
-        }}>
-          {filteredTalents.map(talent => (
-            <div
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem 0' }}>
+            <LoadingSpinner message="Chargement des talents..." />
+          </div>
+        ) : (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+            gap: '1.5rem'
+          }}>
+            {filteredTalents.map(talent => (
+              <div
               key={talent.id}
               style={{
                 backgroundColor: '#ffffff',
@@ -275,7 +301,8 @@ export default function Talents() {
 
             </div>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Empty state */}
         {filteredTalents.length === 0 && (

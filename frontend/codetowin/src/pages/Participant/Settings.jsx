@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import SecuritySettings from '../../components/features/settings/SecuritySettings';
+import { usersApi } from '../../api/users';
 import '../../styles/pages/participant/profile.css';
 
 export default function ParticipantSettings() {
@@ -18,6 +19,7 @@ export default function ParticipantSettings() {
   const [showSocialLinks, setShowSocialLinks] = useState(true);
   const [allowTeammateSearch, setAllowTeammateSearch] = useState(true);
   const [allowRecruiterContact, setAllowRecruiterContact] = useState(true);
+  const [savingPrivacy, setSavingPrivacy] = useState(false);
 
   // Notifications tab state
   const [notifDeadlines, setNotifDeadlines] = useState(true);
@@ -45,41 +47,56 @@ export default function ParticipantSettings() {
     }
   }, [profile]);
 
-  const handlePrivacySubmit = (e) => {
+  const handlePrivacySubmit = async (e) => {
     e.preventDefault();
     if (profile) {
-      registerUser({
-        ...profile,
-        visibility: keepProfilePublic ? 'public' : 'members',
-        isPublic: keepProfilePublic,
-        privacyPrefs: {
-          showEmail,
-          showSocialLinks,
-          allowTeammateSearch,
-          allowRecruiterContact,
+      setSavingPrivacy(true);
+      try {
+        const privacyData = {
+          visibility: keepProfilePublic ? 'public' : 'members',
+          isPublic: keepProfilePublic,
+          privacyPrefs: {
+            showEmail,
+            showSocialLinks,
+            allowTeammateSearch,
+            allowRecruiterContact,
+          }
+        };
+        await usersApi.updateProfile(privacyData);
+        registerUser({
+          ...profile,
+          ...privacyData
+        });
+        if (showToast) {
+          showToast('Paramètres de confidentialité mis à jour avec succès.', 'success');
+        } else {
+          alert('Paramètres de confidentialité mis à jour avec succès.');
         }
-      });
-      if (showToast) {
-        showToast('Paramètres de confidentialité mis à jour avec succès.', 'success');
-      } else {
-        alert('Paramètres de confidentialité mis à jour avec succès.');
+      } catch (error) {
+        if (showToast) showToast("Erreur lors de la mise à jour des paramètres", "error");
+      } finally {
+        setSavingPrivacy(false);
       }
     }
   };
 
-  const handleNotificationsSubmit = (e) => {
+  const handleNotificationsSubmit = async (e) => {
     e.preventDefault();
     setSavingNotifications(true);
-    setTimeout(() => {
+    try {
       if (profile) {
-        registerUser({
-          ...profile,
+        const notifData = {
           notificationPrefs: {
             deadlines: notifDeadlines,
             feedbacks: notifFeedbacks,
             teamActivity: notifTeamActivity,
             certificates: notifCertificates,
           }
+        };
+        await usersApi.updateProfile(notifData);
+        registerUser({
+          ...profile,
+          ...notifData
         });
         if (showToast) {
           showToast('Préférences de notifications enregistrées avec succès.', 'success');
@@ -87,15 +104,23 @@ export default function ParticipantSettings() {
           alert('Préférences de notifications enregistrées avec succès.');
         }
       }
+    } catch (error) {
+      if (showToast) showToast("Erreur lors de l'enregistrement des notifications", "error");
+    } finally {
       setSavingNotifications(false);
-    }, 600);
+    }
   };
 
-  const handleDeleteAccount = () => {
-    if (showToast) {
-      showToast('Suppression du compte demandée.', 'warning');
-    } else {
-      alert('Suppression du compte demandée.');
+  const handleDeleteAccount = async () => {
+    try {
+      await usersApi.requestAccountDeletion();
+      if (showToast) {
+        showToast('Suppression du compte demandée.', 'warning');
+      } else {
+        alert('Suppression du compte demandée.');
+      }
+    } catch (error) {
+      if (showToast) showToast("Erreur lors de la demande de suppression", "error");
     }
   };
 
@@ -252,11 +277,11 @@ export default function ParticipantSettings() {
 
             {/* ── Action buttons ── */}
             <div className="form-actions" style={{ marginTop: '2.5rem' }}>
-              <button type="button" className="btn-action-secondary" onClick={() => navigate(-1)}>
+              <button type="button" className="btn-action-secondary" onClick={() => navigate(-1)} disabled={savingPrivacy}>
                 Annuler
               </button>
-              <button type="submit" className="btn-action-primary">
-                Enregistrer les modifications
+              <button type="submit" className="btn-action-primary" disabled={savingPrivacy}>
+                {savingPrivacy ? "Enregistrement..." : "Enregistrer les modifications"}
               </button>
             </div>
           </form>
@@ -355,7 +380,7 @@ export default function ParticipantSettings() {
 
             {/* ── Action buttons ── */}
             <div className="form-actions" style={{ marginTop: '2.5rem' }}>
-              <button type="button" className="btn-action-secondary" onClick={() => navigate(-1)}>
+              <button type="button" className="btn-action-secondary" onClick={() => navigate(-1)} disabled={savingNotifications}>
                 Annuler
               </button>
               <button type="submit" className="btn-action-primary" disabled={savingNotifications}>

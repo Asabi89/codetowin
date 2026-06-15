@@ -2,12 +2,91 @@ import React, { useContext, useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import '../../styles/pages/participant/participant.css';
+import { Download, ExternalLink } from "lucide-react";
+import Card from "../../components/common/Card";
+import Button from "../../components/common/Button";
+import { useToast } from "../../context/ToastContext";
+import { certificatesApi } from "../../api/certificates";
+import { usersApi } from '../../api/users';
 
 export default function Participant() {
   const { workspaceState, profile, registered, registerUser } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('portfolio');
+  const [certificates, setCertificates] = useState([]);
+  const [loadingCerts, setLoadingCerts] = useState(false);
+  const [myHackathons, setMyHackathons] = useState([]);
+  const [loadingHackathons, setLoadingHackathons] = useState(false);
+  const [myProjects, setMyProjects] = useState([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [myActivity, setMyActivity] = useState([]);
+  const [loadingActivity, setLoadingActivity] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  React.useEffect(() => {
+    if (registered && profile) {
+      if (certificates.length === 0) {
+        const fetchCerts = async () => {
+          setLoadingCerts(true);
+          try {
+            const data = await certificatesApi.getMyCertificates();
+            setCertificates(data || []);
+          } catch (err) {
+            console.error(err);
+          } finally {
+            setLoadingCerts(false);
+          }
+        };
+        fetchCerts();
+      }
+      
+      if (myHackathons.length === 0) {
+        const fetchHackathons = async () => {
+          setLoadingHackathons(true);
+          try {
+            const res = await usersApi.getMyHackathons();
+            setMyHackathons(res?.data || []);
+          } catch (err) {
+            console.error(err);
+          } finally {
+            setLoadingHackathons(false);
+          }
+        };
+        fetchHackathons();
+      }
+
+      if (myProjects.length === 0) {
+        const fetchProjects = async () => {
+          setLoadingProjects(true);
+          try {
+            const res = await usersApi.getMyProjects();
+            setMyProjects(res?.data || []);
+          } catch (err) {
+            console.error(err);
+          } finally {
+            setLoadingProjects(false);
+          }
+        };
+        fetchProjects();
+      }
+
+      if (myActivity.length === 0) {
+        const fetchActivity = async () => {
+          setLoadingActivity(true);
+          try {
+            const res = await usersApi.getMyActivity();
+            setMyActivity(res?.data || []);
+          } catch (err) {
+            console.error(err);
+          } finally {
+            setLoadingActivity(false);
+          }
+        };
+        fetchActivity();
+      }
+    }
+  }, [registered, profile, certificates.length, myHackathons.length, myProjects.length, myActivity.length]);
 
   if (!registered || !profile) {
     // If not registered/logged in, redirect to login
@@ -48,9 +127,10 @@ export default function Participant() {
 
   return (
     <div className="participant-page-wrapper">
-      {/* ===== PROFILE IDENTITY ===== */}
-      <div className="profile-identity-wrap">
-        <div className="profile-avatar-block">
+      <div className="profile-container">
+        {/* ===== PROFILE IDENTITY ===== */}
+        <div className="profile-identity-wrap">
+          <div className="profile-avatar-block">
           <div className="profile-avatar-frame">
             <img src={avatar} alt="Profile photo" className="profile-avatar-img" />
             <button
@@ -179,23 +259,25 @@ export default function Participant() {
         {/* Stats Bar */}
         <div className="profile-stats-bar">
           <div className="stat-block">
-            <div className="stat-number">1</div>
+            <div className="stat-number">{myProjects.length}</div>
             <div className="stat-label">Projets</div>
           </div>
           <div className="stat-block">
-            <div className="stat-number">1</div>
+            <div className="stat-number">{myHackathons.length}</div>
             <div className="stat-label">Hackathons</div>
           </div>
           <div className="stat-block">
-            <div className="stat-number">1</div>
+            <div className="stat-number">{profile?.badges?.length || 1}</div>
             <div className="stat-label">Badges</div>
           </div>
           <div className="stat-block">
-            <div className="stat-number">0</div>
+            <div className="stat-number">{certificates.length}</div>
             <div className="stat-label">Certificats</div>
           </div>
           <div className="stat-block">
-            <div className="stat-number">0</div>
+            <div className="stat-number">
+              {myProjects.reduce((acc, p) => acc + (p.likes || 0), 0)}
+            </div>
             <div className="stat-label">Likes</div>
           </div>
         </div>
@@ -212,94 +294,151 @@ export default function Participant() {
         {/* TAB CONTENT: Portfolio */}
         {activeTab === 'portfolio' && (
           <div className="profile-tab-panel active">
-            {/* In-Progress (Owner Only) */}
-            {!isSubmitted && (
-              <div>
-                <div className="in-progress-notice">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 mr-2 inline">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M12 8v4l3 3"></path>
-                  </svg>
-                  Tes projets en cours (juste pour tes yeux)
-                </div>
-                <div className="projects-grid">
-                  <div className="project-card">
-                    <div className="project-card-thumb">{projectName.charAt(0).toUpperCase()}</div>
-                    <div className="project-card-body">
-                      <span className="project-card-status status-draft">Draft</span>
-                      <div className="project-card-title">{projectName}</div>
-                      <div className="project-card-desc">In progress — continue working on your submission</div>
-                      <div className="project-card-footer">
-                        <span className="project-likes">Etape {workspaceState.currentStep || 1}/5</span>
-                        <Link to="/hackathons/google-cloud-rapid-agent?tab=my-project" className="text-emerald-600 font-bold hover:underline">
-                          Continuer &rarr;
+            {loadingProjects ? (
+              <div className="py-12 text-center text-slate-500 flex flex-col items-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600 mb-4"></div>
+                Chargement de vos projets...
+              </div>
+            ) : myProjects.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {myProjects.map((project) => (
+                  <div key={project.id} className="flex flex-col border border-slate-200 rounded-xl overflow-hidden bg-transparent shadow-sm">
+                    {project.image ? (
+                      <div className="h-40 w-full overflow-hidden">
+                        <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="h-40 w-full bg-slate-100 flex items-center justify-center text-3xl font-bold text-slate-300">
+                        {project.title ? project.title.charAt(0).toUpperCase() : 'P'}
+                      </div>
+                    )}
+                    <div className="p-5 flex flex-col flex-1">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-xs font-bold text-brand-700 uppercase tracking-wider">
+                          {project.hackathonName}
+                        </span>
+                        {project.status && (
+                          <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${project.status === 'Draft' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                            {project.status}
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="text-lg font-extrabold text-slate-900 mb-2">{project.title}</h4>
+                      <p className="text-sm text-slate-600 mb-4 line-clamp-2">{project.description}</p>
+                      
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {project.tags && project.tags.map(tag => (
+                          <span key={tag} className="px-2 py-1 bg-slate-50 text-slate-500 text-xs font-semibold rounded-md border border-slate-100">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-sm font-semibold text-slate-500">
+                          <span className="flex items-center gap-1">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
+                            </svg>
+                            {project.likes || 0}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                            </svg>
+                            {project.comments || 0}
+                          </span>
+                        </div>
+                        <Link to={`/hackathons/${project.hackathonId || 1}?tab=projects`} className="text-sm font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1">
+                          Détails <span aria-hidden="true">→</span>
                         </Link>
                       </div>
                     </div>
                   </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state w-full py-10">
+                <div className="empty-state-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto">
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                  </svg>
                 </div>
+                <h3>No Public Projects Yet</h3>
+                <p>Submit your first hackathon project to build your portfolio.</p>
               </div>
             )}
-
-            <div className="section-label" style={{ marginTop: '2rem' }}>Ton Portfolio Public</div>
-            <div className="projects-grid">
-              {isSubmitted ? (
-                <div className="project-card">
-                  <div className="project-card-thumb">{projectName.charAt(0).toUpperCase()}</div>
-                  <div className="project-card-body">
-                    <span className="project-card-status status-submitted">Submitted</span>
-                    <div className="project-card-title">{projectName}</div>
-                    <div className="project-card-desc">{workspaceState.projectPitch || 'A project submitted to the Google Cloud Rapid Agent Hackathon'}</div>
-                    <div className="project-card-footer">
-                      <span className="project-likes">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 inline mr-1">
-                          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
-                        </svg>
-                        0
-                      </span>
-                      <Link to="/hackathons/google-cloud-rapid-agent?tab=my-project" className="text-emerald-600 font-bold hover:underline">
-                        Voir &rarr;
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="empty-state w-full py-10">
-                  <div className="empty-state-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto">
-                      <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                      <line x1="3" y1="9" x2="21" y2="9"></line>
-                      <line x1="9" y1="21" x2="9" y2="9"></line>
-                    </svg>
-                  </div>
-                  <h3>No Public Projects Yet</h3>
-                  <p>Submit your first hackathon project to build your portfolio.</p>
-                </div>
-              )}
-            </div>
           </div>
         )}
 
         {/* TAB CONTENT: Hackathons */}
         {activeTab === 'hackathons' && (
           <div className="profile-tab-panel active">
-            <div className="hackathons-list">
-              <div className="hackathon-entry">
-                <div className="hackathon-entry-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {loadingHackathons ? (
+              <div className="py-12 text-center text-slate-500 flex flex-col items-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600 mb-4"></div>
+                Chargement de vos hackathons...
+              </div>
+            ) : myHackathons.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {myHackathons.map((hackathon) => (
+                  <div key={hackathon.id} className="flex flex-col border border-slate-200 rounded-xl overflow-hidden bg-transparent shadow-sm">
+                    {hackathon.image && (
+                      <div className="h-32 w-full overflow-hidden">
+                        <img src={hackathon.image} alt={hackathon.title} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div className="p-5 flex flex-col flex-1">
+                      <div className="flex justify-between items-start mb-3">
+                        <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${hackathon.status.includes('Terminé') ? 'bg-slate-100 text-slate-600' : 'bg-brand-100 text-brand-700'}`}>
+                          {hackathon.status}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                          </svg>
+                          {hackathon.date}
+                        </span>
+                      </div>
+                      <h4 className="text-lg font-bold text-slate-900 mb-1">{hackathon.title}</h4>
+                      <p className="text-sm text-slate-500 mb-4 line-clamp-2">{hackathon.description}</p>
+                      
+                      <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <span className="text-sm text-slate-600 flex items-center gap-1">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-slate-400">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                          </svg>
+                          {hackathon.location}
+                        </span>
+                        <Link to={`/hackathons/${hackathon.id}`} className="text-sm font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1">
+                          Accéder <span aria-hidden="true">→</span>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state text-center py-10">
+                <div className="empty-state-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto animate-pulse">
                     <path d="m9 6-5 6 5 6"></path>
                     <path d="m15 6 5 6-5 6"></path>
                   </svg>
                 </div>
-                <div className="hackathon-entry-info">
-                  <div className="hackathon-entry-title">Google Cloud Rapid Agent Hackathon</div>
-                  <div className="hackathon-entry-meta">Inscrit · En ligne · Juin 2026</div>
-                </div>
-                <span className="hackathon-entry-badge badge-joined">Inscrit</span>
+                <h3>Aucun hackathon</h3>
+                <p>Tu n'es inscrit à aucun hackathon pour le moment.</p>
               </div>
-            </div>
+            )}
           </div>
         )}
+
 
         {/* TAB CONTENT: Badges */}
         {activeTab === 'badges' && (
@@ -381,52 +520,90 @@ export default function Participant() {
         {/* TAB CONTENT: Certificates */}
         {activeTab === 'certificates' && (
           <div className="profile-tab-panel active">
-            <div className="empty-state text-center py-10">
-              <div className="empty-state-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto animate-pulse">
-                  <rect x="4" y="4" width="11" height="16" rx="2"></rect>
-                  <path d="M7 8h5M7 11h5M7 14h4"></path>
-                  <circle cx="17.2" cy="15.2" r="2.3"></circle>
-                  <path d="m16.3 17.1-1 2.9 1.8-1 1.8 1-1-2.9"></path>
-                </svg>
+            {loadingCerts ? (
+              <div className="py-12 text-center text-slate-500 flex flex-col items-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600 mb-4"></div>
+                Chargement des certificats...
               </div>
-              <h3>Pas encore de certificats</h3>
-              <p>Tes certifs de hackathons terminés s'afficheront ici.</p>
-            </div>
+            ) : certificates && certificates.length > 0 ? (
+              <div className="mt-2 grid gap-5 lg:grid-cols-2">
+                {certificates.map((certificate) => (
+                  <Card key={certificate.id}>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-brand-700">{certificate.type}</p>
+                    <h2 className="mt-1 text-lg font-bold text-slate-900">{certificate.title}</h2>
+                    <p className="mt-2 text-sm text-slate-600">{certificate.hackathon}</p>
+                    <p className="mt-1 text-sm text-slate-500">Émis le {certificate.issuedAt}</p>
+                    <p className="mt-4 rounded-lg bg-slate-50 px-3 py-2 font-mono text-xs text-slate-600">{certificate.id}</p>
+                    <div className="mt-5 flex flex-wrap gap-3">
+                      <Button size="sm" icon={Download} onClick={async () => {
+                        await certificatesApi.downloadCertificateAsPdf(certificate.id);
+                        showToast("Téléchargement PDF en cours.", "success");
+                      }}>
+                        Télécharger
+                      </Button>
+                      <Button size="sm" variant="outline" icon={ExternalLink} onClick={async () => {
+                        await certificatesApi.shareToLinkedIn(certificate.id);
+                        showToast("Lien LinkedIn préparé.", "success");
+                      }}>
+                        Partager
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state text-center py-10">
+                <div className="empty-state-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto animate-pulse">
+                    <rect x="4" y="4" width="11" height="16" rx="2"></rect>
+                    <path d="M7 8h5M7 11h5M7 14h4"></path>
+                    <circle cx="17.2" cy="15.2" r="2.3"></circle>
+                    <path d="m16.3 17.1-1 2.9 1.8-1 1.8 1-1-2.9"></path>
+                  </svg>
+                </div>
+                <h3>Pas encore de certificats</h3>
+                <p>Tes certifs de hackathons terminés s'afficheront ici.</p>
+              </div>
+            )}
           </div>
         )}
 
         {/* TAB CONTENT: Activity */}
         {activeTab === 'activity' && (
           <div className="profile-tab-panel active">
-            <div className="activity-timeline">
-              {isSubmitted && (
-                <div className="activity-item">
-                  <div className="activity-dot"></div>
-                  <div className="activity-text">Projet <strong>{projectName}</strong> soumis pour le Google Cloud Rapid Agent Hackathon</div>
-                  <div className="activity-time">Récemment</div>
+            {loadingActivity ? (
+              <div className="py-12 text-center text-slate-500 flex flex-col items-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600 mb-4"></div>
+                Chargement de votre activité...
+              </div>
+            ) : myActivity.length > 0 ? (
+              <div className="activity-timeline">
+                {myActivity.map((activity) => (
+                  <div key={activity.id} className="activity-item">
+                    <div className="activity-dot"></div>
+                    <div className="activity-text" dangerouslySetInnerHTML={{ __html: activity.text }}></div>
+                    <div className="activity-time">
+                      {new Date(activity.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state text-center py-10">
+                <div className="empty-state-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto animate-pulse">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                  </svg>
                 </div>
-              )}
-              <div className="activity-item">
-                <div className="activity-dot"></div>
-                <div className="activity-text">Inscrit au <strong>Google Cloud Rapid Agent Hackathon</strong></div>
-                <div className="activity-time">Aujourd'hui</div>
+                <h3>Aucune activité</h3>
+                <p>Ton historique s'affichera ici.</p>
               </div>
-              <div className="activity-item">
-                <div className="activity-dot"></div>
-                <div className="activity-text">Profil de builder complété</div>
-                <div className="activity-time">Aujourd'hui</div>
-              </div>
-              <div className="activity-item">
-                <div className="activity-dot"></div>
-                <div className="activity-text">Compte créé sur <strong>CodeToWin</strong></div>
-                <div className="activity-time">Aujourd'hui</div>
-              </div>
-            </div>
+            )}
           </div>
         )}
 
       </main>
+      </div>
     </div>
   );
 }

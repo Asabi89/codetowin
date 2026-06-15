@@ -1,23 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SecuritySettings from '../../components/features/settings/SecuritySettings';
+import useAuth from '../../hooks/useAuth';
+import { usersApi } from '../../api/users';
 
 export default function MentorSettings() {
+  const { profile, registerUser } = useAuth();
+  
   const [activeTab, setActiveTab] = useState('security');
+  
+  // Notifications State
   const [notifInvitations, setNotifInvitations] = useState(true);
   const [notifMessages, setNotifMessages] = useState(true);
   const [notifWeekly, setNotifWeekly] = useState(true);
+  
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  // Pre-fill from context
+  useEffect(() => {
+    if (profile && profile.notificationPrefs) {
+      setNotifInvitations(profile.notificationPrefs.invitations !== false);
+      setNotifMessages(profile.notificationPrefs.messages !== false);
+      setNotifWeekly(profile.notificationPrefs.weekly !== false);
+    }
+  }, [profile]);
 
   const handleSaveNotifications = async () => {
     setSaving(true);
     setSuccess(false);
-    // Simuler un appel API
-    setTimeout(() => {
-      setSaving(false);
+    setErrorMsg('');
+
+    try {
+      const notifData = {
+        notificationPrefs: {
+          ...profile?.notificationPrefs,
+          invitations: notifInvitations,
+          messages: notifMessages,
+          weekly: notifWeekly,
+        }
+      };
+
+      await usersApi.updateProfile(notifData);
+      
+      if (profile) {
+        registerUser({
+          ...profile,
+          ...notifData
+        });
+      }
+
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    }, 800);
+    } catch (err) {
+      console.warn("Erreur lors de la sauvegarde des notifications", err);
+      setErrorMsg("Une erreur est survenue lors de l'enregistrement de vos préférences.");
+      setTimeout(() => setErrorMsg(''), 4000);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -62,6 +103,21 @@ export default function MentorSettings() {
                   </div>
                   <div className="ml-3">
                     <p className="text-sm font-medium text-emerald-800">Préférences de notifications enregistrées avec succès !</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {errorMsg && (
+              <div className="rounded-md bg-red-50 p-4 border border-red-200">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-red-800">{errorMsg}</p>
                   </div>
                 </div>
               </div>
