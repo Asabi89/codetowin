@@ -5,6 +5,7 @@ import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import useAuth from "../../hooks/useAuth";
 import { useToast } from "../../context/ToastContext";
+import { authApi } from "../../api/auth";
 import "../../styles/pages/auth/login.css";
 
 const roles = [
@@ -48,10 +49,18 @@ export default function ChooseRole() {
     }
 
     const otpCode = location.state?.otpCode || Math.floor(100000 + Math.random() * 900000).toString();
+    const email = location.state?.email || 'user@codetowin.com';
+
+    if (!location.state?.otpCode) {
+      // Log newly generated OTP
+      authApi.logOtp(email, otpCode).catch(console.error);
+    }
+
     navigate('/verify-email', {
       state: {
-        email: location.state?.email || 'user@codetowin.com',
+        email: email,
         username: location.state?.username || 'User',
+        password: location.state?.password || '',
         otpCode: otpCode,
         role: selectedRole.key,
         hasExplicitRole: true

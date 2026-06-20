@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { MEMBERS_MOCK } from '../../mockdata/organizer';
 import { usersApi } from '../../api/users';
 import { useToast } from '../../context/ToastContext';
 
@@ -38,7 +37,7 @@ const mapUserToMember = (user, index) => ({
 
 export default function OrganizerMembers() {
   const { showToast } = useToast();
-  const [members, setMembers] = useState(MEMBERS_MOCK);
+  const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
@@ -70,14 +69,14 @@ export default function OrganizerMembers() {
       try {
         setLoading(true);
         const data = await usersApi.getTalents({ role: 'organizer' });
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setMembers(data.map(mapUserToMember));
         } else {
-          setMembers(MEMBERS_MOCK);
+          setMembers([]);
         }
       } catch (err) {
-        console.warn("Erreur lors du chargement des membres via l'API, utilisation du fallback mocké.", err);
-        setMembers(MEMBERS_MOCK);
+        console.error("Erreur api", err);
+        setMembers([]);
       } finally {
         setLoading(false);
       }

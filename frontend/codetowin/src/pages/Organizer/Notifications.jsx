@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import NotificationCenter from '../../components/features/notifications/NotificationCenter';
-import { ORGANIZER_NOTIFICATIONS_MOCK } from '../../mockdata/organizer';
 import { notificationsApi } from '../../api/notifications';
 import { useNotifications } from '../../hooks/useNotifications';
 
 export default function OrganizerNotifications() {
-  const [notifications, setNotifications] = useState(ORGANIZER_NOTIFICATIONS_MOCK);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const data = await notificationsApi.getNotifications();
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setNotifications(data.map(notification => ({
             ...notification,
             unread: notification.unread ?? !notification.read_at,
@@ -19,11 +18,11 @@ export default function OrganizerNotifications() {
             iconBg: notification.iconBg || 'bg-slate-100',
           })));
         } else {
-          setNotifications(ORGANIZER_NOTIFICATIONS_MOCK);
+          setNotifications([]);
         }
       } catch (err) {
-        console.warn("Erreur lors du chargement des notifications via l'API, utilisation du fallback mocké.", err);
-        setNotifications(ORGANIZER_NOTIFICATIONS_MOCK);
+        console.warn("Erreur lors du chargement des notifications via l'API", err);
+        setNotifications([]);
       }
     };
     fetchNotifications();

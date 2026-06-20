@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, Check, X, Mail, Download, CheckCircle2, XCircle } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import Badge from '../../../components/common/Badge';
-import { PARTICIPANTS_MOCK } from '../../../mockdata/organizer';
 import { hackathonsApi } from '../../../api/hackathons';
 import { useToast } from '../../../context/ToastContext';
 
@@ -32,7 +31,7 @@ export default function OrganizerParticipants() {
       try {
         setLoading(true);
         const data = await hackathonsApi.getRegistrations(id);
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           const mapped = data.map(reg => ({
             id: reg.id,
             name: reg.user?.name || reg.name || 'Utilisateur',
@@ -45,11 +44,11 @@ export default function OrganizerParticipants() {
           }));
           setParticipants(mapped);
         } else {
-          setParticipants(PARTICIPANTS_MOCK);
+          setParticipants([]);
         }
       } catch (err) {
-        console.warn("Erreur lors de la récupération des inscriptions via l'API, utilisation du fallback mocké.", err);
-        setParticipants(PARTICIPANTS_MOCK);
+        console.error("Erreur api", err);
+        setParticipants([]);
       } finally {
         setLoading(false);
       }
@@ -63,9 +62,7 @@ export default function OrganizerParticipants() {
       setParticipants(prev => prev.map(p => p.id === regId ? { ...p, status: 'Approuvé' } : p));
       showToast("Inscription approuvée avec succès !", "success");
     } catch (err) {
-      console.warn("Erreur lors de l'approbation via l'API, simulation locale.", err);
-      setParticipants(prev => prev.map(p => p.id === regId ? { ...p, status: 'Approuvé' } : p));
-      showToast("Inscription approuvée avec succès !", "success");
+      console.error("Erreur api", err);
     }
   };
 
@@ -75,9 +72,7 @@ export default function OrganizerParticipants() {
       setParticipants(prev => prev.map(p => p.id === regId ? { ...p, status: 'Rejeté' } : p));
       showToast("Inscription rejetée.", "danger");
     } catch (err) {
-      console.warn("Erreur lors du rejet via l'API, simulation locale.", err);
-      setParticipants(prev => prev.map(p => p.id === regId ? { ...p, status: 'Rejeté' } : p));
-      showToast("Inscription rejetée.", "danger");
+      console.error("Erreur api", err);
     }
   };
 

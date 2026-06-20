@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CornerUpLeft, Info, Search, Send, X, Bell, BellOff, Ban, Flag, Trash2, Plus } from 'lucide-react';
+import { CornerUpLeft, Info, Search, Send, X, Bell, BellOff, Ban, Flag, Trash2, Plus, ArrowLeft } from 'lucide-react';
 import ChatAvatar from './ChatAvatar';
 import ChatStatus from './ChatStatus';
 import ChatListItem from './ChatListItem';
 import HeaderMenu from './HeaderMenu';
 import MessageBubble from './MessageBubble';
+import { ChatWebSocket } from '../../api/websocket';
 
 export default function ChatLayout({
   tabs,
@@ -27,7 +28,9 @@ export default function ChatLayout({
   const [mutedChats, setMutedChats] = useState({});
   const [blockedChats, setBlockedChats] = useState({});
   const [selectedFile, setSelectedFile] = useState(null);
+  const [showMobileChat, setShowMobileChat] = useState(false);
   const messagesEndRef = useRef(null);
+  const wsRef = useRef(null);
 
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
@@ -65,6 +68,41 @@ export default function ChatLayout({
   }, [activeChatId, messages.length]);
 
   useEffect(() => {
+    if (activeChatId) {
+      if (wsRef.current) {
+        wsRef.current.disconnect();
+      }
+
+      const ws = new ChatWebSocket(activeChatId, (incomingMessage) => {
+        setChatMessages((current) => {
+          const currentMessages = current[activeChatId] || [];
+          // Avoid duplicate messages if we already optimisticly appended it
+          if (!currentMessages.some((m) => m.id === incomingMessage.id)) {
+            return {
+              ...current,
+              [activeChatId]: [...currentMessages, {
+                id: incomingMessage.id,
+                sender: incomingMessage.sender_id === 'me' ? 'me' : 'other', // Or derive properly from user session
+                senderName: incomingMessage.sender_email,
+                text: incomingMessage.content,
+                time: new Date(incomingMessage.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+              }],
+            };
+          }
+          return current;
+        });
+      });
+      
+      ws.connect();
+      wsRef.current = ws;
+
+      return () => {
+        ws.disconnect();
+      };
+    }
+  }, [activeChatId]);
+
+  useEffect(() => {
     const handleClick = () => setContextMenu((current) => ({ ...current, show: false }));
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
@@ -95,7 +133,10 @@ export default function ChatLayout({
     setReplyTo(null);
     setSelectedFile(null);
 
-    if (onSendMessage) {
+    // Send via WebSocket if connected
+    if (wsRef.current) {
+      wsRef.current.sendMessage(text);
+    } else if (onSendMessage) {
       try {
         await onSendMessage(activeChat.id, nextMessage);
       } catch (err) {
@@ -210,10 +251,10 @@ export default function ChatLayout({
   const menuOptions = headerMenuOptions && headerMenuOptions.length > 0 ? headerMenuOptions : defaultMenuOptions;
 
   return (
-    <div className="flex flex-1 overflow-hidden h-full bg-white relative">
+    <div className="flex flex-1 overflow-hidden h-full bg-white relative min-h-0 min-w-0">
       <style>{`.chat-scroll::-webkit-scrollbar{width:6px}.chat-scroll::-webkit-scrollbar-track{background:transparent}.chat-scroll::-webkit-scrollbar-thumb{background-color:#cbd5e1;border-radius:10px}`}</style>
 
-      <div className="w-full sm:w-1/3 md:w-80 border-r border-slate-200 flex flex-col bg-slate-50 flex-shrink-0">
+      <div className={`w-full sm:w-1/3 md:w-80 border-r border-slate-200 flex-col bg-slate-50 flex-shrink-0 ${showMobileChat ? 'hidden sm:flex' : 'flex'}`}>
         <div className="p-4 border-b border-slate-200 bg-white">
           <div className="relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -238,7 +279,7 @@ export default function ChatLayout({
 
         <div className="flex-1 overflow-y-auto chat-scroll p-2 space-y-1">
           {filteredChats.map((chat) => (
-            <ChatListItem key={chat.id} chat={chat} isActive={activeChat?.id === chat.id} onClick={() => setActiveChatId(chat.id)} />
+            <ChatListItem key={chat.id} chat={chat} isActive={activeChat?.id === chat.id} onClick={() => { setActiveChatId(chat.id); setShowMobileChat(true); }} />
           ))}
           {filteredChats.length === 0 && (
             <div className="p-4 text-center text-sm text-slate-500">Aucun contact trouvé.</div>
@@ -247,10 +288,17 @@ export default function ChatLayout({
       </div>
 
       {activeChat ? (
-        <div className="hidden sm:flex flex-row flex-1 bg-white relative overflow-hidden">
-          <div className="flex flex-col flex-1 bg-white relative overflow-hidden min-w-0">
+        <div className={`${showMobileChat ? 'flex' : 'hidden sm:flex'} flex-row flex-1 bg-white relative overflow-hidden min-h-0 min-w-0`}>
+          <div className="flex flex-col flex-1 bg-white relative overflow-hidden min-w-0 min-h-0">
             <div className="h-16 border-b border-slate-200 flex items-center justify-between px-6 shrink-0 bg-white">
               <div className="flex items-center">
+                <button
+                  type="button"
+                  onClick={() => setShowMobileChat(false)}
+                  className="mr-3 sm:hidden text-slate-500 hover:text-slate-700 focus:outline-none"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
                 <ChatAvatar chat={activeChat} />
                 <div className="ml-3">
                   <p className="text-sm font-bold text-slate-900">{activeChat.headerName || activeChat.name}</p>

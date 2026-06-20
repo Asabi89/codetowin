@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { authApi } from '../../api/auth';
 import '../../styles/pages/auth/verify-email.css';
 
 export default function VerifyEmail() {
@@ -14,6 +15,7 @@ export default function VerifyEmail() {
   const signupData = location.state || null;
   const email = signupData?.email || '';
   const username = signupData?.username || '';
+  const password = signupData?.password || '';
   const initialOtp = signupData?.otpCode || '123456';
 
   // OTP inputs state (6 digits)
@@ -61,7 +63,7 @@ export default function VerifyEmail() {
 
     // Auto focus next input
     if (index < 5 && element.value !== '') {
-      inputRefs.current[index + 1].focus();
+      inputRefs.current[index + 1]?.focus();
     }
   };
 
@@ -74,7 +76,7 @@ export default function VerifyEmail() {
           const newOtp = [...otp];
           newOtp[index - 1] = '';
           setOtp(newOtp);
-          inputRefs.current[index - 1].focus();
+          inputRefs.current[index - 1]?.focus();
         }
       } else {
         // Clear current digit
@@ -101,6 +103,10 @@ export default function VerifyEmail() {
     // Generate a new 6-digit random OTP code
     const newCode = Math.floor(100000 + Math.random() * 900000).toString();
     setCurrentOtpCode(newCode);
+    
+    // Log OTP to terminal
+    authApi.logOtp(email, newCode).catch(console.error);
+
     setOtp(new Array(6).fill(''));
     setErrorMsg('');
     setResendCountdown(59);
@@ -122,46 +128,41 @@ export default function VerifyEmail() {
     setErrorMsg('');
 
     // Simulate network delay
-    setTimeout(() => {
+    setTimeout(async () => {
       if (enteredCode === currentOtpCode) {
         const userRole = signupData?.role || 'participant';
-        registerUser({
-          firstName: username || 'User',
-          lastName: '',
-          email: email || 'user@codetowin.com',
-          role: userRole,
-          title: userRole === 'organizer' ? 'Organisateur' : userRole === 'mentor' ? 'Mentor' : 'Développeur',
-          about: '',
-          bio: '',
-          skills: 'React, Tailwind',
-          interests: 'Hackathons',
-          city: '',
-          country: '',
-          github: '',
-          linkedin: '',
-          website: '',
-          visibility: 'public',
-          isPublic: true,
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
-        });
-        
-        setIsVerifying(false);
-        showToast("Votre email a été vérifié et votre inscription est maintenant finalisée !", "success");
-        if (!signupData?.hasExplicitRole) {
-          navigate('/choose-role', {
-            replace: true,
-            state: {
-              fromSignup: true,
-              email: email || 'user@codetowin.com',
-              username: username || 'User',
-            },
+        try {
+          await registerUser({
+            firstName: username || 'User',
+            lastName: '',
+            email: email || 'user@codetowin.com',
+            password: password,
+            role: userRole
           });
-        } else if (userRole === 'organizer') {
-          navigate('/organizer/hackathons/create');
-        } else if (userRole === 'mentor') {
-          navigate('/mentor');
-        } else {
-          navigate('/participant');
+          
+          setIsVerifying(false);
+          showToast("Votre email a été vérifié et votre inscription est maintenant finalisée !", "success");
+          
+          if (!signupData?.hasExplicitRole) {
+            navigate('/choose-role', {
+              replace: true,
+              state: {
+                fromSignup: true,
+                email: email || 'user@codetowin.com',
+                username: username || 'User',
+                password: password,
+              },
+            });
+          } else if (userRole === 'organizer') {
+            navigate('/profile'); // Let them complete profile first
+          } else if (userRole === 'mentor') {
+            navigate('/profile'); // Let them complete profile first
+          } else {
+            navigate('/profile'); // Let them complete profile first
+          }
+        } catch (err) {
+          setIsVerifying(false);
+          setErrorMsg(`Erreur: ${err.message || 'Erreur inconnue'}`);
         }
       } else {
         setIsVerifying(false);
@@ -210,6 +211,11 @@ export default function VerifyEmail() {
           <span className="verify-email-bold">{email}</span>. <br />
           Entre-le ci-dessous pour valider ton inscription.
         </p>
+
+        {/* DEVELOPMENT ONLY: Show OTP */}
+        <div style={{ backgroundColor: '#f0fdf4', color: '#166534', padding: '10px', borderRadius: '8px', marginBottom: '20px', textAlign: 'center', fontWeight: 'bold', border: '1px dashed #166534' }}>
+          [DEV MODE] Ton code OTP est : {currentOtpCode}
+        </div>
 
         {errorMsg && (
           <div style={{ color: '#ef4444', fontSize: '0.88rem', fontWeight: 600, marginBottom: '1.25rem', padding: '0.5rem 1rem', background: '#fef2f2', borderRadius: '8px' }}>

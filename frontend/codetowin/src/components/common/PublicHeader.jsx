@@ -31,10 +31,10 @@ export default function PublicHeader() {
               <Link to="/hackathons" className="text-sm font-semibold text-slate-700 transition hover:text-emerald-700">
                 Explorer les hackathons
               </Link>
-              <Link to="/participer" className="text-sm font-semibold text-slate-700 transition hover:text-emerald-700">
+              <Link to="/signup?role=participant" className="text-sm font-semibold text-slate-700 transition hover:text-emerald-700">
                 Rejoindre un hackathon
               </Link>
-              <Link to="/organiser" className="text-sm font-semibold text-slate-700 transition hover:text-emerald-700">
+              <Link to="/signup?role=organizer" className="text-sm font-semibold text-slate-700 transition hover:text-emerald-700">
                 Créer un hackathon
               </Link>
               
@@ -103,10 +103,10 @@ export default function PublicHeader() {
           <Link to="/hackathons" className="mobile-nav-sidebar-link" onClick={closeMobileMenu}>
             Explorer les hackathons
           </Link>
-          <Link to="/participer" className="mobile-nav-sidebar-link" onClick={closeMobileMenu}>
+          <Link to="/signup?role=participant" className="mobile-nav-sidebar-link" onClick={closeMobileMenu}>
             Rejoindre un hackathon
           </Link>
-          <Link to="/organiser" className="mobile-nav-sidebar-link" onClick={closeMobileMenu}>
+          <Link to="/signup?role=organizer" className="mobile-nav-sidebar-link" onClick={closeMobileMenu}>
             Créer un hackathon
           </Link>
         </div>

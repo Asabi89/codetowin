@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PageHeader from '../../components/common/PageHeader';
 import InvitationCard from '../../components/features/mentor/InvitationCard';
-import { MENTOR_INVITATIONS_MOCK } from '../../mockdata/mentor';
 import { mentorsApi } from '../../api/mentors';
 import { extractArray } from '../../services/normalizers';
 
@@ -33,11 +32,11 @@ export default function MentorInvitations() {
         if (apiInvitations.length > 0) {
           setInvitations(apiInvitations.map(normalizeInvitation));
         } else {
-          setInvitations(MENTOR_INVITATIONS_MOCK);
+          setInvitations([]);
         }
       } catch (err) {
-        console.warn('Erreur de chargement des invitations depuis l\'API, utilisation du fallback.', err);
-        setInvitations(MENTOR_INVITATIONS_MOCK);
+        console.error("Erreur api", err);
+        setInvitations([]);
       } finally {
         setLoading(false);
       }
@@ -50,8 +49,7 @@ export default function MentorInvitations() {
       await mentorsApi.acceptInvitation(id);
       setInvitations(prev => prev.filter(inv => inv.id !== id));
     } catch (err) {
-      console.warn('API error, simulating accept locally', err);
-      setInvitations(prev => prev.filter(inv => inv.id !== id));
+      console.error("Erreur api", err);
     }
   };
 
@@ -60,8 +58,7 @@ export default function MentorInvitations() {
       await mentorsApi.declineInvitation(id);
       setInvitations(prev => prev.filter(inv => inv.id !== id));
     } catch (err) {
-      console.warn('API error, simulating decline locally', err);
-      setInvitations(prev => prev.filter(inv => inv.id !== id));
+      console.error("Erreur api", err);
     }
   };
 

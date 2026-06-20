@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import ChatLayout from '../../components/features/messaging/ChatLayout';
 import { messagesApi } from '../../api/messages';
-import { ORGANIZER_TABS_MOCK, ORGANIZER_CHATS_MOCK } from '../../mockdata/organizer';
 import { extractArray, normalizeConversation } from '../../services/normalizers';
 import { useRoleConversations } from '../../hooks/useRoleConversations';
 
 export default function OrganizerMessages() {
-  const [tabs, setTabs] = useState(ORGANIZER_TABS_MOCK);
-  const [chats, setChats] = useState(ORGANIZER_CHATS_MOCK);
+  const [tabs, setTabs] = useState([]);
+  const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,17 +15,12 @@ export default function OrganizerMessages() {
         setLoading(true);
         const data = await messagesApi.getConversations({ role: 'organizer' });
         const conversations = extractArray(data);
-        if (conversations.length > 0) {
-          setTabs(ORGANIZER_TABS_MOCK);
-          setChats(conversations.map(normalizeConversation));
-        } else {
-          setTabs(ORGANIZER_TABS_MOCK);
-          setChats(ORGANIZER_CHATS_MOCK);
-        }
+        setTabs(data.tabs || []);
+        setChats(conversations.map(normalizeConversation));
       } catch (err) {
-        console.warn('Erreur lors du chargement des conversations organisateur depuis l\'API, utilisation du fallback.', err);
-        setTabs(ORGANIZER_TABS_MOCK);
-        setChats(ORGANIZER_CHATS_MOCK);
+        console.error("Erreur api", err);
+        setTabs([]);
+        setChats([]);
       } finally {
         setLoading(false);
       }

@@ -7,13 +7,8 @@ export const hackathonsApi = {
    * @param {object} params { search, country, status, theme, page }
    */
   getHackathons: async (params = {}) => {
-    try {
-      const query = new URLSearchParams(params).toString();
-      return await apiClient.get(`/hackathons?${query}`);
-    } catch (error) {
-      console.warn("API unavailable, returning mock hackathons", error);
-      return { data: initialHackathons, total: initialHackathons.length };
-    }
+    const query = new URLSearchParams(params).toString();
+    return await apiClient.get(`/hackathons?${query}`);
   },
 
   /**
@@ -21,14 +16,7 @@ export const hackathonsApi = {
    * @param {string} id
    */
   getHackathonById: async (id) => {
-    try {
-      return await apiClient.get(`/hackathons/${id}`);
-    } catch (error) {
-      console.warn("API unavailable, mocking getHackathonById", error);
-      const hackathon = initialHackathons.find(h => String(h.id) === String(id));
-      if (!hackathon) throw new Error("Hackathon not found", { cause: error });
-      return { data: hackathon };
-    }
+    return await apiClient.get(`/hackathons/${id}`);
   },
 
   /**
@@ -68,36 +56,14 @@ export const hackathonsApi = {
    * @param {string} id
    */
   getRegistrations: async (id) => {
-    try {
-      return await apiClient.get(`/hackathons/${id}/registrations`);
-    } catch (error) {
-      console.warn("API unavailable, mocking getRegistrations", error);
-      // We import mockTalents lazily to avoid circular dependencies if any, 
-      // or we can just return a basic mock list.
-      return { 
-        data: [
-          { id: '1', user: { name: 'Sarah Chen', role: 'AI Developer', skills: ['Python', 'Gemini API'] } },
-          { id: '2', user: { name: 'Marcus Vance', role: 'Product Designer', skills: ['Figma', 'UX'] } },
-        ] 
-      };
-    }
+    return await apiClient.get(`/hackathons/${id}/registrations`);
   },
 
   /**
    * Récupère les actualités d'un hackathon
    */
   getAnnouncements: async (id) => {
-    try {
-      return await apiClient.get(`/hackathons/${id}/announcements`);
-    } catch (error) {
-      console.warn("API unavailable, mocking getAnnouncements", error);
-      return {
-        data: [
-          { id: 'a1', title: 'Coup d\'envoi !', content: 'Le hackathon est officiellement lancé !', date: new Date().toISOString() },
-          { id: 'a2', title: 'Nouveau prix ajouté', content: 'Le sponsor X vient de rajouter 5000$ au prize pool.', date: new Date().toISOString() }
-        ]
-      };
-    }
+    return await apiClient.get(`/hackathons/${id}/announcements`);
   },
 
   /**

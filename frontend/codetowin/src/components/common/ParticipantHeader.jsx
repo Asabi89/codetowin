@@ -101,12 +101,14 @@ export default function ParticipantHeader() {
             >
               Explorer
             </Link>
-            <Link
-              to={currentRoleConfig.dashboardTo}
-              className={`auth-nav-link${location.pathname.startsWith(currentRoleConfig.dashboardTo) ? ' active' : ''}`}
-            >
-              {currentRoleConfig.dashboardLabel}
-            </Link>
+            {role !== 'participant' && (
+              <Link
+                to={currentRoleConfig.dashboardTo}
+                className={`auth-nav-link${location.pathname.startsWith(currentRoleConfig.dashboardTo) ? ' active' : ''}`}
+              >
+                {currentRoleConfig.dashboardLabel}
+              </Link>
+            )}
             {role !== 'participant' && (
               <Link
                 to={currentRoleConfig.secondaryTo}
@@ -193,17 +195,19 @@ export default function ParticipantHeader() {
 
               {/* Nav links */}
               <div className="dropdown-links">
-                <Link
-                  to={currentRoleConfig.dashboardTo}
-                  className="dropdown-link"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="8" r="4"></circle>
-                    <path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"></path>
-                  </svg>
-                  {currentRoleConfig.dashboardLabel}
-                </Link>
+                {(role === 'organizer' || role === 'mentor') && (
+                  <Link
+                    to={currentRoleConfig.dashboardTo}
+                    className="dropdown-link"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="8" r="4"></circle>
+                      <path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"></path>
+                    </svg>
+                    {currentRoleConfig.dashboardLabel}
+                  </Link>
+                )}
                 <Link
                   to={currentRoleConfig.profileTo}
                   className="dropdown-link"
@@ -215,7 +219,7 @@ export default function ParticipantHeader() {
                   </svg>
                   Mon profil
                 </Link>
-                {role !== 'participant' && (
+                {(role === 'organizer' || role === 'mentor') && (
                   <Link
                     to={currentRoleConfig.secondaryTo}
                     className="dropdown-link"

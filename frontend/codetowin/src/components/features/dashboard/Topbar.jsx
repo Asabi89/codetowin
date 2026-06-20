@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, Bell } from 'lucide-react';
 
-export default function Topbar({ role = 'organizer' }) {
+export default function Topbar({ role = 'organizer', onMenuClick }) {
   const location = useLocation();
   const organizerTitles = {
     '/organizer': 'Dashboard',
@@ -49,7 +49,7 @@ export default function Topbar({ role = 'organizer' }) {
   return (
     <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
       <div className="flex items-center">
-        <button className="text-slate-500 focus:outline-none sm:hidden mr-4">
+        <button onClick={onMenuClick} className="text-slate-500 focus:outline-none lg:hidden mr-4 hover:text-slate-700 transition-colors">
           <Menu size={24} />
         </button>
         {(isMentorHackathonDetail || isMentorHackathonSubmissions) ? (

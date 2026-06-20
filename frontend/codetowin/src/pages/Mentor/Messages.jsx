@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import ChatLayout from '../../components/features/messaging/ChatLayout';
 import { messagesApi } from '../../api/messages';
-import { MENTOR_TABS_MOCK, MENTOR_CHATS_MOCK } from '../../mockdata/mentor';
 import { extractArray, normalizeConversation } from '../../services/normalizers';
 import { useRoleConversations } from '../../hooks/useRoleConversations';
 
 export default function MentorMessages() {
-  const { tabs, chats, loading } = useRoleConversations('mentor', { mockChats: MENTOR_CHATS_MOCK, mockTabs: MENTOR_TABS_MOCK });
+  const { tabs, chats, loading } = useRoleConversations('mentor');
 
   if (loading) {
     return (

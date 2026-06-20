@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import SubmissionCard from '../../../components/features/submissions/SubmissionCard';
-import { SUBMISSIONS_MOCK } from '../../../mockdata/organizer';
 import { submissionsApi } from '../../../api/submissions';
 import { extractArray, normalizeSubmission } from '../../../services/normalizers';
 
@@ -27,11 +26,11 @@ export default function OrganizerSubmissions() {
         if (apiSubmissions.length > 0) {
           setSubmissions(apiSubmissions.map(normalizeSubmission));
         } else {
-          setSubmissions(SUBMISSIONS_MOCK);
+          setSubmissions([]);
         }
       } catch (err) {
-        console.warn("Erreur lors de la récupération des soumissions, utilisation du fallback mocké.", err);
-        setSubmissions(SUBMISSIONS_MOCK);
+        console.error("Erreur api", err);
+        setSubmissions([]);
       } finally {
         setLoading(false);
       }

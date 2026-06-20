@@ -23,7 +23,7 @@ export default function ParticipantLayout() {
         ${isMessagesPage ? `
           body, #root, main {
             overflow: hidden !important;
-            height: 100vh;
+            height: 100dvh;
           }
         ` : ''}
       `}</style>
@@ -31,11 +31,13 @@ export default function ParticipantLayout() {
 
 
       {/* Main Content Area */}
-      <div 
-        className={isMessagesPage ? "participant-portal-content w-full" : "participant-portal-content mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8"}
-        style={isMessagesPage ? { height: 'calc(100vh - 121px)', padding: 0, overflow: 'hidden' } : {}}
-      >
-        <Outlet />
+      <div className="w-full flex-1 flex flex-col" style={{ backgroundColor: '#F2F2F2', minHeight: 0 }}>
+        <div 
+          className={isMessagesPage ? "participant-portal-content w-full flex-1 flex flex-col" : "participant-portal-content mx-auto max-w-7xl w-full px-4 py-8 sm:px-6 lg:px-8 flex-1 flex flex-col"}
+          style={isMessagesPage ? { padding: 0, overflow: 'hidden', minHeight: 0 } : { minHeight: 0 }}
+        >
+          <Outlet />
+        </div>
       </div>
     </MainLayout>
   );

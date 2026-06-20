@@ -33,6 +33,10 @@
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
+  min-height: 100vh;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 body.menu-open {

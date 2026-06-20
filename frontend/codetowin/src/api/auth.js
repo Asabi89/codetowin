@@ -34,4 +34,14 @@ export const authApi = {
    * Récupérer les détails de la session actuelle
    */
   getMe: () => apiClient.get('/auth/me'),
+
+  /**
+   * Log OTP to terminal
+   */
+  logOtp: (email, otp) => apiClient.post('/auth/log-otp', { email, otp }),
+
+  /**
+   * Check if username and email are available
+   */
+  checkAvailability: (email, username) => apiClient.post('/auth/check-availability', { email, username }),
 };

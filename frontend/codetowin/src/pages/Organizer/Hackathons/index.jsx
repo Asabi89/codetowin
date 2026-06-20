@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Trophy, FileText, Clock, CheckCircle } from 'lucide-react';
 import { hackathonsApi } from '../../../api/hackathons';
 import { HACKATHONS_DATA_MOCK } from '../../../mockdata/organizer';
 import { extractArray, normalizeHackathon, normalizeStatus } from '../../../services/normalizers';
+import { OrganizerContext } from '../../../context/OrganizerContext';
 
 const STATUS_BADGE_MAP = {
   publie: { label: 'Publié', classes: 'bg-green-100 text-green-800' },
@@ -13,31 +14,11 @@ const STATUS_BADGE_MAP = {
 };
 
 const OrganizerHackathons = () => {
-  const [hackathons, setHackathons] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    const fetchHackathons = async () => {
-      try {
-        setLoading(true);
-        const data = await hackathonsApi.getHackathons();
-        const apiHackathons = extractArray(data);
-        if (apiHackathons.length > 0) {
-          setHackathons(apiHackathons.map(normalizeHackathon));
-        } else {
-          setHackathons(HACKATHONS_DATA_MOCK);
-        }
-      } catch (err) {
-        console.warn("Erreur lors du chargement des hackathons via l'API, utilisation du fallback mocké.", err);
-        setHackathons(HACKATHONS_DATA_MOCK);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchHackathons();
-  }, []);
+  const [activeTab, setActiveTab] = useState('all');
+  const { hackathons: contextHackathons } = useContext(OrganizerContext);
+  const hackathons = contextHackathons ? contextHackathons.map(normalizeHackathon) : [];
+  const loading = false;
 
   if (loading) {
     return (

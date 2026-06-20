@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Users, ShieldCheck, FileCheck2, Activity } from 'lucide-react';
 import DashboardStatCard from '../../../components/common/DashboardStatCard';
 import Badge from '../../../components/common/Badge';
 import { hackathonsApi } from '../../../api/hackathons';
 import { HACKATHONS_DATA_MOCK } from '../../../mockdata/organizer';
 import { extractArray, normalizeHackathon, normalizeStatus } from '../../../services/normalizers';
+import { OrganizerContext } from '../../../context/OrganizerContext';
 
 const toNumber = (value) => {
   const number = Number(value);
@@ -12,29 +14,9 @@ const toNumber = (value) => {
 };
 
 const OrganizerDashboard = () => {
-  const [hackathons, setHackathons] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchHackathons = async () => {
-      try {
-        setLoading(true);
-        const data = await hackathonsApi.getHackathons();
-        const apiHackathons = extractArray(data);
-        if (apiHackathons.length > 0) {
-          setHackathons(apiHackathons.map(normalizeHackathon));
-        } else {
-          setHackathons(HACKATHONS_DATA_MOCK);
-        }
-      } catch (err) {
-        console.warn("Erreur lors de la récupération des hackathons depuis l'API, utilisation du fallback mocké.", err);
-        setHackathons(HACKATHONS_DATA_MOCK);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchHackathons();
-  }, []);
+  const { hackathons: contextHackathons } = useContext(OrganizerContext);
+  const hackathons = contextHackathons ? contextHackathons.map(normalizeHackathon) : [];
+  const loading = false;
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -87,44 +69,32 @@ const OrganizerDashboard = () => {
     { 
       title: 'Participants totaux', 
       value: String(totalParticipants), 
-      icon: (
-        <svg className="h-6 w-6 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-      ), 
+      icon: <Users className="h-6 w-6 text-blue-600 stroke-[2.5px]" />, 
+      iconBgClass: 'bg-blue-50',
       trend: '+12%', 
       trendLabel: 'depuis la semaine dernière' 
     },
     { 
       title: 'Équipes formées', 
       value: String(totalTeams), 
-      icon: (
-        <svg className="h-6 w-6 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      ), 
+      icon: <ShieldCheck className="h-6 w-6 text-indigo-600 stroke-[2.5px]" />, 
+      iconBgClass: 'bg-indigo-50',
       trend: '+5%', 
       trendLabel: 'depuis la semaine dernière' 
     },
     { 
       title: 'Soumissions', 
       value: String(totalSubmissions), 
-      icon: (
-        <svg className="h-6 w-6 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      ), 
+      icon: <FileCheck2 className="h-6 w-6 text-emerald-600 stroke-[2.5px]" />, 
+      iconBgClass: 'bg-emerald-50',
       trend: '+8%', 
       trendLabel: 'depuis la semaine dernière' 
     },
     { 
       title: 'Hackathons actifs', 
       value: String(activeHackathonsCount), 
-      icon: (
-        <svg className="h-6 w-6 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-        </svg>
-      ), 
+      icon: <Activity className="h-6 w-6 text-orange-600 stroke-[2.5px]" />, 
+      iconBgClass: 'bg-orange-50',
       subtitle: 'En cours de publication / brouillons' 
     },
   ];
@@ -216,7 +186,7 @@ const OrganizerDashboard = () => {
                           {getStatusBadge(hackathon.status)}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
-                          {hackathon.dates || '24–26 Mai 2026'}
+                          {hackathon.date || hackathon.start ? `${hackathon.start} - ${hackathon.end}` : '24–26 Mai 2026'}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                           {hackathon.participants !== '-' && hackathon.participants ? `${hackathon.participants} inscrits` : '-'}

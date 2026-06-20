@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, NavLink, useLocation, matchPath, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Calendar, PlusSquare, Users, MessageSquare, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Calendar, PlusSquare, Users, MessageSquare, Settings, LogOut, X } from 'lucide-react';
 import useAuth from '../../../hooks/useAuth';
 
-export default function OrganizerSidebar() {
+export default function OrganizerSidebar({ isOpen, setIsOpen }) {
   const { logout, profile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,16 +35,38 @@ export default function OrganizerSidebar() {
   ];
 
   return (
-    <aside className="hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex">
-      <div className="flex h-16 items-center border-b border-slate-200 px-6">
-        <img
-          src="/assets/brand/codetowin-brand.png"
-          alt="CodeToWin"
-          className="h-8"
-          decoding="async"
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-slate-900/50 lg:hidden transition-opacity"
+          onClick={() => setIsOpen(false)}
         />
-        <span className="ml-2 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">Organisateur</span>
-      </div>
+      )}
+
+      {/* Sidebar */}
+      <aside 
+        className={`fixed inset-y-0 left-0 z-50 w-64 flex flex-col border-r border-slate-200 bg-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex h-16 items-center justify-between border-b border-slate-200 px-6 shrink-0">
+          <div className="flex items-center">
+            <img
+              src="/assets/brand/codetowin-brand.png"
+              alt="CodeToWin"
+              className="h-8"
+              decoding="async"
+            />
+            <span className="ml-2 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">Organisateur</span>
+          </div>
+          <button 
+            className="lg:hidden text-slate-500 hover:text-slate-700 focus:outline-none" 
+            onClick={() => setIsOpen(false)}
+          >
+            <X size={20} />
+          </button>
+        </div>
       <div className="flex-1 overflow-y-auto py-4">
         <nav className="space-y-1 px-3">
           {navItems.map((item) => (
@@ -52,6 +74,7 @@ export default function OrganizerSidebar() {
               <NavLink
                 to={item.path}
                 end={item.path === '/organizer'}
+                onClick={() => setIsOpen(false)}
                 className={({ isActive }) => {
                   const isHackathonActive = item.path === '/organizer/hackathons' && location.pathname.startsWith('/organizer/hackathons') && location.pathname !== '/organizer/hackathons/create';
                   const active = isActive || isHackathonActive;
@@ -82,13 +105,13 @@ export default function OrganizerSidebar() {
               {/* Nested Hackathon Menu */}
               {item.path === '/organizer/hackathons' && activeHackathonId && (
                 <div className="mt-1 space-y-1 border-l-2 border-slate-200 ml-[22px]">
-                  <NavLink to={`/organizer/hackathons/edit/${activeHackathonId}`} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Configuration</span></NavLink>
-                  <NavLink to={`/organizer/hackathons/${activeHackathonId}/participants`} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Participants</span></NavLink>
-                  <NavLink to={`/organizer/hackathons/${activeHackathonId}/teams`} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Équipes</span></NavLink>
-                  <NavLink to={`/organizer/hackathons/${activeHackathonId}/submissions`} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Soumissions</span></NavLink>
-                  <NavLink to={`/organizer/hackathons/${activeHackathonId}/results`} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Résultats</span></NavLink>
-                  <NavLink to={`/organizer/hackathons/${activeHackathonId}/mentors`} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Mentors</span></NavLink>
-                  <NavLink to={`/organizer/hackathons/${activeHackathonId}/announcements`} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Annonces</span></NavLink>
+                  <NavLink to={`/organizer/hackathons/edit/${activeHackathonId}`} onClick={() => setIsOpen(false)} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Configuration</span></NavLink>
+                  <NavLink to={`/organizer/hackathons/${activeHackathonId}/participants`} onClick={() => setIsOpen(false)} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Participants</span></NavLink>
+                  <NavLink to={`/organizer/hackathons/${activeHackathonId}/teams`} onClick={() => setIsOpen(false)} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Équipes</span></NavLink>
+                  <NavLink to={`/organizer/hackathons/${activeHackathonId}/submissions`} onClick={() => setIsOpen(false)} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Soumissions</span></NavLink>
+                  <NavLink to={`/organizer/hackathons/${activeHackathonId}/results`} onClick={() => setIsOpen(false)} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Résultats</span></NavLink>
+                  <NavLink to={`/organizer/hackathons/${activeHackathonId}/mentors`} onClick={() => setIsOpen(false)} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Mentors</span></NavLink>
+                  <NavLink to={`/organizer/hackathons/${activeHackathonId}/announcements`} onClick={() => setIsOpen(false)} className={({ isActive }) => `group flex items-center pl-6 pr-3 py-2 text-sm rounded-r-md hover:bg-slate-50 ${isActive ? 'text-brand-700 font-semibold' : 'text-slate-600 font-medium hover:text-slate-900'}`}><span className="truncate">Annonces</span></NavLink>
                 </div>
               )}
             </React.Fragment>
@@ -110,5 +133,6 @@ export default function OrganizerSidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }

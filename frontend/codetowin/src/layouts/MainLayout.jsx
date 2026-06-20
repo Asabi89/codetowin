@@ -18,11 +18,11 @@ export default function MainLayout({ children }) {
     location.pathname.startsWith('/participant/');
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
       {usesAuthenticatedPrototypeHeader ? <ParticipantHeader /> : <PublicHeader />}
 
       {/* ===== MAIN CONTENT ===== */}
-      <main style={{ flex: 1 }}>
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
         {children}
       </main>
 

@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { initialHackathons } from '../mockdata/hackathons';
 
 export const OrganizerContext = createContext();
 
@@ -6,26 +7,7 @@ const STORAGE_KEY = 'codetowin_organizer_state';
 
 // Mocked initial state
 const initialDefaultState = {
-  hackathons: [
-    {
-      id: 1,
-      title: "AI for Climate Africa 2026",
-      status: "Actif",
-      date: "12 - 14 Août 2026",
-      participants: 120,
-      teams: 24,
-      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=400&q=80"
-    },
-    {
-      id: 2,
-      title: "Fintech Innovation Week",
-      status: "Brouillon",
-      date: "05 - 10 Nov 2026",
-      participants: 0,
-      teams: 0,
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=80"
-    }
-  ],
+  hackathons: initialHackathons,
   members: [
     { id: 1, name: "Alioune Fall", email: "alioune@example.com", role: "Organisateur", status: "Actif", avatar: "https://ui-avatars.com/api/?name=Alioune+Fall" },
     { id: 2, name: "Sophie Mendez", email: "sophie@example.com", role: "Évaluateur", status: "Invitation envoyée", avatar: "https://ui-avatars.com/api/?name=Sophie+Mendez" }

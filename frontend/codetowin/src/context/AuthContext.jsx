@@ -1,14 +1,16 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { getDemoAccount } from '../mockdata/demoAccounts';
+import { authApi } from '../api/auth';
 
 export const AuthContext = createContext();
 
 const STORAGE_KEY = 'hack_agent_workspace_state';
+const TOKEN_KEY = 'token';
 
 const initialDefaultState = {
   registered: false,
   profile: null,
   role: 'participant',
+  // Keep the workspace fields for UI forms
   currentStep: 1,
   projectName: "",
   projectPitch: "",
@@ -25,23 +27,6 @@ const initialDefaultState = {
   previewActive: false
 };
 
-const inferRole = (value = '', fallback = 'participant') => {
-  const text = String(value).toLowerCase();
-  const demoAccount = getDemoAccount(text);
-  if (demoAccount?.role) return demoAccount.role;
-  if (text.includes('mentor')) return 'mentor';
-  if (
-    text.includes('organizer') ||
-    text.includes('organisateur') ||
-    text.includes('admin') ||
-    text.includes('org@') ||
-    text.startsWith('org')
-  ) {
-    return 'organizer';
-  }
-  return fallback;
-};
-
 export const AuthProvider = ({ children }) => {
   const [state, setState] = useState(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -55,104 +40,102 @@ export const AuthProvider = ({ children }) => {
     return initialDefaultState;
   });
 
+  const [loading, setLoading] = useState(true);
+
+  // Fetch real user session on mount if token exists
+  useEffect(() => {
+    const initAuth = async () => {
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (token) {
+        try {
+          const user = await authApi.getMe();
+          setState(prev => ({
+            ...prev,
+            registered: true,
+            profile: {
+               ...user,
+               firstName: user.first_name || '',
+               lastName: user.last_name || '',
+               email: user.email,
+               avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
+            },
+            role: user.role ? user.role.toLowerCase() : 'participant'
+          }));
+        } catch (err) {
+          console.error("Failed to fetch user session", err);
+          localStorage.removeItem(TOKEN_KEY);
+          setState(prev => ({ ...prev, registered: false, profile: null }));
+        }
+      }
+      setLoading(false);
+    };
+    initAuth();
+  }, []);
+
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
-  const login = (email, options = {}) => {
-    // Mimic login by registering a mock user if profile doesn't exist
-    setState(prev => {
-      const loginEmail = email || 'participant@codetowin.com';
-      const demoAccount = getDemoAccount(loginEmail);
-      const mockProfile = demoAccount?.profile || {
-        firstName: loginEmail.split('@')[0],
-        lastName: '',
-        email: loginEmail,
-        title: 'Developer',
-        about: '',
-        bio: '',
-        skills: 'React, Tailwind',
-        interests: 'Hackathons',
-        city: '',
-        country: '',
-        github: '',
-        linkedin: '',
-        website: '',
-        visibility: 'public',
-        isPublic: true,
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
-      };
+  const login = async (email, password) => {
+    try {
+      const response = await authApi.login({ email, password: password || 'default' });
+      const token = response.access || response.token;
+      if (token) {
+        localStorage.setItem(TOKEN_KEY, token);
+      }
       
-      const newTeammates = (prev.teammates && prev.teammates.length > 0) ? prev.teammates : [
-        {
-          name: `${mockProfile.firstName} ${mockProfile.lastName}`.trim(),
-          avatar: mockProfile.avatar,
-          role: "Team Leader",
-          status: "joined"
-        },
-        {
-          name: "Elena Rostova",
-          avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=80&h=80&q=80",
-          role: "Developer",
-          status: "pending"
-        }
-      ];
-
-      const assignedRole = options.role || demoAccount?.role || inferRole(loginEmail, prev.role || 'participant');
-
-      return {
+      // Fetch profile
+      const user = await authApi.getMe();
+      
+      setState(prev => ({
         ...prev,
         registered: true,
-        profile: mockProfile,
-        role: assignedRole,
-        memberRole: demoAccount?.memberRole || null,
-        teammates: newTeammates
-      };
-    });
+        profile: {
+           ...user,
+           firstName: user.first_name || '',
+           lastName: user.last_name || '',
+           email: user.email,
+           avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
+        },
+        role: user.role ? user.role.toLowerCase() : 'participant'
+      }));
+      return true;
+    } catch (err) {
+      console.error("Login failed", err);
+      throw err;
+    }
   };
 
-  const registerUser = (profileData) => {
-    setState(prev => {
-      const leaderName = `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim() || 'User';
-      const updatedTeammates = [...(prev.teammates || [])];
-      const leaderIndex = updatedTeammates.findIndex(t => t.role === "Team Leader");
+  const registerUser = async (profileData) => {
+    try {
+      // Map frontend fields to backend fields
+      const payload = {
+        email: profileData.email,
+        username: profileData.firstName || profileData.email,
+        password: profileData.password || 'default123',
+        full_name: `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim(),
+        role: (profileData.role || 'PARTICIPANT').toUpperCase()
+      };
       
-      const leaderObj = {
-        name: leaderName,
-        avatar: profileData.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80',
-        role: "Team Leader",
-        status: "joined"
-      };
-
-      if (leaderIndex > -1) {
-        updatedTeammates[leaderIndex] = leaderObj;
-      } else {
-        updatedTeammates.unshift(leaderObj);
+      if (profileData.country !== undefined) {
+        payload.country = profileData.country;
       }
-
-      // Add mock teammate if missing
-      if (updatedTeammates.length < 2) {
-        updatedTeammates.push({
-          name: "Elena Rostova",
-          avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=80&h=80&q=80",
-          role: "Developer",
-          status: "pending"
-        });
-      }
-
-      return {
-        ...prev,
-        registered: true,
-        profile: profileData,
-        role: profileData.role || inferRole(profileData.email, prev.role || 'participant'),
-        teammates: updatedTeammates
-      };
-    });
+      
+      const response = await authApi.register(payload);
+      
+      // After successful registration, log them in
+      await login(profileData.email, payload.password);
+      return true;
+    } catch (err) {
+      console.error("Registration failed", err);
+      throw err;
+    }
   };
 
   const logout = () => {
-    setState(initialDefaultState);
+    localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(STORAGE_KEY);
+    setState(initialDefaultState);
   };
 
   const updateWorkspaceState = (updates) => {
@@ -167,12 +150,7 @@ export const AuthProvider = ({ children }) => {
       ...initialDefaultState,
       registered: prev.registered, // Keep logged in status
       profile: prev.profile,
-      teammates: prev.profile ? [{
-        name: `${prev.profile.firstName} ${prev.profile.lastName}`.trim(),
-        avatar: prev.profile.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80",
-        role: "Team Leader",
-        status: "joined"
-      }] : []
+      role: prev.role
     }));
   };
 
@@ -182,6 +160,7 @@ export const AuthProvider = ({ children }) => {
       registered: state.registered,
       profile: state.profile,
       role: state.role,
+      loading,
       login,
       registerUser,
       logout,

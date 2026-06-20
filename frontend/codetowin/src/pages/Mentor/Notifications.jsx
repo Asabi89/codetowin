@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import NotificationCenter from '../../components/features/notifications/NotificationCenter';
 import { notificationsApi } from '../../api/notifications';
-import { MENTOR_NOTIFICATIONS_MOCK } from '../../mockdata/mentor';
 import { extractArray, normalizeNotification } from '../../services/normalizers';
 import { useNotifications } from '../../hooks/useNotifications';
 
@@ -18,11 +17,11 @@ export default function MentorNotifications() {
         if (apiNotifications.length > 0) {
           setNotifications(apiNotifications.map(normalizeNotification));
         } else {
-          setNotifications(MENTOR_NOTIFICATIONS_MOCK);
+          setNotifications([]);
         }
       } catch (err) {
-        console.warn('Erreur lors du chargement des notifications depuis l\'API, utilisation du fallback.', err);
-        setNotifications(MENTOR_NOTIFICATIONS_MOCK);
+        console.error("Erreur api", err);
+        setNotifications([]);
       } finally {
         setLoading(false);
       }
@@ -35,7 +34,7 @@ export default function MentorNotifications() {
     try {
       await notificationsApi.markAsRead(notification.id);
     } catch (err) {
-      console.warn('Erreur lors du marquage de la notification comme lue via l\'API, simulation locale.', err);
+      console.error("Erreur api", err);
     } finally {
       setNotifications(prev => prev.map(item => (
         item.id === notification.id ? { ...item, unread: false } : item

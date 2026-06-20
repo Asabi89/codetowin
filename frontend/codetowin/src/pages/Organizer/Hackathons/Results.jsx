@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { LEADERBOARD_MOCK } from '../../../mockdata/organizer';
+
 import { certificatesApi } from '../../../api/certificates';
 import { hackathonsApi } from '../../../api/hackathons';
 
 export default function OrganizerResults() {
   const { id } = useParams();
-  const [leaderboard, setLeaderboard] = useState(LEADERBOARD_MOCK);
+  const [leaderboard, setLeaderboard] = useState([]);
   const [isPublished, setIsPublished] = useState(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);

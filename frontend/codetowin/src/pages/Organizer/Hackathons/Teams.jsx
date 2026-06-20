@@ -3,7 +3,6 @@ import { Mail, Eye, ChevronRight } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import Badge from '../../../components/common/Badge';
 import SearchFilterBar from '../../../components/common/SearchFilterBar';
-import { TEAMS_MOCK } from '../../../mockdata/organizer';
 import { teamsApi } from '../../../api/teams';
 import { mentorsApi } from '../../../api/mentors';
 import { useToast } from '../../../context/ToastContext';
@@ -27,22 +26,19 @@ export default function OrganizerTeams() {
           mentorsApi.getMentors()
         ]);
         
-        if (Array.isArray(teamsData) && teamsData.length > 0) {
+        if (Array.isArray(teamsData)) {
           setTeams(teamsData);
         } else {
-          setTeams(TEAMS_MOCK);
+          setTeams([]);
         }
 
         if (Array.isArray(mentorsData)) {
           setMentors(mentorsData);
         }
       } catch (err) {
-        console.warn("Erreur lors de la récupération des équipes / mentors depuis l'API, utilisation du fallback mocké.", err);
-        setTeams(TEAMS_MOCK);
-        setMentors([
-          { id: 'ousmane', name: 'Dr. Ousmane Diop', role: 'Expert IA', avatar: 'https://i.pravatar.cc/150?u=mentor_net1' },
-          { id: 'marie', name: 'Marie Koné', role: 'UX/UI Designer', avatar: 'https://i.pravatar.cc/150?u=mentor_net2' }
-        ]);
+        console.error("Erreur api", err);
+        setTeams([]);
+        setMentors([]);
       } finally {
         setLoading(false);
       }
@@ -68,10 +64,8 @@ export default function OrganizerTeams() {
       showToast('Assignation enregistrée avec succès !', 'success');
       setIsAssignModalOpen(false);
     } catch (err) {
-      console.warn("Erreur lors de l'assignation du mentor via l'API, simulation locale.", err);
-      setTeams(prev => prev.map(t => t.id === selectedTeam.id ? { ...t, mentor: mentorObj } : t));
-      showToast('Assignation enregistrée avec succès !', 'success');
-      setIsAssignModalOpen(false);
+      console.error("Erreur api", err);
+    }
     }
   };
 

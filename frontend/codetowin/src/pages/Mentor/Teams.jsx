@@ -3,7 +3,6 @@ import PageHeader from '../../components/common/PageHeader';
 import SearchFilterBar from '../../components/common/SearchFilterBar';
 import TeamCard from '../../components/features/mentor/TeamCard';
 import { mentorsApi } from '../../api/mentors';
-import { MENTOR_TEAMS_MOCK } from '../../mockdata/mentor';
 import { extractArray, normalizeTeam } from '../../services/normalizers';
 
 export default function MentorTeams() {
@@ -19,11 +18,11 @@ export default function MentorTeams() {
         if (apiTeams.length > 0) {
           setTeams(apiTeams.map(normalizeTeam));
         } else {
-          setTeams(MENTOR_TEAMS_MOCK);
+          setTeams([]);
         }
       } catch (err) {
-        console.warn('Erreur lors du chargement des équipes depuis l\'API, utilisation du fallback.', err);
-        setTeams(MENTOR_TEAMS_MOCK);
+        console.error("Erreur api", err);
+        setTeams([]);
       } finally {
         setLoading(false);
       }

@@ -100,8 +100,7 @@ export default function Home() {
                   <text x="18" y="132" fontFamily="Inter,sans-serif" fontSize="28" fontWeight="900" fill="white">AI CLIMATE</text>
                   <text x="18" y="158" fontFamily="Inter,sans-serif" fontSize="28" fontWeight="900" fill="white">SPRINT</text>
                 </svg>
-                <div className="hackathon-status hackathon-status--register">Register</div>
-                <div className="hackathon-format">Hybrid</div>
+
               </div>
 
               <div className="hackathon-body">
@@ -193,13 +192,12 @@ export default function Home() {
                   <text x="18" y="132" fontFamily="Inter,sans-serif" fontSize="28" fontWeight="900" fill="white">FINTECH</text>
                   <text x="18" y="158" fontFamily="Inter,sans-serif" fontSize="28" fontWeight="900" fill="white">BUILDERS</text>
                 </svg>
-                <div className="hackathon-status hackathon-status--finished">TBA</div>
-                <div className="hackathon-format">Hybrid</div>
+
               </div>
 
               <div className="hackathon-body">
                 <div className="hackathon-top-row">
-                  <span className="hackathon-date">To be announced</span>
+                  <span className="hackathon-date">À venir</span>
                   <span className="hackathon-participants flex items-center gap-1">
                     <svg width="15" height="15" fill="none" viewBox="0 0 16 16" stroke="#555555" strokeWidth="1.5">
                       <path d="M10 8a3 3 0 100-6 3 3 0 000 6zm-6 6c0-2.8 2.7-5 6-5s6 2.2 6 5" strokeLinecap="round"></path>
@@ -282,8 +280,7 @@ export default function Home() {
                   <text x="18" y="132" fontFamily="Inter,sans-serif" fontSize="28" fontWeight="900" fill="white">AGRITECH</text>
                   <text x="18" y="158" fontFamily="Inter,sans-serif" fontSize="28" fontWeight="900" fill="white">YOUTH HACK</text>
                 </svg>
-                <div className="hackathon-status hackathon-status--finished">Finished</div>
-                <div className="hackathon-format">Remote</div>
+
               </div>
 
               <div className="hackathon-body">

@@ -9,7 +9,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
  * @returns {string|null}
  */
 const getAuthToken = () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem('accessToken') || localStorage.getItem('token');
 };
 
 /**
@@ -42,8 +42,17 @@ async function request(endpoint, options = {}) {
     if (response.status === 401) {
       // Déconnexion automatique ou redirection si non autorisé
       localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
     }
     const errorData = await response.json().catch(() => ({}));
+    if (errorData.errors) {
+      throw new Error(JSON.stringify(errorData.errors));
+    }
+    // Handle standard DRF validation error dicts (where it just returns { field: ["error"] })
+    if (response.status === 400 && !errorData.detail && Object.keys(errorData).length > 0) {
+      throw new Error(JSON.stringify(errorData));
+    }
     throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
   }
 

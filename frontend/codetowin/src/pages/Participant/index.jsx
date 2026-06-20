@@ -7,18 +7,18 @@ import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import { useToast } from "../../context/ToastContext";
 import { certificatesApi } from "../../api/certificates";
-import { usersApi } from '../../api/users';
+import { usersApi } from "../../api/users";
 
 export default function Participant() {
   const { workspaceState, profile, registered, registerUser } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('portfolio');
+  const [myHackathons, setMyHackathons] = useState([]);
+  const [myProjects, setMyProjects] = useState([]);
+  const [myActivity, setMyActivity] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [loadingCerts, setLoadingCerts] = useState(false);
-  const [myHackathons, setMyHackathons] = useState([]);
   const [loadingHackathons, setLoadingHackathons] = useState(false);
-  const [myProjects, setMyProjects] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
-  const [myActivity, setMyActivity] = useState([]);
   const [loadingActivity, setLoadingActivity] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
@@ -26,67 +26,52 @@ export default function Participant() {
 
   React.useEffect(() => {
     if (registered && profile) {
-      if (certificates.length === 0) {
-        const fetchCerts = async () => {
-          setLoadingCerts(true);
-          try {
-            const data = await certificatesApi.getMyCertificates();
-            setCertificates(data || []);
-          } catch (err) {
-            console.error(err);
-          } finally {
+      const fetchData = async () => {
+        try {
+          if (certificates.length === 0) {
+            setLoadingCerts(true);
+            const certData = await certificatesApi.getMyCertificates();
+            setCertificates(certData || []);
             setLoadingCerts(false);
           }
-        };
-        fetchCerts();
-      }
-      
-      if (myHackathons.length === 0) {
-        const fetchHackathons = async () => {
+        } catch (err) {
+          console.error(err);
+          setLoadingCerts(false);
+        }
+
+        try {
           setLoadingHackathons(true);
-          try {
-            const res = await usersApi.getMyHackathons();
-            setMyHackathons(res?.data || []);
-          } catch (err) {
-            console.error(err);
-          } finally {
-            setLoadingHackathons(false);
-          }
-        };
-        fetchHackathons();
-      }
+          const hackData = await usersApi.getMyHackathons();
+          setMyHackathons(hackData || []);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setLoadingHackathons(false);
+        }
 
-      if (myProjects.length === 0) {
-        const fetchProjects = async () => {
+        try {
           setLoadingProjects(true);
-          try {
-            const res = await usersApi.getMyProjects();
-            setMyProjects(res?.data || []);
-          } catch (err) {
-            console.error(err);
-          } finally {
-            setLoadingProjects(false);
-          }
-        };
-        fetchProjects();
-      }
+          const projData = await usersApi.getMyProjects();
+          setMyProjects(projData || []);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setLoadingProjects(false);
+        }
 
-      if (myActivity.length === 0) {
-        const fetchActivity = async () => {
+        try {
           setLoadingActivity(true);
-          try {
-            const res = await usersApi.getMyActivity();
-            setMyActivity(res?.data || []);
-          } catch (err) {
-            console.error(err);
-          } finally {
-            setLoadingActivity(false);
-          }
-        };
-        fetchActivity();
-      }
+          const actData = await usersApi.getMyActivity();
+          setMyActivity(actData || []);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setLoadingActivity(false);
+        }
+      };
+      fetchData();
     }
-  }, [registered, profile, certificates.length, myHackathons.length, myProjects.length, myActivity.length]);
+  }, [registered, profile]);
 
   if (!registered || !profile) {
     // If not registered/logged in, redirect to login

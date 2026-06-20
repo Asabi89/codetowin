@@ -1,10 +1,10 @@
 import React from 'react';
 
-export default function DashboardStatCard({ title, value, icon, trend, trendLabel, subtitle }) {
+export default function DashboardStatCard({ title, value, icon, trend, trendLabel, subtitle, iconBgClass = 'bg-brand-50' }) {
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center">
-        <div className="flex-shrink-0 rounded-md bg-brand-50 p-3">
+        <div className={`flex-shrink-0 rounded-md p-3 ${iconBgClass}`}>
           {icon}
         </div>
         <div className="ml-5 w-0 flex-1">

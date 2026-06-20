@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ACCEPTED_MENTORS_MOCK, PENDING_MENTORS_MOCK, NETWORK_MENTORS_MOCK, TEAMS_MOCK } from '../../../mockdata/organizer';
+
 import { mentorsApi } from '../../../api/mentors';
 import { teamsApi } from '../../../api/teams';
 import { useToast } from '../../../context/ToastContext';
@@ -51,8 +51,8 @@ export default function OrganizerMentors() {
   const [notice, setNotice] = useState('');
 
   // Lists states
-  const [acceptedMentors, setAcceptedMentors] = useState(ACCEPTED_MENTORS_MOCK);
-  const [pendingMentors, setPendingMentors] = useState(PENDING_MENTORS_MOCK);
+  const [acceptedMentors, setAcceptedMentors] = useState([]);
+  const [pendingMentors, setPendingMentors] = useState([]);
   const [networkMentors, setNetworkMentors] = useState([]);
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -74,27 +74,27 @@ export default function OrganizerMentors() {
         const apiMentors = extractArray(mentorsData);
         if (apiMentors.length > 0) {
           const groupedMentors = splitMentorsByStatus(apiMentors);
-          setAcceptedMentors(groupedMentors.accepted.length > 0 ? groupedMentors.accepted : ACCEPTED_MENTORS_MOCK);
-          setPendingMentors(groupedMentors.pending.length > 0 ? groupedMentors.pending : PENDING_MENTORS_MOCK);
-          setNetworkMentors(groupedMentors.network.length > 0 ? groupedMentors.network : NETWORK_MENTORS_MOCK);
+          setAcceptedMentors(groupedMentors.accepted);
+          setPendingMentors(groupedMentors.pending);
+          setNetworkMentors(groupedMentors.network);
         } else {
-          setAcceptedMentors(ACCEPTED_MENTORS_MOCK);
-          setPendingMentors(PENDING_MENTORS_MOCK);
-          setNetworkMentors(NETWORK_MENTORS_MOCK);
+          setAcceptedMentors([]);
+          setPendingMentors([]);
+          setNetworkMentors([]);
         }
 
         const apiTeams = extractArray(teamsData);
         if (apiTeams.length > 0) {
           setTeams(apiTeams);
         } else {
-          setTeams(TEAMS_MOCK);
+          setTeams([]);
         }
       } catch (err) {
-        console.warn("Erreur lors du chargement des données Mentors, utilisation des fallbacks.", err);
-        setAcceptedMentors(ACCEPTED_MENTORS_MOCK);
-        setPendingMentors(PENDING_MENTORS_MOCK);
-        setNetworkMentors(NETWORK_MENTORS_MOCK);
-        setTeams(TEAMS_MOCK);
+        console.error("Erreur api", err);
+        setAcceptedMentors([]);
+        setPendingMentors([]);
+        setNetworkMentors([]);
+        setTeams([]);
       } finally {
         setLoading(false);
       }
@@ -130,20 +130,7 @@ export default function OrganizerMentors() {
       setInviteExpertise('');
       setInviteMessage('');
     } catch (err) {
-      console.warn("Erreur lors de l'envoi de l'invitation, simulation locale.", err);
-      const newPending = {
-        id: Date.now(),
-        email: inviteEmail,
-        initial: inviteEmail.charAt(0).toUpperCase(),
-        role: inviteExpertise || 'Expert invité',
-        status: 'En attente de réponse'
-      };
-      setPendingMentors(prev => [...prev, newPending]);
-      showToast("Invitation envoyée !", "success");
-      setIsInviteNewModalOpen(false);
-      setInviteEmail('');
-      setInviteExpertise('');
-      setInviteMessage('');
+      console.error("Erreur api", err);
     }
   };
 
@@ -166,16 +153,7 @@ export default function OrganizerMentors() {
       setPendingMentors(prev => [...prev, newPending]);
       showToast(`Invitation envoyée à ${mentor.name} !`, 'success');
     } catch (err) {
-      console.warn("Erreur lors de l'envoi de l'invitation, simulation locale.", err);
-      const newPending = {
-        id: Date.now(),
-        name: mentor.name,
-        avatar: mentor.avatar,
-        role: mentor.role || 'Expert invité',
-        status: 'En attente de réponse'
-      };
-      setPendingMentors(prev => [...prev, newPending]);
-      showToast(`Invitation envoyée à ${mentor.name} !`, 'success');
+      console.error("Erreur api", err);
     }
   };
 
@@ -456,8 +434,7 @@ export default function OrganizerMentors() {
                                           setTeams(prev => prev.map(t => t.id === team.id ? { ...t, mentor: null } : t));
                                         }
                                       } catch (err) {
-                                        console.warn("Erreur assignation mentor, simulation locale.", err);
-                                        setTeams(prev => prev.map(t => t.id === team.id ? { ...t, mentor: isChecked ? selectedMentor : null } : t));
+                                        console.error("Erreur api", err);
                                       }
                                     }}
                                     className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600 cursor-pointer" 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import { mentorsApi } from '../../api/mentors';
@@ -10,60 +10,32 @@ import {
   MENTOR_TEAMS_MOCK,
   MENTOR_INVITATIONS_MOCK
 } from '../../mockdata/mentor';
+import { MentorContext } from '../../context/MentorContext';
 
 export default function MentorDashboard() {
   const { profile } = useAuth();
   const [loading, setLoading] = useState(true);
+  const mentorContext = useContext(MentorContext);
+  const { teams, invitations, notifications, acceptInvitation: contextAcceptInvitation } = mentorContext;
+
   const [dashboardData, setDashboardData] = useState({
-    firstName: profile?.firstName || 'Seydou',
-    teams: [],
-    invitations: [],
-    notifications: [],
-    feedbacksCount: 1,
+    firstName: profile?.firstName || profile?.name?.split(' ')[0] || 'Seydou',
+    teams: teams || [],
+    invitations: invitations || [],
+    notifications: notifications || [],
+    feedbacksCount: (teams || []).filter(t => t.status === 'Soumission en cours').length || 1,
   });
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        const [teamsRes, notificationsRes, profileRes] = await Promise.allSettled([
-          mentorsApi.getMyTeams(),
-          notificationsApi.getNotifications(),
-          usersApi.getProfile()
-        ]);
-
-        const teams = teamsRes.status === 'fulfilled' ? teamsRes.value : MENTOR_TEAMS_MOCK;
-        const notifications = notificationsRes.status === 'fulfilled' ? notificationsRes.value : MENTOR_NOTIFICATIONS_MOCK;
-        const userProfile = profileRes.status === 'fulfilled' ? profileRes.value : profile;
-
-        const apiTeams = extractArray(teams, 'teams');
-        const apiNotifications = extractArray(notifications, 'notifications');
-        const finalTeams = apiTeams.length > 0 ? apiTeams.map(normalizeTeam) : MENTOR_TEAMS_MOCK;
-        const finalNotifications = apiNotifications.length > 0 ? apiNotifications.map(normalizeNotification) : MENTOR_NOTIFICATIONS_MOCK;
-
-        setDashboardData({
-          firstName: userProfile?.firstName || userProfile?.first_name || userProfile?.name?.split(' ')[0] || profile?.firstName || 'Seydou',
-          teams: finalTeams,
-          invitations: MENTOR_INVITATIONS_MOCK,
-          notifications: finalNotifications,
-          feedbacksCount: finalTeams.filter(t => t.status === 'Soumission en cours').length || 1,
-        });
-      } catch (err) {
-        console.warn('Erreur lors du chargement des données API, utilisation du fallback.', err);
-        setDashboardData({
-          firstName: profile?.firstName || 'Seydou',
-          teams: MENTOR_TEAMS_MOCK,
-          invitations: MENTOR_INVITATIONS_MOCK,
-          notifications: MENTOR_NOTIFICATIONS_MOCK,
-          feedbacksCount: 1,
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-  }, [profile]);
+    setDashboardData({
+      firstName: profile?.firstName || profile?.name?.split(' ')[0] || 'Seydou',
+      teams: teams || [],
+      invitations: invitations || [],
+      notifications: notifications || [],
+      feedbacksCount: (teams || []).filter(t => t.status === 'Soumission en cours').length || 1,
+    });
+    setLoading(false);
+  }, [profile, teams, invitations, notifications]);
 
   if (loading) {
     return (
@@ -80,14 +52,10 @@ export default function MentorDashboard() {
 
   const handleAcceptInvitation = async (invitationId) => {
     try {
+      contextAcceptInvitation(invitationId);
       await mentorsApi.acceptInvitation(invitationId);
     } catch (err) {
       console.warn("Erreur lors de l'acceptation de l'invitation via l'API, simulation locale.", err);
-    } finally {
-      setDashboardData(prev => ({
-        ...prev,
-        invitations: prev.invitations.filter(invitation => invitation.id !== invitationId),
-      }));
     }
   };
 

@@ -6,12 +6,7 @@ export const certificatesApi = {
    * Récupère la liste des certificats obtenus par l'utilisateur connecté
    */
   getMyCertificates: async () => {
-    try {
-      return await apiClient.get('/certificates/me');
-    } catch (error) {
-      console.warn("API unavailable, returning mock certificates", error);
-      return participantCertificates;
-    }
+    return await apiClient.get('/certificates/me');
   },
 
   /**
@@ -47,12 +42,7 @@ export const certificatesApi = {
    * @param {string} id
    */
   downloadCertificateAsPdf: async (id) => {
-    try {
-      return await apiClient.get(`/certificates/${id}/download`);
-    } catch (error) {
-      console.warn("API unavailable, mocking downloadCertificateAsPdf", error);
-      return { success: true };
-    }
+    return await apiClient.get(`/certificates/${id}/download`);
   },
 
   /**
@@ -60,11 +50,6 @@ export const certificatesApi = {
    * @param {string} id
    */
   shareToLinkedIn: async (id) => {
-    try {
-      return await apiClient.post(`/certificates/${id}/share/linkedin`);
-    } catch (error) {
-      console.warn("API unavailable, mocking shareToLinkedIn", error);
-      return { success: true };
-    }
+    return await apiClient.post(`/certificates/${id}/share/linkedin`);
   },
 };
