@@ -34,13 +34,13 @@ export default function OrganizerParticipants() {
         if (Array.isArray(data)) {
           const mapped = data.map(reg => ({
             id: reg.id,
-            name: reg.user?.name || reg.name || 'Utilisateur',
-            email: reg.user?.email || reg.email || '',
-            avatar: reg.user?.avatar || reg.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(reg.user?.name || reg.name || 'U')}&background=047857&color=fff`,
-            country: reg.user?.country || reg.country || 'Sénégal',
+            name: reg.user_details?.name || reg.participant_name || 'Utilisateur',
+            email: reg.user_details?.email || '',
+            avatar: reg.user_details?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(reg.participant_name || 'U')}&background=047857&color=fff`,
+            country: reg.user_details?.country || 'Sénégal',
             team: reg.teamName || reg.team || null,
             status: reg.status === 'approved' ? 'Approuvé' : reg.status === 'rejected' ? 'Rejeté' : 'En attente',
-            date: reg.createdAt ? new Date(reg.createdAt).toLocaleDateString() : (reg.date || 'Il y a 2 heures'),
+            date: reg.registered_at ? new Date(reg.registered_at).toLocaleDateString() : 'Il y a 2 heures',
           }));
           setParticipants(mapped);
         } else {

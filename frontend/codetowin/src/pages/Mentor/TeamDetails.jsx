@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import TeamDetailsView from '../../components/features/teams/TeamDetailsView';
 import { mentorsApi } from '../../api/mentors';
-import { MENTOR_TEAMS_MOCK } from '../../mockdata/mentor';
 
 export default function MentorTeamDetails() {
   const { id } = useParams();
@@ -13,19 +12,19 @@ export default function MentorTeamDetails() {
     const fetchTeamDetails = async () => {
       try {
         setLoading(true);
-        const teams = await mentorsApi.getMyTeams();
+        const response = await mentorsApi.getMyTeams();
+        const teams = response.data || response;
         const found = teams?.find(t => String(t.id) === String(id));
         if (found) {
-          setTeam(found);
-        } else {
-          // Si non trouvé ou API échoue, chercher dans mock
-          const mockFound = MENTOR_TEAMS_MOCK.find(t => String(t.id) === String(id)) || MENTOR_TEAMS_MOCK[0];
-          setTeam(mockFound);
+          setTeam({
+            ...found,
+            name: found.name || found.team_name || `Equipe ${found.id}`,
+            hackathon: found.hackathon_title || 'Hackathon Inconnu',
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(found.name || found.team_name || 'Team')}&background=random`,
+          });
         }
       } catch (err) {
-        console.warn('API error, using mock data for team details', err);
-        const mockFound = MENTOR_TEAMS_MOCK.find(t => String(t.id) === String(id)) || MENTOR_TEAMS_MOCK[0];
-        setTeam(mockFound);
+        console.error('API error', err);
       } finally {
         setLoading(false);
       }

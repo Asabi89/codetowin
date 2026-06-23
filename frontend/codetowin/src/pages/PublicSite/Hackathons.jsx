@@ -33,9 +33,14 @@ export default function Hackathons() {
   };
 
   const getStatusFromDates = (startVal, endVal) => {
+    if (!startVal || !endVal) return { filter: 'upcoming', label: 'À venir' };
     const today = new Date();
-    const start = new Date(`${startVal}T00:00:00`);
-    const end = new Date(`${endVal}T23:59:59`);
+    // Use the string directly, it's either an ISO string or YYYY-MM-DD
+    const start = new Date(startVal);
+    const end = new Date(endVal);
+    // If it's still invalid, return a default
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) return { filter: 'upcoming', label: 'À venir' };
+    
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
     const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
@@ -61,16 +66,23 @@ export default function Hackathons() {
     const fetchHackathons = async () => {
       try {
         const response = await hackathonsApi.getHackathons();
-        const data = response.data || [];
+        const data = Array.isArray(response) ? response : (response.data || []);
         
         // Build the list of available locations and themes (interests)
         setLocations(['all', ...new Set(data.map(h => h.location))]);
         setInterests(['all', ...new Set(data.map(h => h.interest))]);
 
         const enriched = data.map(h => {
-          const statusInfo = getStatusFromDates(h.start, h.end);
+          const startVal = h.start_date || h.start;
+          const endVal = h.end_date || h.end;
+          const statusInfo = getStatusFromDates(startVal, endVal);
           return {
             ...h,
+            start: startVal,
+            end: endVal,
+            logoText: h.logo_text || h.logoText,
+            participants: h.participants_count !== undefined ? h.participants_count : h.participants,
+            online: h.type === 'En ligne' || h.online,
             statusFilter: statusInfo.filter,
             statusLabel: statusInfo.label,
             searchStr: normalizeText(

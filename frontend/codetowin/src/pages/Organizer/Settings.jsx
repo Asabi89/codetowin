@@ -1,19 +1,88 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import SecuritySettings from '../../components/features/settings/SecuritySettings';
+import { organizerApi } from '../../api/organizer';
+import useAuth from '../../hooks/useAuth';
 
 export default function OrganizerSettings() {
+  const { updateProfileContext } = useAuth();
   const [activeTab, setActiveTab] = useState('info');
-  const [logo, setLogo] = useState('https://ui-avatars.com/api/?name=TechHub+Senegal&background=047857&color=fff');
+  const [profile, setProfile] = useState({
+    organization_name: '',
+    description: '',
+    website: '',
+    linkedin: '',
+    twitter: '',
+  });
+  const [logo, setLogo] = useState('https://ui-avatars.com/api/?name=Organizer&background=047857&color=fff');
+  const [logoFile, setLogoFile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const logoInputRef = useRef(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const res = await organizerApi.getMe();
+        const data = res.data || res;
+        if (data) {
+          setProfile({
+            organization_name: data.organization_name || '',
+            description: data.description || '',
+            website: data.website || '',
+            linkedin: data.linkedin || '',
+            twitter: data.twitter || '',
+          });
+          if (data.logo) {
+            setLogo(data.logo);
+          } else if (data.organization_name) {
+            setLogo(`https://ui-avatars.com/api/?name=${encodeURIComponent(data.organization_name)}&background=047857&color=fff`);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProfile();
+  }, []);
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setLogoFile(file);
       const reader = new FileReader();
       reader.onload = (event) => {
         setLogo(event.target.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProfile(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveInfo = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      Object.entries(profile).forEach(([key, val]) => {
+        formData.append(key, val);
+      });
+      if (logoFile) {
+        formData.append('logo', logoFile);
+      }
+      await organizerApi.updateMe(formData);
+      // Update global context so sidebar and header update immediately
+      updateProfileContext({ 
+        firstName: profile.organization_name,
+        avatar: logo 
+      });
+      alert('Profil mis à jour avec succès');
+    } catch (err) {
+      console.error("Failed to save profile:", err);
+      alert('Erreur lors de la mise à jour du profil');
     }
   };
 
@@ -60,19 +129,22 @@ export default function OrganizerSettings() {
                 <p className="mt-1 text-sm leading-6 text-slate-500">Ces informations seront affichées publiquement sur vos pages de hackathons.</p>
               </div>
 
-              <form className="mt-6 space-y-6">
+              {loading ? (
+                <div className="py-12 text-center text-slate-500">Chargement...</div>
+              ) : (
+              <form className="mt-6 space-y-6" onSubmit={handleSaveInfo}>
                 <div className="grid grid-cols-1 gap-6">
                   <div>
-                    <label htmlFor="org-name" className="block text-sm font-medium leading-6 text-slate-900">Nom de l'organisation</label>
+                    <label htmlFor="organization_name" className="block text-sm font-medium leading-6 text-slate-900">Nom de l'organisation</label>
                     <div className="mt-2">
-                      <input type="text" name="org-name" id="org-name" defaultValue="TechHub Sénégal" className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" />
+                      <input type="text" name="organization_name" id="organization_name" value={profile.organization_name} onChange={handleInputChange} className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="about" className="block text-sm font-medium leading-6 text-slate-900">Description</label>
+                    <label htmlFor="description" className="block text-sm font-medium leading-6 text-slate-900">Description</label>
                     <div className="mt-2">
-                      <textarea id="about" name="about" rows="3" defaultValue="Centre d'innovation et incubateur basé à Dakar, dédié à l'accompagnement des startups technologiques en Afrique de l'Ouest." className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"></textarea>
+                      <textarea id="description" name="description" rows="3" value={profile.description} onChange={handleInputChange} className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"></textarea>
                     </div>
                     <p className="mt-2 text-sm text-slate-500">Écrivez quelques phrases pour décrire votre mission.</p>
                   </div>
@@ -101,14 +173,7 @@ export default function OrganizerSettings() {
                   <div>
                     <label htmlFor="website" className="block text-sm font-medium leading-6 text-slate-900">Site Web</label>
                     <div className="mt-2">
-                      <input type="url" name="website" id="website" defaultValue="https://techhub-senegal.com" className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-slate-900">Adresse Email de contact</label>
-                    <div className="mt-2">
-                      <input type="email" name="email" id="email" defaultValue="contact@techhub-senegal.com" className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" />
+                      <input type="url" name="website" id="website" value={profile.website} onChange={handleInputChange} className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" />
                     </div>
                   </div>
 
@@ -119,13 +184,13 @@ export default function OrganizerSettings() {
                       <div>
                         <label htmlFor="linkedin" className="block text-sm font-medium leading-6 text-slate-900">LinkedIn</label>
                         <div className="mt-2">
-                          <input type="text" name="linkedin" id="linkedin" defaultValue="techhub-senegal" placeholder="linkedin.com/company/techhub-senegal" className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" />
+                          <input type="text" name="linkedin" id="linkedin" value={profile.linkedin} onChange={handleInputChange} placeholder="URL linkedin" className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" />
                         </div>
                       </div>
                       <div>
                         <label htmlFor="twitter" className="block text-sm font-medium leading-6 text-slate-900">Twitter / X</label>
                         <div className="mt-2">
-                          <input type="text" name="twitter" id="twitter" defaultValue="techhub_sn" placeholder="twitter.com/techhub_sn" className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" />
+                          <input type="text" name="twitter" id="twitter" value={profile.twitter} onChange={handleInputChange} placeholder="URL twitter" className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6" />
                         </div>
                       </div>
                     </div>
@@ -133,9 +198,10 @@ export default function OrganizerSettings() {
                 </div>
                 
                 <div className="flex justify-start">
-                  <button type="button" className="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">Enregistrer les modifications</button>
+                  <button type="submit" className="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">Enregistrer les modifications</button>
                 </div>
               </form>
+              )}
             </div>
           </div>
         )}

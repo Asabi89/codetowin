@@ -8,7 +8,8 @@ import { useToast } from '../../context/ToastContext';
 import '../../styles/pages/participant/profile.css';
 
 export default function Profile() {
-  const { profile, registerUser } = useContext(AuthContext);
+  const { profile, role, updateProfileContext } = useContext(AuthContext);
+  const isOrganizer = role === 'organizer';
   const navigate = useNavigate();
   const { showToast } = useToast();
 
@@ -26,6 +27,7 @@ export default function Profile() {
   const [country,   setCountry]         = useState('');
   const [github,    setGithub]          = useState('');
   const [linkedin,  setLinkedin]        = useState('');
+  const [twitter,   setTwitter]         = useState('');
   const [website,   setWebsite]         = useState('');
   const [saving,    setSaving]          = useState(false);
   const [countriesList, setCountriesList] = useState([]);
@@ -67,6 +69,7 @@ export default function Profile() {
       setCountry(profile.country     || '');
       setGithub(profile.github       || '');
       setLinkedin(profile.linkedin   || '');
+      setTwitter(profile.twitter     || '');
       setWebsite(profile.website     || '');
       if (profile.avatar) setAvatar(profile.avatar);
     }
@@ -116,14 +119,14 @@ export default function Profile() {
       firstName, lastName, title, about, bio,
       skills: skills.join(', '),
       interests: interests.join(', '),
-      city, country, github, linkedin, website, avatar,
+      city, country, github, linkedin, twitter, website, avatar,
       visibility: profile?.visibility || 'public',
       isPublic: profile?.isPublic !== undefined ? profile.isPublic : true,
     };
 
     try {
       await usersApi.updateProfile(profileData);
-      registerUser(profileData);
+      updateProfileContext(profileData);
       showToast("Profil enregistré avec succès !", "success");
       navigate('/participant');
     } catch (error) {
@@ -174,121 +177,140 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* ── Name ── */}
-            <div className="form-row-2">
+            {/* ── Name / Organization ── */}
+            {isOrganizer ? (
               <div className="form-group">
                 <label htmlFor="profile-first-name" className="form-label">
-                  Prénom<span className="required-asterisk">*</span>
+                  Nom de l'organisation<span className="required-asterisk">*</span>
                 </label>
                 <input
                   type="text" id="profile-first-name" className="form-input"
-                  required placeholder="ex: Sarah"
+                  required placeholder="ex: Google Cloud, Tech Hub..."
                   value={firstName} onChange={e => setFirstName(e.target.value)}
                 />
               </div>
-              <div className="form-group">
-                <label htmlFor="profile-last-name" className="form-label">
-                  Nom<span className="required-asterisk">*</span>
-                </label>
-                <input
-                  type="text" id="profile-last-name" className="form-input"
-                  required placeholder="ex: Dupont"
-                  value={lastName} onChange={e => setLastName(e.target.value)}
-                />
+            ) : (
+              <div className="form-row-2">
+                <div className="form-group">
+                  <label htmlFor="profile-first-name" className="form-label">
+                    Prénom<span className="required-asterisk">*</span>
+                  </label>
+                  <input
+                    type="text" id="profile-first-name" className="form-input"
+                    required placeholder="ex: Sarah"
+                    value={firstName} onChange={e => setFirstName(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="profile-last-name" className="form-label">
+                    Nom<span className="required-asterisk">*</span>
+                  </label>
+                  <input
+                    type="text" id="profile-last-name" className="form-input"
+                    required placeholder="ex: Dupont"
+                    value={lastName} onChange={e => setLastName(e.target.value)}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             {/* ── Title ── */}
-            <div className="form-group">
-              <label htmlFor="profile-title" className="form-label">
-                Titre<span className="required-asterisk">*</span>
-              </label>
-              <input
-                type="text" id="profile-title" className="form-input"
-                required placeholder="ex: Développeur Full-stack, Data Scientist"
-                value={title} onChange={e => setTitle(e.target.value)}
-              />
-            </div>
+            {!isOrganizer && (
+              <div className="form-group">
+                <label htmlFor="profile-title" className="form-label">
+                  Titre<span className="required-asterisk">*</span>
+                </label>
+                <input
+                  type="text" id="profile-title" className="form-input"
+                  required placeholder="ex: Développeur Full-stack, Data Scientist"
+                  value={title} onChange={e => setTitle(e.target.value)}
+                />
+              </div>
+            )}
 
             {/* ── About ── */}
             <div className="form-group">
               <label htmlFor="profile-about" className="form-label">
-                À propos de toi<span className="required-asterisk">*</span>
+                {isOrganizer ? "Description de l'organisation" : "À propos de toi"}<span className="required-asterisk">*</span>
               </label>
               <textarea
                 id="profile-about" className="form-textarea" required
-                placeholder="Raconte un peu ton parcours, ce qui te passionne, ce que tu cherches..."
+                placeholder={isOrganizer ? "Que fait votre organisation..." : "Raconte un peu ton parcours, ce qui te passionne, ce que tu cherches..."}
                 value={about} onChange={e => setAbout(e.target.value)}
               />
             </div>
 
-            {/* ── Bio express ── */}
-            <div className="form-group">
-              <label htmlFor="profile-bio" className="form-label">Bio express</label>
-              <textarea
-                id="profile-bio" className="form-textarea"
-                placeholder="Ton pitch en une phrase..."
-                value={bio} onChange={e => setBio(e.target.value)}
-              />
-            </div>
+            {!isOrganizer && (
+              <>
+                {/* ── Bio express ── */}
+                <div className="form-group">
+                  <label htmlFor="profile-bio" className="form-label">Bio express</label>
+                  <textarea
+                    id="profile-bio" className="form-textarea"
+                    placeholder="Ton pitch en une phrase..."
+                    value={bio} onChange={e => setBio(e.target.value)}
+                  />
+                </div>
 
-            {/* ── Skills tag input ── */}
-            <div className="form-group">
-              <label className="form-label">
-                Compétences &amp; Tech<span className="required-asterisk">*</span>
-              </label>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
-                Tape ta tech et appuie sur Entrée ou virgule.
-              </p>
-              <div className="tags-input-wrap">
-                {skills.map((s, i) => (
-                  <span key={i} className="tag-pill">
-                    {s}
-                    <button
-                      type="button"
-                      className="tag-remove-btn"
-                      onClick={() => setSkills(skills.filter((_, idx) => idx !== i))}
-                      aria-label={`Supprimer ${s}`}
-                    >×</button>
-                  </span>
-                ))}
-                <input
-                  type="text" className="tags-input-text"
-                  placeholder={skills.length === 0 ? 'Ajouter un truc cool...' : ''}
-                  value={skillInput}
-                  onChange={e => setSkillInput(e.target.value)}
-                  onKeyDown={handleSkillKey}
-                />
-              </div>
-            </div>
+                {/* ── Skills tag input ── */}
+                <div className="form-group">
+                  <label className="form-label">
+                    Compétences &amp; Tech<span className="required-asterisk">*</span>
+                  </label>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
+                    Tape ta tech et appuie sur Entrée ou virgule.
+                  </p>
+                  <div className="tags-input-wrap">
+                    {skills.map((s, i) => (
+                      <span key={i} className="tag-pill">
+                        {s}
+                        <button
+                          type="button"
+                          className="tag-remove-btn"
+                          onClick={() => setSkills(skills.filter((_, idx) => idx !== i))}
+                          aria-label={`Supprimer ${s}`}
+                        >×</button>
+                      </span>
+                    ))}
+                    <input
+                      type="text" className="tags-input-text"
+                      placeholder={skills.length === 0 ? 'Ajouter un truc cool...' : ''}
+                      value={skillInput}
+                      onChange={e => setSkillInput(e.target.value)}
+                      onKeyDown={handleSkillKey}
+                    />
+                  </div>
+                </div>
 
-            {/* ── Interests tag input ── */}
-            <div className="form-group">
-              <label className="form-label">Intérêts</label>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
-                Qu'est-ce qui t'anime ? Appuie sur Entrée pour valider.
-              </p>
-              <div className="tags-input-wrap">
-                {interests.map((t, i) => (
-                  <span key={i} className="tag-pill">
-                    {t}
-                    <button
-                      type="button"
-                      className="tag-remove-btn"
-                      onClick={() => setInterests(interests.filter((_, idx) => idx !== i))}
-                      aria-label={`Supprimer ${t}`}
-                    >×</button>
-                  </span>
-                ))}
-                <input
-                  type="text" className="tags-input-text"
-                  placeholder={interests.length === 0 ? 'Ajouter un intérêt...' : ''}
-                  value={interestInput}
-                  onChange={e => setInterestInput(e.target.value)}
-                  onKeyDown={handleInterestKey}
-                />
-              </div>
-            </div>
+                {/* ── Interests tag input ── */}
+                <div className="form-group">
+                  <label className="form-label">Intérêts</label>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
+                    Qu'est-ce qui t'anime ? Appuie sur Entrée pour valider.
+                  </p>
+                  <div className="tags-input-wrap">
+                    {interests.map((t, i) => (
+                      <span key={i} className="tag-pill">
+                        {t}
+                        <button
+                          type="button"
+                          className="tag-remove-btn"
+                          onClick={() => setInterests(interests.filter((_, idx) => idx !== i))}
+                          aria-label={`Supprimer ${t}`}
+                        >×</button>
+                      </span>
+                    ))}
+                    <input
+                      type="text" className="tags-input-text"
+                      placeholder={interests.length === 0 ? 'Ajouter un intérêt...' : ''}
+                      value={interestInput}
+                      onChange={e => setInterestInput(e.target.value)}
+                      onKeyDown={handleInterestKey}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* ── Location ── */}
             <div className="form-row-2">
@@ -365,24 +387,45 @@ export default function Profile() {
             </div>
 
             {/* ── Social links ── */}
-            <div className="form-row-2">
-              <div className="form-group">
-                <label htmlFor="profile-github" className="form-label">Lien GitHub</label>
-                <input
-                  type="url" id="profile-github" className="form-input"
-                  placeholder="https://github.com/pseudo"
-                  value={github} onChange={e => setGithub(e.target.value)}
-                />
+            {isOrganizer ? (
+              <div className="form-row-2">
+                <div className="form-group">
+                  <label htmlFor="profile-linkedin" className="form-label">Lien LinkedIn</label>
+                  <input
+                    type="url" id="profile-linkedin" className="form-input"
+                    placeholder="https://linkedin.com/company/pseudo"
+                    value={linkedin} onChange={e => setLinkedin(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="profile-twitter" className="form-label">Twitter / X</label>
+                  <input
+                    type="text" id="profile-twitter" className="form-input"
+                    placeholder="twitter.com/pseudo"
+                    value={twitter} onChange={e => setTwitter(e.target.value)}
+                  />
+                </div>
               </div>
-              <div className="form-group">
-                <label htmlFor="profile-linkedin" className="form-label">Lien LinkedIn</label>
-                <input
-                  type="url" id="profile-linkedin" className="form-input"
-                  placeholder="https://linkedin.com/in/pseudo"
-                  value={linkedin} onChange={e => setLinkedin(e.target.value)}
-                />
+            ) : (
+              <div className="form-row-2">
+                <div className="form-group">
+                  <label htmlFor="profile-github" className="form-label">Lien GitHub</label>
+                  <input
+                    type="url" id="profile-github" className="form-input"
+                    placeholder="https://github.com/pseudo"
+                    value={github} onChange={e => setGithub(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="profile-linkedin" className="form-label">Lien LinkedIn</label>
+                  <input
+                    type="url" id="profile-linkedin" className="form-input"
+                    placeholder="https://linkedin.com/in/pseudo"
+                    value={linkedin} onChange={e => setLinkedin(e.target.value)}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             {/* ── Portfolio / Website ── */}
             <div className="form-group">

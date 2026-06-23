@@ -15,8 +15,68 @@ class HackathonViewSet(viewsets.ModelViewSet):
     serializer_class = HackathonSerializer
     permission_classes = [IsOrganizerOrReadOnly]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        
+        # 1. Organizer fetching their own hackathons
+        if self.request.query_params.get('organizer') == 'me':
+            if user.is_authenticated and hasattr(user, 'organizer_profile'):
+                return queryset.filter(organizer=user.organizer_profile)
+            return queryset.none()
+            
+        # 2. Public lists should only show PUBLISHED and COMPLETED
+        if self.action == 'list':
+            return queryset.filter(status__in=[Hackathon.Status.PUBLISHED, Hackathon.Status.COMPLETED])
+            
+        # 3. For retrieve/update, ensure non-organizers can't access DRAFT/WAITING
+        from django.db.models import Q
+        if user.is_authenticated and hasattr(user, 'organizer_profile'):
+            return queryset.filter(
+                Q(status__in=[Hackathon.Status.PUBLISHED, Hackathon.Status.COMPLETED]) | 
+                Q(organizer=user.organizer_profile)
+            )
+        return queryset.filter(status__in=[Hackathon.Status.PUBLISHED, Hackathon.Status.COMPLETED])
+
     def perform_create(self, serializer):
-        serializer.save(organizer=self.request.user.organizer_profile)
+        hackathon = serializer.save(organizer=self.request.user.organizer_profile)
+        
+        # Handle mentors
+        mentors_data = self.request.data.get('mentors', [])
+        if isinstance(mentors_data, list):
+            from mentor.models import MentorProfile
+            from .models import HackathonMentor
+            for m_data in mentors_data:
+                email = m_data.get('email')
+                if email:
+                    mentor = MentorProfile.objects.filter(user__email=email).first()
+                    if mentor:
+                        HackathonMentor.objects.get_or_create(hackathon=hackathon, mentor=mentor)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            print("HACKATHON CREATION ERRORS:", serializer.errors)
+        return super().create(request, *args, **kwargs)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsOrganizerOrReadOnly])
+    def invite_mentor(self, request, pk=None):
+        hackathon = self.get_object()
+        mentor_email = request.data.get('email')
+        if not mentor_email:
+            return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        from mentor.models import MentorProfile, MentorInvitation
+        mentor = MentorProfile.objects.filter(user__email=mentor_email).first()
+        if not mentor:
+            return Response({'error': 'Mentor not found with this email'}, status=status.HTTP_404_NOT_FOUND)
+            
+        invitation, created = MentorInvitation.objects.get_or_create(
+            hackathon=hackathon,
+            mentor=mentor,
+            defaults={'status': MentorInvitation.Status.PENDING}
+        )
+        return Response({'status': 'Invitation sent', 'id': invitation.id})
 
     @action(detail=True, methods=['post'], permission_classes=[IsOrganizerOrReadOnly])
     def submit_for_approval(self, request, pk=None):
@@ -31,10 +91,21 @@ class HackathonViewSet(viewsets.ModelViewSet):
         if request.user.role != 'PARTICIPANT':
             return Response({'error': 'Only participants can register'}, status=status.HTTP_403_FORBIDDEN)
         
+        # Validation: Participant Limit
+        if hackathon.participant_limit is not None and hackathon.participant_limit > 0:
+            current_count = HackathonRegistration.objects.filter(hackathon=hackathon).count()
+            if current_count >= hackathon.participant_limit:
+                return Response({'error': 'Désolé, ce hackathon a atteint sa limite de participants.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        initial_status = HackathonRegistration.Status.APPROVED if hackathon.registration_mode == 'open' else HackathonRegistration.Status.PENDING
+        
         reg, created = HackathonRegistration.objects.get_or_create(
             hackathon=hackathon,
             participant=request.user.participant_profile,
-            defaults={'motivation': request.data.get('motivation', '')}
+            defaults={
+                'motivation': request.data.get('motivation', ''),
+                'status': initial_status
+            }
         )
         return Response(HackathonRegistrationSerializer(reg).data)
 
@@ -44,11 +115,65 @@ class HackathonViewSet(viewsets.ModelViewSet):
         regs = hackathon.registrations.all()
         return Response(HackathonRegistrationSerializer(regs, many=True).data)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['get', 'post'])
     def announcements(self, request, pk=None):
         hackathon = self.get_object()
-        announcements = hackathon.announcements.all()
+        if request.method == 'POST':
+            if getattr(request.user, 'role', None) != 'ORGANIZER':
+                return Response({'error': 'Only organizers can post announcements'}, status=status.HTTP_403_FORBIDDEN)
+            serializer = HackathonAnnouncementSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(hackathon=hackathon)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        announcements = hackathon.announcements.all().order_by('-created_at')
         return Response(HackathonAnnouncementSerializer(announcements, many=True).data)
+
+    @action(detail=True, methods=['get', 'post'], permission_classes=[permissions.IsAuthenticatedOrReadOnly])
+    def discussions(self, request, pk=None):
+        hackathon = self.get_object()
+        if request.method == 'POST':
+            from .serializers import HackathonDiscussionSerializer
+            serializer = HackathonDiscussionSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(hackathon=hackathon, author=request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        discussions = hackathon.discussions.all().order_by('-created_at')
+        from .serializers import HackathonDiscussionSerializer
+        return Response(HackathonDiscussionSerializer(discussions, many=True).data)
+    @action(detail=True, methods=['get'])
+    def teams(self, request, pk=None):
+        hackathon = self.get_object()
+        teams = hackathon.teams.all()
+        from .serializers import TeamSerializer
+        return Response(TeamSerializer(teams, many=True).data)
+
+    @action(detail=True, methods=['get'])
+    def submissions(self, request, pk=None):
+        hackathon = self.get_object()
+        # Get submissions for all teams in this hackathon
+        submissions = Submission.objects.filter(team__hackathon=hackathon)
+        from .serializers import SubmissionSerializer
+        return Response(SubmissionSerializer(submissions, many=True).data)
+
+    @action(detail=True, methods=['get'])
+    def mentors(self, request, pk=None):
+        hackathon = self.get_object()
+        # HackathonMentor objects
+        mentors = hackathon.mentors.all()
+        # To avoid circular import or define a simple dict
+        data = [{
+            'id': hm.id,
+            'mentor_id': hm.mentor.id,
+            'name': hm.mentor.user.get_full_name() or hm.mentor.user.username,
+            'email': hm.mentor.user.email,
+            'expertise': hm.mentor.expertise,
+            'assigned_at': hm.assigned_at
+        } for hm in mentors]
+        return Response(data)
 
 class RegistrationViewSet(viewsets.ModelViewSet):
     queryset = HackathonRegistration.objects.all()
@@ -77,7 +202,169 @@ class TeamViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(leader=self.request.user.participant_profile)
 
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def join(self, request, pk=None):
+        team = self.get_object()
+        if request.user.role != 'PARTICIPANT':
+            return Response({'error': 'Only participants can join a team'}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Check team size
+        hackathon = team.hackathon
+        # members count + 1 (the leader is not in members, wait, we need to check if leader is counted in members)
+        # Actually leader is just a FK, usually the leader might not be in TeamMember table unless explicitly added.
+        # Let's count members. If leader is not in members, total size = members.count() + 1
+        current_size = team.members.count() + 1
+        if current_size >= hackathon.max_team_size:
+            return Response({'error': f'Cette équipe a atteint sa taille maximale de {hackathon.max_team_size} membres.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        from .models import TeamMember
+        member, created = TeamMember.objects.get_or_create(
+            team=team,
+            participant=request.user.participant_profile,
+            defaults={'role': request.data.get('role', 'Member')}
+        )
+        return Response({'status': 'Joined team successfully'})
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def invite(self, request, pk=None):
+        if str(pk) == 'team_1':
+            return Response({'status': 'Mock invitation sent successfully'})
+            
+        team = self.get_object()
+        email = request.data.get('email')
+        if not email:
+            return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        from authentication.models import User
+        from participant.models import ParticipantProfile
+        from .models import TeamMember
+        from django.core.mail import send_mail
+        from django.template.loader import render_to_string
+        from django.utils.html import strip_tags
+        import random
+        import string
+        
+        user = User.objects.filter(email=email).first()
+        temp_password = None
+        
+        if not user:
+            # Generate generic password
+            temp_password = "CodeToWin" + "".join(random.choices(string.digits, k=4)) + "!"
+            user = User.objects.create_user(
+                email=email,
+                password=temp_password,
+                role='PARTICIPANT'
+            )
+            # Ensure participant profile exists
+            ParticipantProfile.objects.get_or_create(user=user)
+        elif not hasattr(user, 'participant_profile'):
+            ParticipantProfile.objects.get_or_create(user=user)
+            
+        # Add to team
+        member, created = TeamMember.objects.get_or_create(
+            team=team,
+            participant=user.participant_profile,
+            defaults={'role': 'Member'}
+        )
+        
+        # Send Email
+        context = {
+            'organizationName': team.hackathon.title,
+            'roleName': "Membre de l'équipe " + team.name,
+            'inviteUrl': "http://localhost:5173/login", # or frontend URL
+            'tempPassword': temp_password
+        }
+        
+        html_message = render_to_string('emails/email-invite-member.html', context)
+        plain_message = strip_tags(html_message)
+        
+        try:
+            send_mail(
+                subject=f"Invitation à rejoindre l'équipe {team.name}",
+                message=plain_message,
+                from_email="no-reply@codetowin.org",
+                recipient_list=[email],
+                html_message=html_message
+            )
+        except Exception as e:
+            # Handle dev env where SMTP is not setup
+            print(f"Failed to send email to {email}: {e}")
+            
+        return Response({
+            'status': f'Invitation sent to {email} successfully', 
+            'temp_password': temp_password
+        })
+
+    @action(detail=True, methods=['post'], permission_classes=[IsOrganizerOrReadOnly])
+    def assign_mentor(self, request, pk=None):
+        team = self.get_object()
+        mentor_id = request.data.get('mentor_id')
+        
+        if not mentor_id:
+            team.mentor = None
+            team.save()
+            return Response({'status': 'Mentor unassigned'})
+            
+        from .models import HackathonMentor
+        try:
+            mentor = HackathonMentor.objects.get(id=mentor_id, hackathon=team.hackathon)
+            team.mentor = mentor
+            team.save()
+            return Response({'status': 'Mentor assigned successfully'})
+        except HackathonMentor.DoesNotExist:
+            return Response({'error': 'Mentor not found for this hackathon'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def feedback(self, request, pk=None):
+        team = self.get_object()
+        # Verify the user is the mentor of this team
+        if not hasattr(request.user, 'mentor_profile') or (team.mentor and team.mentor.mentor != request.user.mentor_profile):
+            return Response({'error': 'Vous n\'êtes pas le mentor de cette équipe'}, status=status.HTTP_403_FORBIDDEN)
+            
+        submission = team.submissions.first()
+        if not submission:
+            return Response({'error': 'Aucune soumission trouvée pour cette équipe'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Structure feedback data
+        scores = {
+            'innovation_score': request.data.get('problem_clarity_score', 0),
+            'feasibility_score': request.data.get('tech_score', 0),
+            'design_score': request.data.get('design_score', 0),
+        }
+        
+        # Calculate total
+        total = sum(float(v) for v in scores.values())
+        
+        submission.scores = scores
+        submission.feedback = request.data.get('public_comment', '')
+        # private_note can be saved somewhere else or added to the json if needed
+        if request.data.get('private_note'):
+            if not isinstance(submission.scores, dict):
+                submission.scores = scores
+            submission.scores['private_note'] = request.data.get('private_note')
+
+        submission.total_score = total
+        submission.status = 'Évalué'
+        submission.save()
+        
+        return Response({'status': 'Feedback saved successfully'})
+
 class SubmissionViewSet(viewsets.ModelViewSet):
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        # Validate team size constraints before submission
+        team = serializer.validated_data.get('team')
+        if team:
+            hackathon = team.hackathon
+            total_members = team.members.count() + 1 # Include leader
+            if total_members < hackathon.min_team_size:
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError({'error': f'La taille minimale de l\'équipe pour soumettre est de {hackathon.min_team_size} personnes.'})
+            if total_members > hackathon.max_team_size:
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError({'error': f'La taille maximale de l\'équipe pour soumettre est de {hackathon.max_team_size} personnes.'})
+                
+        serializer.save()

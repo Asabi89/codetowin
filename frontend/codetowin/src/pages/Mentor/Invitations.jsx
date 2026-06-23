@@ -9,8 +9,8 @@ const normalizeInvitation = (invitation) => {
   const organizer = invitation.organizer || hackathon.organizer || {};
   return {
     id: invitation.id || invitation._id,
-    hackathonName: invitation.hackathonName || hackathon.title || hackathon.name || 'Hackathon',
-    organizer: invitation.organizerName || organizer.name || organizer.full_name || 'Organisateur',
+    hackathonName: invitation.hackathon_title || invitation.hackathonName || hackathon.title || hackathon.name || 'Hackathon',
+    organizer: invitation.organizer_name || invitation.organizerName || organizer.name || organizer.full_name || 'Organisateur',
     logo: invitation.logo || organizer.logo || hackathon.logo || 'https://ui-avatars.com/api/?name=CT&background=0F172A&color=fff',
     dates: invitation.dates || [hackathon.start_date, hackathon.end_date].filter(Boolean).join(' - ') || 'Dates à confirmer',
     teamCount: invitation.teamCount ?? invitation.team_count ?? invitation.teams_count ?? 0,

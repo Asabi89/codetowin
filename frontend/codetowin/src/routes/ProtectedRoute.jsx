@@ -23,6 +23,11 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     // Redirect to login if not authenticated
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
+  
+  const { profile } = useAuth();
+  if (profile?.must_change_password && location.pathname !== '/force-change-password') {
+    return <Navigate to="/force-change-password" replace />;
+  }
 
   if (shouldSwitchMockRole) {
     return (

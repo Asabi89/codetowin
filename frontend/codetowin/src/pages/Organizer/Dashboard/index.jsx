@@ -7,6 +7,7 @@ import { hackathonsApi } from '../../../api/hackathons';
 import { HACKATHONS_DATA_MOCK } from '../../../mockdata/organizer';
 import { extractArray, normalizeHackathon, normalizeStatus } from '../../../services/normalizers';
 import { OrganizerContext } from '../../../context/OrganizerContext';
+import { AuthContext } from '../../../context/AuthContext';
 
 const toNumber = (value) => {
   const number = Number(value);
@@ -15,6 +16,8 @@ const toNumber = (value) => {
 
 const OrganizerDashboard = () => {
   const { hackathons: contextHackathons } = useContext(OrganizerContext);
+  const { profile } = useContext(AuthContext);
+  const organizationName = profile?.firstName || profile?.username || 'Organisateur';
   const hackathons = contextHackathons ? contextHackathons.map(normalizeHackathon) : [];
   const loading = false;
 
@@ -53,17 +56,17 @@ const OrganizerDashboard = () => {
 
   const totalParticipants = hackathons.reduce((acc, h) => {
     return acc + toNumber(h.participants);
-  }, 0) || 247;
+  }, 0);
 
   const totalTeams = hackathons.reduce((acc, h) => {
     return acc + toNumber(h.teams);
-  }, 0) || 38;
+  }, 0);
 
   const totalSubmissions = hackathons.reduce((acc, h) => {
     return acc + toNumber(h.submissions);
-  }, 0) || 29;
+  }, 0);
 
-  const activeHackathonsCount = hackathons.filter(h => h.status === 'publie' || h.status === 'attente' || h.status === 'active').length || 3;
+  const activeHackathonsCount = hackathons.filter(h => h.status === 'publie' || h.status === 'attente' || h.status === 'active').length;
 
   const stats = [
     { 
@@ -99,13 +102,33 @@ const OrganizerDashboard = () => {
     },
   ];
 
+  const today = new Date();
+  let urgentHackathon = null;
+  let daysRemaining = null;
+
+  for (const h of hackathons) {
+    if (h.end && (h.status === 'publie' || h.status === 'active' || h.status === 'Publié')) {
+      const endDate = new Date(h.end);
+      if (!isNaN(endDate)) {
+        const diffTime = endDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays > 0 && diffDays <= 7) {
+          urgentHackathon = h;
+          daysRemaining = diffDays;
+          break;
+        }
+      }
+    }
+  }
+
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
       
       {/* Welcome banner */}
       <div className="mb-8 rounded-xl bg-brand-800 p-6 text-white sm:flex sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-display text-2xl font-bold">Bonjour, TechHub Sénégal 👋</h2>
+          <h2 className="font-display text-2xl font-bold">Bonjour, {organizationName} 👋</h2>
           <p className="mt-1 text-brand-100">Voici un aperçu de vos hackathons en cours et de leur activité.</p>
         </div>
         <div className="mt-4 sm:mt-0">
@@ -126,31 +149,33 @@ const OrganizerDashboard = () => {
       </div>
 
       {/* Alert */}
-      <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-4">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-amber-800">Attention requise</h3>
-            <div className="mt-2 text-sm text-amber-700">
-              <p>La date limite de soumission pour <strong>AgriTech Youth Hack</strong> est dans 3 jours. Pensez à envoyer une annonce aux participants.</p>
+      {urgentHackathon && (
+        <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
             </div>
-            <div className="mt-4">
-              <div className="-mx-2 -my-1.5 flex">
-                <button
-                  type="button"
-                  className="rounded-md bg-amber-50 px-2 py-1.5 text-sm font-medium text-amber-800 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2 focus:ring-offset-amber-50"
-                >
-                  Envoyer une annonce
-                </button>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-amber-800">Attention requise</h3>
+              <div className="mt-2 text-sm text-amber-700">
+                <p>La date limite de soumission pour <strong>{urgentHackathon.title}</strong> est dans {daysRemaining} jour{daysRemaining > 1 ? 's' : ''}. Pensez à envoyer une annonce aux participants.</p>
+              </div>
+              <div className="mt-4">
+                <div className="-mx-2 -my-1.5 flex">
+                  <Link
+                    to={`/organizer/hackathons/${urgentHackathon.id}/announcements/new`}
+                    className="rounded-md bg-amber-50 px-2 py-1.5 text-sm font-medium text-amber-800 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2 focus:ring-offset-amber-50"
+                  >
+                    Envoyer une annonce
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Recent Hackathons Table */}
       <div className="mt-8">

@@ -60,12 +60,11 @@ export default function OrganizerTeams() {
     const mentorObj = mentors.find(m => String(m.id) === String(selectedMentorId));
     try {
       await teamsApi.assignMentor(selectedTeam.id, { mentor_id: selectedMentorId });
-      setTeams(prev => prev.map(t => t.id === selectedTeam.id ? { ...t, mentor: mentorObj } : t));
+      setTeams(prev => prev.map(t => t.id === selectedTeam.id ? { ...t, mentor_details: mentorObj } : t));
       showToast('Assignation enregistrée avec succès !', 'success');
       setIsAssignModalOpen(false);
     } catch (err) {
       console.error("Erreur api", err);
-    }
     }
   };
 
@@ -123,7 +122,7 @@ export default function OrganizerTeams() {
                     {team.name}
                   </Link>
                   <Badge variant="brand">
-                    {team.members?.length || team.memberCount || 0} membres
+                    {team.members_details?.length || team.memberCount || 0} membres
                   </Badge>
                 </div>
                 <p className="mt-2 text-sm text-slate-500 line-clamp-2">
@@ -131,11 +130,11 @@ export default function OrganizerTeams() {
                 </p>
                 <div className="mt-4 flex flex-1 items-end">
                   <div className="flex -space-x-2 overflow-hidden">
-                    {team.members?.map((member, idx) => (
+                    {team.members_details?.map((member, idx) => (
                       <img
                         key={idx}
                         className="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover"
-                        src={member.avatar || member}
+                        src={member.avatar}
                         alt=""
                       />
                     ))}
@@ -145,10 +144,10 @@ export default function OrganizerTeams() {
               
               <div className="flex items-center justify-between border-t border-b border-slate-200 bg-slate-50 px-6 py-3">
                 <div className="flex items-center">
-                  {team.mentor ? (
+                  {team.mentor_details ? (
                     <div className="flex items-center">
-                      <img className="h-6 w-6 rounded-full object-cover" src={team.mentor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(team.mentor.name)}`} alt="" />
-                      <span className="ml-2 text-sm font-medium text-slate-700 truncate max-w-[100px] sm:max-w-[120px]">{team.mentor.name}</span>
+                      <img className="h-6 w-6 rounded-full object-cover" src={team.mentor_details.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(team.mentor_details.name)}`} alt="" />
+                      <span className="ml-2 text-sm font-medium text-slate-700 truncate max-w-[100px] sm:max-w-[120px]">{team.mentor_details.name}</span>
                       <button onClick={() => openAssignModal(team)} className="ml-2 text-xs text-brand-600 hover:underline">Modifier</button>
                     </div>
                   ) : (

@@ -5,19 +5,47 @@ export default function WizardStep2Content({ formData, updateForm }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [newFaqQ, setNewFaqQ] = useState('');
   const [newFaqA, setNewFaqA] = useState('');
+  const [newJuryQ, setNewJuryQ] = useState('');
+  const [newJuryType, setNewJuryType] = useState('text');
+  const [newJuryOptions, setNewJuryOptions] = useState('');
   const [isPreview, setIsPreview] = useState(false);
   const textareaRef = useRef(null);
 
   const addFaq = () => {
     if (newFaqQ.trim() && newFaqA.trim()) {
-      updateForm('faqs', [...formData.faqs, { question: newFaqQ, answer: newFaqA }]);
+      updateForm('faqs', [...(formData.faqs || []), { question: newFaqQ, answer: newFaqA }]);
       setNewFaqQ('');
       setNewFaqA('');
     }
   };
 
   const removeFaq = (idx) => {
-    updateForm('faqs', formData.faqs.filter((_, i) => i !== idx));
+    updateForm('faqs', (formData.faqs || []).filter((_, i) => i !== idx));
+  };
+
+  const addJuryQuestion = () => {
+    if (newJuryQ.trim()) {
+      const optionsArray = newJuryOptions
+        .split('\n')
+        .map(o => o.trim())
+        .filter(Boolean);
+        
+      updateForm('jury_questions', [
+        ...(formData.jury_questions || []), 
+        { 
+          question: newJuryQ, 
+          type: newJuryType, 
+          options: (newJuryType === 'select' || newJuryType === 'checkbox' || newJuryType === 'radio') ? optionsArray : [] 
+        }
+      ]);
+      setNewJuryQ('');
+      setNewJuryType('text');
+      setNewJuryOptions('');
+    }
+  };
+
+  const removeJuryQuestion = (idx) => {
+    updateForm('jury_questions', (formData.jury_questions || []).filter((_, i) => i !== idx));
   };
 
   const handleFormat = (type) => {
@@ -147,7 +175,7 @@ export default function WizardStep2Content({ formData, updateForm }) {
       </div>
       <div className="border border-slate-200 rounded-lg overflow-hidden">
         <div className="border-b border-slate-200 bg-slate-50 flex overflow-x-auto">
-          {['overview', 'resources', 'rules', 'faq'].map((tab) => (
+          {['overview', 'resources', 'rules', 'faq', 'jury_questions'].map((tab) => (
             <button
               key={tab}
               type="button"
@@ -158,12 +186,12 @@ export default function WizardStep2Content({ formData, updateForm }) {
                   : 'text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-100'
               }`}
             >
-              {tab === 'overview' ? "Vue d'ensemble" : tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {tab === 'overview' ? "Vue d'ensemble" : tab === 'faq' ? 'FAQ' : tab === 'jury_questions' ? 'Questions du Jury' : tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
 
-        {activeTab !== 'faq' && (
+        {(activeTab !== 'faq' && activeTab !== 'jury_questions') && (
           <>
             <div className="border-b border-slate-200 bg-white p-2 flex items-center justify-between text-slate-500 overflow-x-auto">
               <div className="flex items-center space-x-1 sm:space-x-2">
@@ -234,7 +262,7 @@ export default function WizardStep2Content({ formData, updateForm }) {
                   <p className="text-sm text-slate-600 mt-2">{faq.answer}</p>
                 </div>
               ))}
-              {formData.faqs.length === 0 && (
+              {(!formData.faqs || formData.faqs.length === 0) && (
                 <p className="text-sm text-slate-500 italic">Aucune FAQ ajoutée pour le moment.</p>
               )}
             </div>
@@ -251,6 +279,73 @@ export default function WizardStep2Content({ formData, updateForm }) {
                 <div>
                   <button type="button" onClick={addFaq} className="inline-flex items-center rounded-md border border-transparent bg-brand-50 text-brand-700 px-4 py-2 text-sm font-medium hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
                     Ajouter la question
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'jury_questions' && (
+          <div className="bg-white p-4">
+            <div className="mb-4">
+              <p className="text-sm text-slate-600">Ces questions seront posées aux participants lors de la soumission de leur projet. Leurs réponses seront visibles par le jury lors de l'évaluation.</p>
+            </div>
+            <div className="space-y-4 mb-6">
+              {(formData.jury_questions || []).map((q, idx) => (
+                <div key={idx} className="bg-slate-50 p-4 rounded-lg border border-slate-200 relative group">
+                  <button type="button" onClick={() => removeJuryQuestion(idx)} className="absolute top-2 right-2 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </button>
+                  <h4 className="font-bold text-slate-900 text-sm">Question {idx + 1} <span className="text-xs font-normal text-slate-500 bg-slate-200 px-2 py-0.5 rounded ml-2">{q.type || 'text'}</span></h4>
+                  <p className="text-sm text-slate-600 mt-1">{q.question}</p>
+                  {q.options && q.options.length > 0 && (
+                    <div className="mt-2 text-xs text-slate-500">
+                      <strong>Options :</strong> {q.options.join(', ')}
+                    </div>
+                  )}
+                </div>
+              ))}
+              {(!formData.jury_questions || formData.jury_questions.length === 0) && (
+                <p className="text-sm text-slate-500 italic">Aucune question du jury n'a été configurée.</p>
+              )}
+            </div>
+            <div className="bg-white border border-slate-200 shadow-sm rounded-lg p-4">
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700">Type de question</label>
+                  <select 
+                    value={newJuryType} 
+                    onChange={e => setNewJuryType(e.target.value)} 
+                    className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border"
+                  >
+                    <option value="text">Texte court</option>
+                    <option value="textarea">Texte long</option>
+                    <option value="url">Lien / URL</option>
+                    <option value="radio">Choix unique (Boutons radio)</option>
+                    <option value="select">Menu déroulant</option>
+                    <option value="checkbox">Choix multiples (Cases à cocher)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700">Question</label>
+                  <input type="text" value={newJuryQ} onChange={e => setNewJuryQ(e.target.value)} placeholder="Ex: Décrivez l'architecture..." className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border" />
+                </div>
+                {(newJuryType === 'select' || newJuryType === 'checkbox' || newJuryType === 'radio') && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700">Options (une option par ligne)</label>
+                    <textarea 
+                      rows="3" 
+                      value={newJuryOptions} 
+                      onChange={e => setNewJuryOptions(e.target.value)} 
+                      placeholder="React&#10;Angular&#10;Vue" 
+                      className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2 px-3 border"
+                    ></textarea>
+                  </div>
+                )}
+                <div>
+                  <button type="button" onClick={addJuryQuestion} className="inline-flex items-center rounded-md border border-transparent bg-brand-50 text-brand-700 px-4 py-2 text-sm font-medium hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                    Ajouter la question au jury
                   </button>
                 </div>
               </div>

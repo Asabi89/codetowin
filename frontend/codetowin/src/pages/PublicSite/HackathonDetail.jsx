@@ -7,13 +7,16 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import '../../styles/pages/participant/hackaton-detail.css';
 
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+
 import HackathonHero from '../../components/features/hackathon/detail/HackathonHero';
 import HackathonTabs from '../../components/features/hackathon/detail/HackathonTabs';
 import ProjectWorkspace from '../../components/features/hackathon/detail/ProjectWorkspace';
 import FAQAccordion from '../../components/features/hackathon/detail/FAQAccordion';
 
 export default function HackathonDetail() {
-  const { workspaceState, registered, updateWorkspaceState, resetWorkspace } = useContext(AuthContext);
+  const { workspaceState, registered, updateWorkspaceState, resetWorkspace, isAuthenticated } = useContext(AuthContext);
   const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,7 +29,13 @@ export default function HackathonDetail() {
   
   const [participants, setParticipants] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
+  const [discussions, setDiscussions] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
+
+  const [newDiscussionTitle, setNewDiscussionTitle] = useState('');
+  const [newDiscussionContent, setNewDiscussionContent] = useState('');
+  const [showDiscussionForm, setShowDiscussionForm] = useState(false);
+  const [submittingDiscussion, setSubmittingDiscussion] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -41,7 +50,15 @@ export default function HackathonDetail() {
       setLoading(true);
       try {
         const response = await hackathonsApi.getHackathonById(id || '1');
-        setHackathon(response.data);
+        const h = response.data || response;
+        setHackathon({
+          ...h,
+          start: h.start_date || h.start,
+          end: h.end_date || h.end,
+          logoText: h.logo_text || h.logoText,
+          participants: h.participants_count !== undefined ? h.participants_count : h.participants,
+          online: h.type === 'En ligne' || h.online,
+        });
       } catch (error) {
         console.error("Hackathon details failed to load", error);
         showToast("Impossible de charger les détails de ce hackathon.", "error");
@@ -60,10 +77,13 @@ export default function HackathonDetail() {
       try {
         if (activeTab === 'participants') {
           const res = await hackathonsApi.getRegistrations(hackathon.id);
-          setParticipants(res.data || []);
+          setParticipants(Array.isArray(res) ? res : (res.data || []));
         } else if (activeTab === 'updates') {
           const res = await hackathonsApi.getAnnouncements(hackathon.id);
-          setAnnouncements(res.data || []);
+          setAnnouncements(Array.isArray(res) ? res : (res.data || []));
+        } else if (activeTab === 'discussions') {
+          const res = await hackathonsApi.getDiscussions(hackathon.id);
+          setDiscussions(Array.isArray(res) ? res : (res.data || []));
         }
       } catch (error) {
         console.error("Failed to load tab data", error);
@@ -76,7 +96,11 @@ export default function HackathonDetail() {
   }, [activeTab, hackathon]);
 
   const handleOnboardingJoin = () => {
-    navigate('/profile');
+    if (!isAuthenticated) {
+      navigate('/auth/signup');
+    } else {
+      navigate('/profile');
+    }
   };
 
   const handleResetWorkspace = () => {
@@ -119,29 +143,9 @@ export default function HackathonDetail() {
             {activeTab === 'overview' && (
               <div className="tab-screen active">
                 <div className="section-slice">
-                  <div className="textarea-render-body">
-                    <h2>C'est quoi ce défi ?</h2>
-                    <p>Bienvenue au Google Cloud Rapid Agent Hackathon ! Fini les vieux chatbots ennuyeux, on passe aux vrais Agents IA : des trucs intelligents qui réfléchissent, planifient et utilisent des API pour de vrai.</p>
-                    <p>Avec Gemini et les outils MCP, ton but est de créer un agent (presque) autonome qui fait le boulot à la place des humains dans l'une des catégories ci-dessous.</p>
-                    <p>Que tu sois un pro du code, un as du design ou juste un débutant curieux, on a tout ce qu'il faut pour t'aider. Viens t'amuser avec nous !</p>
-                    
-                    <h2>Les Pistes (et les Prix !)</h2>
-                    <p>Choisis ton camp et essaie de gagner le gros lot :</p>
-                    <ul>
-                      <li><strong>Piste Arize (10 000 $ en jeu)</strong> : Fais des agents qui surveillent les erreurs et tracent tout. (1er: 5 000 $ | 2e: 3 000 $ | 3e: 2 000 $)</li>
-                      <li><strong>Piste Elastic (10 000 $ en jeu)</strong> : Utilise la recherche vectorielle pour rendre ton agent super malin. (1er: 5 000 $ | 2e: 3 000 $ | 3e: 2 000 $)</li>
-                      <li><strong>Piste Fivetran (10 000 $ en jeu)</strong> : Construis des pipelines de données et automatise tout le bazar. (1er: 5 000 $ | 2e: 3 000 $ | 3e: 2 000 $)</li>
-                      <li><strong>Piste MongoDB (10 000 $ en jeu)</strong> : Stocke et recherche des trucs avec MongoDB Atlas. (1er: 5 000 $ | 2e: 3 000 $ | 3e: 2 000 $)</li>
-                    </ul>
-
-                    <h2>Quelques idées pour t'inspirer 💡</h2>
-                    <p>T'as pas d'idée ? Pas de panique, voici de quoi te lancer :</p>
-                    <ul>
-                      <li><strong>Le Planificateur de la Coupe du Monde 2026</strong> : Aide les fans à trouver des hôtels, des billets et à s'organiser sans stress.</li>
-                      <li><strong>Le Chasseur de Fraudes</strong> : Un agent qui fouille dans les transactions pour attraper les méchants.</li>
-                      <li><strong>Le Superviseur de Magasin</strong> : Gère les stocks, les livraisons et crie au secours (poliment) quand il manque des trucs.</li>
-                    </ul>
-                  </div>
+                  <div className="textarea-render-body prose prose-sm max-w-none prose-slate"
+                       dangerouslySetInnerHTML={{ __html: hackathon.overview ? DOMPurify.sanitize(marked.parse(hackathon.overview)) : '<p class="text-slate-500 italic">Aucune vue d\'ensemble fournie pour le moment.</p>' }}
+                  />
                 </div>
               </div>
             )}
@@ -158,6 +162,7 @@ export default function HackathonDetail() {
                     handleOnboardingJoin={handleOnboardingJoin}
                     isSubmitted={workspaceState.submitted}
                     setIsSubmitted={setIsSubmitted}
+                    hackathon={hackathon}
                   />
                 </div>
               </div>
@@ -216,21 +221,9 @@ export default function HackathonDetail() {
             {activeTab === 'resources' && (
               <div className="tab-screen active">
                 <div className="section-slice">
-                  <div className="textarea-render-body">
-                    <h2>La boîte à outils ! 🛠️</h2>
-                    <p>Voici tous les trucs cool pour t'aider à construire ton projet :</p>
-
-                    <h3>Les papiers officiels</h3>
-                    <ul>
-                      <li><a href="#mcp-doc" onClick={(e) => e.preventDefault()}>La doc MCP</a> - Pour comprendre comment faire des outils magiques.</li>
-                      <li><a href="#gcloud-models" onClick={(e) => e.preventDefault()}>Les modèles Google Cloud</a> - Des petits bouts de code pour te lancer plus vite.</li>
-                    </ul>
-
-                    <h3>Les guides de nos amis</h3>
-                    <ul>
-                      <li><a href="#mongo-guide" onClick={(e) => e.preventDefault()}>Le guide MongoDB</a> - Pour apprendre à stocker plein de trucs super facilement.</li>
-                    </ul>
-                  </div>
+                  <div className="textarea-render-body prose prose-sm max-w-none prose-slate"
+                       dangerouslySetInnerHTML={{ __html: hackathon.resources ? DOMPurify.sanitize(marked.parse(hackathon.resources)) : '<p class="text-slate-500 italic">Aucune ressource fournie pour le moment.</p>' }}
+                  />
                 </div>
               </div>
             )}
@@ -239,17 +232,9 @@ export default function HackathonDetail() {
             {activeTab === 'rules' && (
               <div className="tab-screen active">
                 <div className="section-slice">
-                  <div className="textarea-render-body">
-                    <h2>Les Règles du Jeu 📜</h2>
-                    
-                    <h3>1. Qui peut jouer ?</h3>
-                    <p>Tout le monde peut participer au Google Cloud Rapid Agent Hackathon ! Faut juste avoir 18 ans, parce qu'on fait les choses bien.</p>
-                    <p>Par contre, si tu bosses chez Google ou nos partenaires, tu pourras pas gagner les prix (faut laisser la chance aux autres !).</p>
-
-                    <h3>2. Comment ça marche ?</h3>
-                    <p>Ton projet doit être tout frais, codé pendant le hackathon. Pas de recyclage d'anciens trucs ! Mais tu peux utiliser des librairies gratuites, évidemment.</p>
-                    <p>Et devine quoi ? Vous pouvez être jusqu'à 4 dans l'équipe. Mélangez les talents, c'est encore plus rigolo !</p>
-                  </div>
+                  <div className="textarea-render-body prose prose-sm max-w-none prose-slate"
+                       dangerouslySetInnerHTML={{ __html: hackathon.rules ? DOMPurify.sanitize(marked.parse(hackathon.rules)) : '<p class="text-slate-500 italic">Aucune règle définie pour le moment.</p>' }}
+                  />
                 </div>
               </div>
             )}
@@ -287,35 +272,87 @@ export default function HackathonDetail() {
               <div className="tab-screen active">
                 <div className="section-slice">
                   <h2 className="slice-title">Le coin Bla-bla 🗣️</h2>
+                  
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                     <div className="search-box-wrap" style={{ flex: 1, marginRight: '1rem' }}>
                       <input type="text" placeholder="Cherche de quoi papoter..." />
                     </div>
-                    <a href="#new-post" onClick={(e) => { e.preventDefault(); showToast("Bla-bla bientôt disponible !", 'warning'); }} className="btn-action-primary">Nouveau truc à dire</a>
+                    {isAuthenticated ? (
+                      <button onClick={() => setShowDiscussionForm(!showDiscussionForm)} className="btn-action-primary">
+                        {showDiscussionForm ? 'Annuler' : 'Nouveau truc à dire'}
+                      </button>
+                    ) : (
+                      <button onClick={() => showToast("Connectez-vous pour participer.", "warning")} className="btn-action-primary">Nouveau truc à dire</button>
+                    )}
                   </div>
 
-                  <div className="discussions-pane">
-                    <div className="discussion-item-card">
-                      <div className="discussion-info">
-                        <a href="#topic1" onClick={(e) => e.preventDefault()} className="discussion-topic">Au secours avec les erreurs Fivetran !</a>
-                        <div className="discussion-meta">
-                          <span>Lancé par Tariq Johnson • il y a 2 heures</span>
-                          <span>dans Aide Technique</span>
-                        </div>
-                      </div>
-                      <span className="discussion-replies">4 réponses</span>
+                  {showDiscussionForm && (
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6 shadow-sm">
+                      <h3 className="text-lg font-bold text-slate-800 mb-4">Lancer une nouvelle discussion</h3>
+                      <input 
+                        type="text" 
+                        value={newDiscussionTitle} 
+                        onChange={(e) => setNewDiscussionTitle(e.target.value)} 
+                        placeholder="Titre de la discussion" 
+                        className="w-full mb-3 rounded-md border-slate-300 py-2 px-3 text-sm focus:border-brand-500 focus:ring-brand-500" 
+                      />
+                      <textarea 
+                        value={newDiscussionContent} 
+                        onChange={(e) => setNewDiscussionContent(e.target.value)} 
+                        placeholder="De quoi voulez-vous parler ?" 
+                        rows="4" 
+                        className="w-full mb-3 rounded-md border-slate-300 py-2 px-3 text-sm focus:border-brand-500 focus:ring-brand-500" 
+                      ></textarea>
+                      <button 
+                        onClick={async () => {
+                          if (!newDiscussionTitle || !newDiscussionContent) {
+                            showToast('Veuillez remplir le titre et le contenu.', 'error');
+                            return;
+                          }
+                          setSubmittingDiscussion(true);
+                          try {
+                            const res = await hackathonsApi.createDiscussion(hackathon.id, { title: newDiscussionTitle, content: newDiscussionContent });
+                            setDiscussions([res.data || res, ...discussions]);
+                            setNewDiscussionTitle('');
+                            setNewDiscussionContent('');
+                            setShowDiscussionForm(false);
+                            showToast('Discussion publiée !', 'success');
+                          } catch (err) {
+                            showToast('Erreur lors de la publication', 'error');
+                          } finally {
+                            setSubmittingDiscussion(false);
+                          }
+                        }}
+                        disabled={submittingDiscussion}
+                        className="btn-action-primary w-full text-center flex justify-center items-center"
+                      >
+                        {submittingDiscussion ? 'Publication...' : 'Publier'}
+                      </button>
                     </div>
+                  )}
 
-                    <div className="discussion-item-card">
-                      <div className="discussion-info">
-                        <a href="#topic2" onClick={(e) => e.preventDefault()} className="discussion-topic">On cherche un artiste UX pour notre équipe !</a>
-                        <div className="discussion-meta">
-                          <span>Lancé par Sarah Chen • il y a 1 jour</span>
-                          <span>dans Recherche d'équipe</span>
-                        </div>
+                  <div className="discussions-pane">
+                    {loadingData ? (
+                      <div style={{ padding: '3rem', textAlign: 'center' }}>
+                        <LoadingSpinner message="Chargement des discussions..." />
                       </div>
-                      <span className="discussion-replies">8 réponses</span>
-                    </div>
+                    ) : discussions.length > 0 ? (
+                      discussions.map(disc => (
+                        <div className="discussion-item-card" key={disc.id}>
+                          <img src={disc.author_avatar} alt={disc.author_name} className="w-10 h-10 rounded-full mr-4" />
+                          <div className="discussion-info" style={{ flex: 1 }}>
+                            <a href={`#discussion-${disc.id}`} onClick={(e) => e.preventDefault()} className="discussion-topic">{disc.title}</a>
+                            <div className="discussion-meta text-xs text-slate-500 mt-1">
+                              <span>Lancé par {disc.author_name} • {new Date(disc.created_at).toLocaleDateString()}</span>
+                              {disc.category && <span> dans {disc.category}</span>}
+                            </div>
+                            <p className="text-sm text-slate-700 mt-2">{disc.content}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Soyez le premier à lancer une discussion !</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -326,7 +363,7 @@ export default function HackathonDetail() {
               <div className="tab-screen active">
                 <div className="section-slice">
                   <h2 className="slice-title">Questions Fréquentes (FAQ)</h2>
-                  <FAQAccordion />
+                  <FAQAccordion faqs={hackathon.faqs} />
                 </div>
               </div>
             )}

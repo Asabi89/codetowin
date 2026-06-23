@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ANNOUNCEMENTS_MOCK } from '../../../mockdata/organizer';
+import { hackathonsApi } from '../../../api/hackathons';
 
 
 export default function OrganizerAnnouncements() {
@@ -8,13 +8,49 @@ export default function OrganizerAnnouncements() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const filteredAnnouncements = ANNOUNCEMENTS_MOCK.filter(ann => {
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        setLoading(true);
+        const data = await hackathonsApi.getAnnouncements(id);
+        if (Array.isArray(data)) {
+          setAnnouncements(data);
+        } else if (data && Array.isArray(data.data)) {
+          setAnnouncements(data.data);
+        } else {
+          setAnnouncements([]);
+        }
+      } catch (err) {
+        console.error("Erreur api", err);
+        setAnnouncements([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnnouncements();
+  }, [id]);
+
+  const filteredAnnouncements = announcements.filter(ann => {
     const matchesSearch = ann.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || 
                           (statusFilter === 'sent' && !ann.isDraft) ||
                           (statusFilter === 'draft' && ann.isDraft);
     return matchesSearch && matchesStatus;
   });
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center p-8 flex-1">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600"></div>
+          <p className="text-sm font-medium text-slate-500">Chargement des annonces...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">

@@ -59,11 +59,41 @@ export const hackathonsApi = {
     return await apiClient.get(`/hackathons/${id}/registrations`);
   },
 
-  /**
-   * Récupère les actualités d'un hackathon
-   */
   getAnnouncements: async (id) => {
     return await apiClient.get(`/hackathons/${id}/announcements`);
+  },
+
+  createAnnouncement: async (id, data) => {
+    return await apiClient.post(`/hackathons/${id}/announcements/`, data);
+  },
+
+  getDiscussions: async (id) => {
+    return await apiClient.get(`/hackathons/${id}/discussions`);
+  },
+
+  createDiscussion: async (id, data) => {
+    return await apiClient.post(`/hackathons/${id}/discussions/`, data);
+  },
+
+  /**
+   * Récupère les équipes d'un hackathon
+   */
+  getTeams: async (id) => {
+    return await apiClient.get(`/hackathons/${id}/teams`);
+  },
+
+  /**
+   * Récupère les soumissions d'un hackathon
+   */
+  getSubmissions: async (id) => {
+    return await apiClient.get(`/hackathons/${id}/submissions`);
+  },
+
+  /**
+   * Récupère les mentors assignés à un hackathon
+   */
+  getMentors: async (id) => {
+    return await apiClient.get(`/hackathons/${id}/mentors`);
   },
 
   /**

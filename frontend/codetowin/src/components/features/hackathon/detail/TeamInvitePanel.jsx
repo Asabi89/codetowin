@@ -20,9 +20,9 @@ export default function TeamInvitePanel({ workspaceState, updateWorkspaceState, 
         const updatedTeammates = [
           ...(workspaceState.teammates || []),
           {
-            name: formattedName,
-            avatar: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80`,
-            role: 'Developer',
+            name: inviteEmail,
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(inviteEmail)}&background=random`,
+            role: 'Invité',
             status: 'pending'
           }
         ];

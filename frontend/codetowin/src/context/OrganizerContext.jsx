@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { initialHackathons } from '../mockdata/hackathons';
+import { hackathonsApi } from '../api/hackathons';
 
 export const OrganizerContext = createContext();
 
@@ -7,7 +7,7 @@ const STORAGE_KEY = 'codetowin_organizer_state';
 
 // Mocked initial state
 const initialDefaultState = {
-  hackathons: initialHackathons,
+  hackathons: [],
   members: [
     { id: 1, name: "Alioune Fall", email: "alioune@example.com", role: "Organisateur", status: "Actif", avatar: "https://ui-avatars.com/api/?name=Alioune+Fall" },
     { id: 2, name: "Sophie Mendez", email: "sophie@example.com", role: "Évaluateur", status: "Invitation envoyée", avatar: "https://ui-avatars.com/api/?name=Sophie+Mendez" }
@@ -40,6 +40,22 @@ export const OrganizerProvider = ({ children }) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
+  const fetchMyHackathons = async () => {
+    try {
+      const response = await hackathonsApi.getHackathons({ organizer: 'me' });
+      const hackathonsData = Array.isArray(response) ? response : (response.results || response.data?.results || response.data || []);
+      setState(prev => ({ ...prev, hackathons: hackathonsData }));
+    } catch (err) {
+      console.error("Could not fetch organizer hackathons", err);
+      setState(prev => ({ ...prev, hackathons: [] }));
+    }
+  };
+
+  // Fetch real hackathons from API on mount
+  useEffect(() => {
+    fetchMyHackathons();
+  }, []);
+
   const addHackathon = (hackathonData) => {
     setState(prev => ({
       ...prev,
@@ -66,7 +82,8 @@ export const OrganizerProvider = ({ children }) => {
       ...state,
       addHackathon,
       inviteMember,
-      createAnnouncement
+      createAnnouncement,
+      refreshHackathons: fetchMyHackathons
     }}>
       {children}
     </OrganizerContext.Provider>

@@ -52,13 +52,7 @@ export default function OrganizerEvaluation() {
           }
         }
       } catch (err) {
-        console.warn("Erreur lors de la récupération de la soumission, utilisation du fallback mocké.", err);
-        const mock = SUBMISSIONS_MOCK.find(s => String(s.id) === String(submissionId)) || SUBMISSIONS_MOCK[0];
-        setSubmission(mock);
-        if (mock.score && mock.score !== '-') {
-          const val = parseFloat(mock.score) / 4;
-          setScores({ innovation: val, faisabilite: val, impact: val, ux: val });
-        }
+        console.warn("Erreur lors de la récupération de la soumission.", err);
       } finally {
         setLoading(false);
       }
@@ -84,8 +78,8 @@ export default function OrganizerEvaluation() {
         scores,
         feedback,
         total_score: totalScore,
+        status: 'Évalué'
       });
-      await submissionsApi.updateSubmissionStatus(submissionId, 'Évalué');
       showToast("L'évaluation a été enregistrée avec succès !", "success");
       navigate(`/organizer/hackathons/${id}/submissions`);
     } catch (err) {
@@ -282,8 +276,8 @@ export default function OrganizerEvaluation() {
                     <Activity className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-slate-900">{submission?.projectName || 'Projet'}</h4>
-                    <p className="text-xs font-medium text-slate-500">Par {submission?.teamName || 'Équipe'}</p>
+                    <h4 className="text-lg font-bold text-slate-900">{submission?.project_name || submission?.title || 'Projet'}</h4>
+                    <p className="text-xs font-medium text-slate-500">Par {submission?.team_name || 'Équipe'}</p>
                   </div>
                 </div>
 
@@ -293,7 +287,7 @@ export default function OrganizerEvaluation() {
 
                 <div className="space-y-3">
                   <a
-                    href={submission?.repoLink || submission?.githubUrl || '#'}
+                    href={submission?.github_url || '#'}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center justify-center w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-700"
@@ -302,7 +296,7 @@ export default function OrganizerEvaluation() {
                     Voir le code (GitHub)
                   </a>
                   <a
-                    href={submission?.demoLink || submission?.demoUrl || '#'}
+                    href={submission?.demo_url || '#'}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center justify-center w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-brand-600 shadow-sm ring-1 ring-inset ring-brand-300 hover:bg-brand-50"

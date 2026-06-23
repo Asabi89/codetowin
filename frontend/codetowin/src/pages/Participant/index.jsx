@@ -10,7 +10,7 @@ import { certificatesApi } from "../../api/certificates";
 import { usersApi } from "../../api/users";
 
 export default function Participant() {
-  const { workspaceState, profile, registered, registerUser } = useContext(AuthContext);
+  const { workspaceState, profile, registered, updateProfileContext } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('portfolio');
   const [myHackathons, setMyHackathons] = useState([]);
   const [myProjects, setMyProjects] = useState([]);
@@ -86,13 +86,13 @@ export default function Participant() {
   }
 
   const p = profile;
-  const fullName = `${p.firstName || ''} ${p.lastName || ''}`.trim() || 'User';
-  const username = `@${(p.firstName || 'user').toLowerCase()}${(p.lastName || '').toLowerCase()}`;
-  const avatar = p.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80';
+  const fullName = p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim() || p.username || 'User';
+  const username = `@${p.username || (p.firstName || 'user').toLowerCase() + (p.lastName || '').toLowerCase()}`;
+  const avatar = p.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(p.username || 'User')}&background=random`;
   
   const locationText = [p.city, p.country].filter(Boolean).join(', ') || 'City, Country';
   const skillsList = p.skills ? p.skills.split(',').map(s => s.trim()).filter(Boolean) : [];
-  const interestsList = p.interests ? p.interests.split(',').map(i => i.trim()).filter(Boolean) : ['AI', 'Fintech', 'Education', 'Mobile', 'Web'];
+  const interestsList = p.interests ? p.interests.split(',').map(i => i.trim()).filter(Boolean) : [];
 
   const projectName = workspaceState.projectName || 'Untitled Project';
   const isSubmitted = workspaceState.submitted;
@@ -102,10 +102,12 @@ export default function Participant() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = ev => {
-      registerUser({
+      updateProfileContext({
         ...profile,
         avatar: ev.target.result
       });
+      // Also update backend
+      usersApi.updateProfile({ ...profile, avatar: ev.target.result }).catch(console.error);
     };
     reader.readAsDataURL(file);
   };
@@ -234,9 +236,11 @@ export default function Participant() {
           <div className="tag-group">
             <div className="section-label">Intérêts</div>
             <div className="tags-list">
-              {interestsList.map((interest, idx) => (
-                <span key={idx} className="interest-pill">{interest}</span>
-              ))}
+              {interestsList.length > 0 ? (
+                interestsList.map((interest, idx) => <span key={idx} className="interest-pill">{interest}</span>)
+              ) : (
+                <span className="text-slate-400 text-xs italic">Aucun intérêt renseigné</span>
+              )}
             </div>
           </div>
         </div>
@@ -430,23 +434,16 @@ export default function Participant() {
           <div className="profile-tab-panel active">
             <div className="badges-grid">
               <div className="badge-card">
-                <div className="badge-icon-wrap">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path>
-                    <polyline points="22,4 12,14.01 9,11.01"></polyline>
-                  </svg>
+                <div className="badge-icon-wrap bg-transparent">
+                  <img src="/assets/badges/diamond_for_participate.png" alt="Diamond" className="w-full h-full object-contain drop-shadow-md" />
                 </div>
                 <div className="badge-title">Welcome to CodeToWin</div>
                 <div className="badge-desc">Completed profile setup</div>
                 <div className="badge-earned-date">🏆 Obtenu</div>
               </div>
               <div className={`badge-card ${isSubmitted ? '' : 'locked'}`}>
-                <div className="badge-icon-wrap">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                    <line x1="3" y1="9" x2="21" y2="9"></line>
-                    <line x1="9" y1="21" x2="9" y2="9"></line>
-                  </svg>
+                <div className="badge-icon-wrap bg-transparent">
+                  <img src="/assets/badges/submit_badge.png" alt="Submit" className="w-full h-full object-contain drop-shadow-md" />
                 </div>
                 <div className="badge-title">First Project Submitted</div>
                 <div className="badge-desc">Submit your first hackathon project</div>
@@ -455,34 +452,27 @@ export default function Participant() {
                 </div>
               </div>
               <div className="badge-card locked">
-                <div className="badge-icon-wrap">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="8" r="4"></circle>
-                    <path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"></path>
-                  </svg>
+                <div className="badge-icon-wrap bg-transparent">
+                  <img src="/assets/badges/team_buillder_badge.png" alt="Team Builder" className="w-full h-full object-contain drop-shadow-md" />
                 </div>
-                <div className="badge-title">Team Player</div>
+                <div className="badge-title">Team Builder</div>
                 <div className="badge-desc">Complete a project with a team of 3+</div>
                 <div className="badge-progress-bar"><div className="badge-progress-fill" style={{ width: '0%' }}></div></div>
               </div>
               <div className="badge-card locked">
-                <div className="badge-icon-wrap">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                  </svg>
+                <div className="badge-icon-wrap bg-transparent">
+                  <img src="/assets/badges/top3_winner_badge.png" alt="Winner" className="w-full h-full object-contain drop-shadow-md" />
                 </div>
-                <div className="badge-title">Hackathon Winner</div>
+                <div className="badge-title">Top 3 Winner</div>
                 <div className="badge-desc">Win a prize in any hackathon</div>
                 <div className="badge-progress-bar"><div className="badge-progress-fill" style={{ width: '0%' }}></div></div>
               </div>
               <div className="badge-card locked">
-                <div className="badge-icon-wrap">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                  </svg>
+                <div className="badge-icon-wrap bg-transparent">
+                  <img src="/assets/badges/ai_builder.png" alt="AI Builder" className="w-full h-full object-contain drop-shadow-md" />
                 </div>
-                <div className="badge-title">5 Hackathons</div>
-                <div className="badge-desc">Join 5 hackathons on CodeToWin</div>
+                <div className="badge-title">AI Builder</div>
+                <div className="badge-desc">Integrate AI in your project</div>
                 <div className="badge-progress-bar"><div className="badge-progress-fill" style={{ width: '20%' }}></div></div>
               </div>
               <div className="badge-card locked">

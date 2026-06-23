@@ -1,11 +1,11 @@
 import { apiClient } from './client';
 
 export const usersApi = {
-  getProfile: () => apiClient.get('/users/me'),
-  updateProfile: (profileData) => apiClient.patch('/users/me', profileData),
-  updatePassword: (data) => apiClient.post('/users/me/password', data),
-  toggle2FA: (enable) => apiClient.post('/users/me/2fa', { enable }),
-  requestAccountDeletion: () => apiClient.delete('/users/me'),
+  getProfile: () => apiClient.get('/auth/me'),
+  updateProfile: (profileData) => apiClient.patch('/auth/me', profileData),
+  updatePassword: (data) => apiClient.post('/auth/me/password', data),
+  toggle2FA: (enable) => apiClient.post('/auth/me/2fa', { enable }),
+  requestAccountDeletion: () => apiClient.delete('/auth/me'),
   getUserById: (id) => apiClient.get(`/users/${id}`),
   getTalents: (params = {}) => {
     const query = new URLSearchParams(params).toString();

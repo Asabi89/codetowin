@@ -34,6 +34,8 @@ async function request(endpoint, options = {}) {
 
   if (config.body && typeof config.body === 'object' && !(config.body instanceof FormData)) {
     config.body = JSON.stringify(config.body);
+  } else if (config.body instanceof FormData) {
+    delete config.headers['Content-Type'];
   }
 
   const response = await fetch(`${BASE_URL}${endpoint}`, config);

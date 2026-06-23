@@ -1,80 +1,80 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
+import { mentorsApi } from '../api/mentors';
+import useAuth from '../hooks/useAuth';
 
 export const MentorContext = createContext();
 
-const STORAGE_KEY = 'codetowin_mentor_state';
+const mockNotifications = [
+  { id: 1, type: "system", title: "Bienvenue !", message: "Votre espace mentor a été initialisé avec succès.", time: "À l'instant", read: false }
+];
 
-// Mocked initial state
 const initialDefaultState = {
-  teams: [
-    {
-      id: 1,
-      name: "EcoPay Solutions",
-      hackathon: "Fintech Builders Challenge",
-      avatar: "https://ui-avatars.com/api/?name=EcoPay+Solutions&background=10b981&color=fff",
-      progress: 60,
-      nextMeeting: "Aujourd'hui, 15:00",
-      status: "Actif"
-    },
-    {
-      id: 2,
-      name: "CryptoFarm",
-      hackathon: "Agrotech Africa",
-      avatar: "https://ui-avatars.com/api/?name=CryptoFarm&background=f59e0b&color=fff",
-      progress: 85,
-      nextMeeting: "Demain, 10:00",
-      status: "En attente"
-    }
-  ],
-  invitations: [
-    {
-      id: 1,
-      hackathonName: "AI for Climate Africa 2026",
-      organizer: "TechHub Sénégal",
-      logo: "https://ui-avatars.com/api/?name=TechHub+Senegal&background=0F172A&color=fff",
-      dates: "12 - 14 Août 2026",
-      teamCount: 3,
-      status: "pending"
-    },
-    {
-      id: 2,
-      hackathonName: "Fintech Builders Challenge",
-      organizer: "Banque Atlantique",
-      logo: "https://ui-avatars.com/api/?name=Finbank&background=0F172A&color=fff",
-      dates: "01 - 03 Septembre 2026",
-      teamCount: 2,
-      status: "pending"
-    }
-  ],
-  notifications: [
-    { id: 1, type: "team_assigned", title: "Nouvelle équipe assignée", message: "L'équipe EcoPay Solutions vous a été assignée.", time: "Il y a 10 min", read: false },
-    { id: 2, type: "new_message", title: "Nouveau message", message: "Moussa Diop (EcoPay Solutions) a envoyé un message.", time: "Il y a 1 heure", read: false },
-    { id: 3, type: "submission", title: "Soumission de projet requise", message: "L'équipe CryptoFarm a soumis son projet.", time: "Hier", read: true }
-  ],
+  teams: [],
+  invitations: [],
+  notifications: mockNotifications,
   stats: {
-    totalTeams: 2,
-    activeHackathons: 1,
-    pendingSubmissions: 3,
-    avgRating: 4.8
+    totalTeams: 0,
+    activeHackathons: 0,
+    pendingSubmissions: 0,
+    avgRating: 0
   }
 };
 
 export const MentorProvider = ({ children }) => {
-  const [state, setState] = useState(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch (e) {
-        console.error('Error parsing mentor state', e);
-      }
+  const { isAuthenticated, profile } = useAuth();
+  const [state, setState] = useState(initialDefaultState);
+
+  const loadMentorData = useCallback(async () => {
+    try {
+      const [teamsRes, invRes] = await Promise.all([
+        mentorsApi.getMyTeams(),
+        mentorsApi.getMyInvitations()
+      ]);
+      
+      const rawTeams = teamsRes.data || teamsRes;
+      const rawInvs = invRes.data || invRes;
+
+      const formattedTeams = rawTeams.map(t => ({
+        id: t.id,
+        name: t.name || t.team_name || `Equipe ${t.id}`,
+        hackathon: t.hackathon_title || 'Hackathon Inconnu',
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || t.team_name || 'Team')}&background=random`,
+        progress: t.submissions?.length > 0 ? 100 : 0,
+        nextMeeting: "Non planifié",
+        status: t.submissions?.length > 0 ? "Soumission en cours" : "En développement",
+        detailPath: `/mentor/teams/${t.id}`
+      }));
+
+      const formattedInvs = rawInvs.map(inv => ({
+        id: inv.id,
+        hackathonName: inv.hackathon_title,
+        organizer: inv.organizer_name,
+        logo: `https://ui-avatars.com/api/?name=${encodeURIComponent(inv.hackathon_title || 'H')}&background=random`,
+        dates: "Bientôt",
+        teamCount: 0,
+        status: inv.status.toLowerCase()
+      }));
+
+      setState(prev => ({
+        ...prev,
+        teams: formattedTeams,
+        invitations: formattedInvs,
+        stats: {
+          ...prev.stats,
+          totalTeams: formattedTeams.length,
+          activeHackathons: new Set(formattedTeams.map(t => t.hackathon)).size
+        }
+      }));
+    } catch (err) {
+      console.error("Failed to load mentor data:", err);
     }
-    return initialDefaultState;
-  });
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [state]);
+    if (isAuthenticated && profile?.role === 'mentor') {
+      loadMentorData();
+    }
+  }, [isAuthenticated, profile, loadMentorData]);
 
   const acceptInvitation = (id) => {
     setState(prev => ({

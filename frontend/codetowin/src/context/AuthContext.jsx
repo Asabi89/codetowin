@@ -54,10 +54,10 @@ export const AuthProvider = ({ children }) => {
             registered: true,
             profile: {
                ...user,
-               firstName: user.first_name || '',
+               firstName: user.display_name || user.first_name || '',
                lastName: user.last_name || '',
                email: user.email,
-               avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
+               avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.display_name || user.username || 'User')}&background=047857&color=fff`
             },
             role: user.role ? user.role.toLowerCase() : 'participant'
           }));
@@ -92,10 +92,10 @@ export const AuthProvider = ({ children }) => {
         registered: true,
         profile: {
            ...user,
-           firstName: user.first_name || '',
+           firstName: user.display_name || user.first_name || '',
            lastName: user.last_name || '',
            email: user.email,
-           avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
+           avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.display_name || user.username || 'User')}&background=047857&color=fff`
         },
         role: user.role ? user.role.toLowerCase() : 'participant'
       }));
@@ -132,6 +132,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateProfileContext = (updatedData) => {
+    setState(prev => ({
+      ...prev,
+      profile: {
+        ...prev.profile,
+        ...updatedData
+      }
+    }));
+  };
+
   const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(STORAGE_KEY);
@@ -163,6 +173,7 @@ export const AuthProvider = ({ children }) => {
       loading,
       login,
       registerUser,
+      updateProfileContext,
       logout,
       updateWorkspaceState,
       resetWorkspace

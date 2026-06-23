@@ -16,7 +16,16 @@ export default function ParticipantNotifications() {
       try {
         setLoading(true);
         const data = await notificationsApi.getNotifications();
-        setNotifications(data || []);
+        if (Array.isArray(data)) {
+          setNotifications(data.map(n => ({
+            ...n,
+            unread: !n.is_read,
+            time: n.time || n.created_at || '',
+            body: n.body || n.message || ''
+          })));
+        } else {
+          setNotifications([]);
+        }
       } catch (err) {
         showToast("Erreur lors du chargement des notifications", "error");
       } finally {

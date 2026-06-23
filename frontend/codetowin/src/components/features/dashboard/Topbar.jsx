@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, Bell } from 'lucide-react';
+import { notificationsApi } from '../../../api/notifications';
 
 export default function Topbar({ role = 'organizer', onMenuClick }) {
   const location = useLocation();
@@ -46,6 +47,35 @@ export default function Topbar({ role = 'organizer', onMenuClick }) {
     location.pathname === `/${role}/notifications`
   );
 
+  const [unreadCount, setUnreadCount] = React.useState(0);
+
+  React.useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const data = await notificationsApi.getNotifications();
+        const results = data.results || data;
+        if (Array.isArray(results)) {
+          const unread = results.filter(n => !n.is_read).length;
+          setUnreadCount(unread);
+        }
+      } catch (err) {
+        console.error("Failed to fetch notifications:", err);
+      }
+    };
+    if (showNotification) {
+      fetchNotifications();
+    }
+  }, [location.pathname, showNotification]);
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await notificationsApi.markAllAsRead();
+      setUnreadCount(0);
+    } catch (err) {
+      console.error("Failed to mark all as read:", err);
+    }
+  };
+
   return (
     <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
       <div className="flex items-center">
@@ -79,7 +109,11 @@ export default function Topbar({ role = 'organizer', onMenuClick }) {
       {showNotification && location.pathname !== '/mentor/profile' && (
         <div className="flex items-center gap-4">
           <NavLink to={`/${role}/notifications`} className="relative block text-slate-400 hover:text-slate-500">
-            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">{role === 'mentor' ? '1' : '3'}</span>
+            {unreadCount > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
             <Bell className="h-6 w-6" />
           </NavLink>
         </div>
@@ -93,14 +127,14 @@ export default function Topbar({ role = 'organizer', onMenuClick }) {
       )}
       {location.pathname === '/mentor/notifications' && (
         <div className="flex items-center gap-4">
-          <button type="button" className="text-sm font-medium text-brand-600 hover:text-brand-800">
+          <button type="button" onClick={handleMarkAllAsRead} className="text-sm font-medium text-brand-600 hover:text-brand-800">
             Tout marquer comme lu
           </button>
         </div>
       )}
       {location.pathname === '/organizer/notifications' && (
         <div className="flex items-center gap-4">
-          <button type="button" className="text-sm font-medium text-brand-600 hover:text-brand-800">
+          <button type="button" onClick={handleMarkAllAsRead} className="text-sm font-medium text-brand-600 hover:text-brand-800">
             Tout marquer comme lu
           </button>
         </div>

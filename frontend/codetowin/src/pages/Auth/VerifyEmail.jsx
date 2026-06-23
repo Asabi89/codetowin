@@ -154,11 +154,11 @@ export default function VerifyEmail() {
               },
             });
           } else if (userRole === 'organizer') {
-            navigate('/profile'); // Let them complete profile first
+            navigate('/organizer/settings'); // Let them complete profile there
           } else if (userRole === 'mentor') {
-            navigate('/profile'); // Let them complete profile first
+            navigate('/mentor/settings'); // Let them complete profile there
           } else {
-            navigate('/profile'); // Let them complete profile first
+            navigate('/profile'); // Let them complete profile there
           }
         } catch (err) {
           setIsVerifying(false);

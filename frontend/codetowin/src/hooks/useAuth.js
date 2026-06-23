@@ -17,7 +17,8 @@ export default function useAuth() {
     registerUser,
     logout,
     updateWorkspaceState,
-    resetWorkspace
+    resetWorkspace,
+    updateProfileContext
   } = context;
 
   const hasRole = (allowedRoles) => {
@@ -35,6 +36,7 @@ export default function useAuth() {
     logout,
     updateWorkspaceState,
     resetWorkspace,
-    hasRole
+    hasRole,
+    updateProfileContext
   };
 }

@@ -8,7 +8,7 @@ export const messagesApi = {
 
   getMessages: (conversationId) => apiClient.get(`/messages/conversations/${conversationId}`),
 
-  sendMessage: (conversationId, data) => apiClient.post(`/messages/conversations/${conversationId}`, data),
+  sendMessage: (conversationId, data) => apiClient.post(`/messages`, { ...data, conversation: conversationId }),
 
   /**
    * Uploads a file for a message attachment

@@ -22,6 +22,7 @@ const ForgotPassword = lazy(() => import("../pages/Auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("../pages/Auth/ResetPassword"));
 const ChooseRole = lazy(() => import("../pages/Auth/ChooseRole"));
 const VerifyEmail = lazy(() => import("../pages/Auth/VerifyEmail"));
+const ForceChangePassword = lazy(() => import("../pages/Auth/ForceChangePassword"));
 const Profile = lazy(() => import("../pages/Participant/Profile"));
 const ParticipantProfile = lazy(() => import("../pages/Participant/index"));
 const ParticipantJoinHackathon = lazy(() => import("../pages/Participant/JoinHackathon"));
@@ -267,13 +268,23 @@ export default function AppRoutes() {
       <RouteChangeSpinner />
       <Routes>
         {/* Auth routes without global layout */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Navigate to="/login/participant" replace />} />
+        <Route path="/login/:role" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/register" element={<Signup />} />
         <Route path="/choose-role" element={<ChooseRole />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        
+        <Route 
+          path="/force-change-password" 
+          element={
+            <ProtectedRoute allowedRoles={["participant", "mentor", "organizer", "admin"]}>
+              <ForceChangePassword />
+            </ProtectedRoute>
+          } 
+        />
 
         {/* Standard routes with MainLayout */}
         <Route

@@ -13,7 +13,7 @@ export default function OrganizerNotifications() {
         if (Array.isArray(data)) {
           setNotifications(data.map(notification => ({
             ...notification,
-            unread: notification.unread ?? !notification.read_at,
+            unread: !notification.is_read,
             time: notification.time || notification.created_at || '',
             iconBg: notification.iconBg || 'bg-slate-100',
           })));

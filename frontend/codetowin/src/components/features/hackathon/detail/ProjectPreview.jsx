@@ -4,10 +4,12 @@ import { FileText, Play, Code, ShieldCheck, Cpu } from 'lucide-react';
 import { submissionsApi } from '../../../../api/submissions';
 import { useToast } from '../../../../context/ToastContext';
 
-export default function ProjectPreview({ workspaceState, techList }) {
+export default function ProjectPreview({ workspaceState, techList, hackathon }) {
   const [voting, setVoting] = useState(false);
   const [commenting, setCommenting] = useState(false);
   const { showToast } = useToast();
+  
+  const juryQuestions = hackathon?.jury_questions || [];
 
   const handleVote = async () => {
     setVoting(true);
@@ -102,26 +104,28 @@ export default function ProjectPreview({ workspaceState, techList }) {
               <h2>Questions du Jury</h2>
             </div>
             <div className="preview-qna-list">
-              <div className="preview-qna-item">
-                <h3 className="qna-question">1. Décris les serveurs MCP de ton agent. Ils font quoi de beau ?</h3>
-                <div className="qna-answer">
-                  {workspaceState.questionMcp ? (
-                    <p>{workspaceState.questionMcp}</p>
-                  ) : (
-                    <p className="empty-text">Non répondu.</p>
-                  )}
+              {juryQuestions.length > 0 ? (
+                juryQuestions.map((q, idx) => (
+                  <div className="preview-qna-item" key={idx}>
+                    <h3 className="qna-question">{idx + 1}. {q.question}</h3>
+                    <div className="qna-answer">
+                      {workspaceState.juryAnswers && workspaceState.juryAnswers[idx] ? (
+                        <p>
+                          {Array.isArray(workspaceState.juryAnswers[idx]) 
+                            ? workspaceState.juryAnswers[idx].join(', ') 
+                            : workspaceState.juryAnswers[idx]}
+                        </p>
+                      ) : (
+                        <p className="empty-text">Non répondu.</p>
+                      )}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="preview-qna-item">
+                  <p className="empty-text">Aucune question configurée pour ce hackathon.</p>
                 </div>
-              </div>
-              <div className="preview-qna-item">
-                <h3 className="qna-question">2. As-tu sécurisé ton agent contre les méchants qui voudraient le hacker ?</h3>
-                <div className="qna-answer">
-                  {workspaceState.questionSecurity ? (
-                    <p>{workspaceState.questionSecurity}</p>
-                  ) : (
-                    <p className="empty-text">Non répondu.</p>
-                  )}
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

@@ -1,9 +1,64 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import TeamDetailsView from '../../../components/features/teams/TeamDetailsView';
+import { teamsApi } from '../../../api/teams';
 
 export default function OrganizerTeamDetails() {
-  const { id } = useParams();
+  const { id, teamId } = useParams();
+  const [team, setTeam] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        setLoading(true);
+        const data = await teamsApi.getTeamById(teamId);
+        
+        // Transform the backend data into the format expected by TeamDetailsView
+        const formattedTeam = {
+          name: data.name,
+          status: data.status,
+          statusTone: data.status === 'Évalué' ? 'blue' : data.status === 'Soumis' ? 'green' : 'slate',
+          hackathonName: 'Code To Win Hackathon', // or pass down if available
+          project: data.submission_details ? {
+            title: data.submission_details.title,
+            description: data.submission_details.description,
+            technologies: [] // Could be extracted if we added it to submission
+          } : null,
+          members: data.members_details?.map(m => ({
+            id: m.id,
+            name: m.name,
+            avatar: m.avatar,
+            title: m.role || 'Participant',
+            isLeader: m.role === 'Leader'
+          })) || [],
+          resources: data.submission_details ? [
+            data.submission_details.github_url && { type: 'github', label: 'Dépôt GitHub', value: 'Voir le code', url: data.submission_details.github_url },
+            data.submission_details.demo_url && { type: 'demo', label: 'Démo en ligne', value: 'Voir la démo', url: data.submission_details.demo_url }
+          ].filter(Boolean) : [],
+          mentor: data.mentor_details ? {
+            name: data.mentor_details.name,
+            avatar: data.mentor_details.avatar,
+            specialty: 'Mentor'
+          } : null,
+          activities: [
+            { id: 1, label: 'Équipe créée', date: new Date(data.created_at || Date.now()).toLocaleDateString(), type: 'default' },
+            data.mentor_details && { id: 2, label: `Mentor ${data.mentor_details.name} assigné`, date: '', type: 'info' },
+            data.submission_details && { id: 3, label: `Projet soumis`, date: '', type: 'success' },
+          ].filter(Boolean)
+        };
+        
+        setTeam(formattedTeam);
+      } catch (err) {
+        console.error("Erreur api", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (teamId) {
+      fetchTeam();
+    }
+  }, [teamId]);
 
   const actions = (
     <>
@@ -25,10 +80,22 @@ export default function OrganizerTeamDetails() {
     </>
   );
 
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center p-8 flex-1">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600"></div>
+          <p className="text-sm font-medium text-slate-500">Chargement de l'équipe...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 overflow-y-auto">
       <TeamDetailsView 
         role="organizer" 
+        team={team}
         actions={actions}
       />
     </div>

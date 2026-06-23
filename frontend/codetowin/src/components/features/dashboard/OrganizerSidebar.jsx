@@ -30,7 +30,7 @@ export default function OrganizerSidebar({ isOpen, setIsOpen }) {
     { name: 'Mes Hackathons', path: '/organizer/hackathons', icon: Calendar },
     { name: 'Créer un hackathon', path: '/organizer/hackathons/create', icon: PlusSquare },
     { name: 'Membres', path: '/organizer/members', icon: Users },
-    { name: 'Messages', path: '/organizer/messages', icon: MessageSquare, badge: 2 },
+    { name: 'Messages', path: '/organizer/messages', icon: MessageSquare },
     { name: 'Paramètres', path: '/organizer/settings', icon: Settings },
   ];
 
@@ -120,8 +120,8 @@ export default function OrganizerSidebar({ isOpen, setIsOpen }) {
       </div>
       <div className="border-t border-slate-200 p-4 space-y-1">
         <Link to="/organizer/settings" className="group flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900">
-          <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent((profile?.firstName || 'O') + '+' + (profile?.lastName || ''))}&background=047857&color=fff`} alt="" className="mr-3 h-8 w-8 rounded-full" />
-          <span className="truncate">{profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Organisateur'}</span>
+          <img src={profile?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.firstName || 'O')}&background=047857&color=fff`} alt="" className="mr-3 h-8 w-8 rounded-full" />
+          <span className="truncate">{profile?.firstName ? profile.firstName : 'Organisateur'}</span>
         </Link>
         <button
           type="button"

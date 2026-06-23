@@ -20,7 +20,7 @@ export default function Talents() {
     const fetchTalents = async () => {
       try {
         const response = await usersApi.getTalents();
-        const data = response.data || [];
+        const data = Array.isArray(response) ? response : (response.data || []);
         setTalents(data);
       } catch (error) {
         console.error("Failed to load talents:", error);

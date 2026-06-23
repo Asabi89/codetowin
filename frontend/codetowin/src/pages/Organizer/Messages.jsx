@@ -15,7 +15,11 @@ export default function OrganizerMessages() {
         setLoading(true);
         const data = await messagesApi.getConversations({ role: 'organizer' });
         const conversations = extractArray(data);
-        setTabs(data.tabs || []);
+        setTabs(data.tabs || [
+          { id: 'participants', label: 'Participants' },
+          { id: 'mentors', label: 'Mentors' },
+          { id: 'membres', label: 'Membres' }
+        ]);
         setChats(conversations.map(normalizeConversation));
       } catch (err) {
         console.error("Erreur api", err);

@@ -6,7 +6,19 @@ export default function HackathonHero({ registered, setActiveTab, handleOnboardi
   return (
     <>
       {/* Hero Section Banner */}
-      <section className="hero" id="hero" aria-label="Challenge Identity Banner">
+      <section 
+        className="hero relative" 
+        id="hero" 
+        aria-label="Challenge Identity Banner"
+        style={{ 
+          backgroundImage: `url(${hackathon.banner || 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          backgroundBlendMode: 'overlay',
+          color: '#fff'
+        }}
+      >
         <h1>{hackathon.title}</h1>
       </section>
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { usersApi } from '../../api/users';
+import { organizerApi } from '../../api/organizer';
 import { useToast } from '../../context/ToastContext';
+import useAuth from '../../hooks/useAuth';
 
 const roleLabels = {
   organizer: 'Administrateur',
@@ -37,42 +38,75 @@ const mapUserToMember = (user, index) => ({
 
 export default function OrganizerMembers() {
   const { showToast } = useToast();
+  const { profile } = useAuth();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('editor');
 
-  const handleRoleChange = (memberId, nextRole) => {
-    setMembers(prev => prev.map(member => (
-      member.id === memberId ? { ...member, role: nextRole } : member
-    )));
-    showToast(`Rôle mis à jour : ${nextRole}.`, 'success');
+  const handleRoleChange = async (memberId, nextRole) => {
+    try {
+      await organizerApi.updateTeamMember(memberId, { role: nextRole });
+      setMembers(prev => prev.map(member => (
+        member.id === memberId ? { ...member, role: roleLabels[nextRole] || nextRole } : member
+      )));
+      showToast(`Rôle mis à jour avec succès.`, 'success');
+    } catch (err) {
+      showToast(`Erreur lors de la mise à jour du rôle.`, 'error');
+    }
   };
 
-  const handleResendInvitation = (member) => {
-    showToast(`Invitation renvoyée à ${member.email} !`, 'success');
+  const handleResendInvitation = async (member) => {
+    try {
+      await organizerApi.inviteTeamMember({ email: member.email, role: 'editor' }); // or existing role
+      showToast(`Invitation renvoyée à ${member.email} !`, 'success');
+    } catch (err) {
+      showToast(`Erreur lors de l'envoi de l'invitation.`, 'error');
+    }
   };
 
-  const handleCancelInvitation = (member) => {
-    setMembers(prev => prev.filter(item => item.id !== member.id));
-    showToast(`Invitation annulée pour ${member.email}.`, 'warning');
+  const handleCancelInvitation = async (member) => {
+    try {
+      await organizerApi.removeTeamMember(member.id);
+      setMembers(prev => prev.filter(item => item.id !== member.id));
+      showToast(`Invitation annulée pour ${member.email}.`, 'warning');
+    } catch (err) {
+      showToast(`Erreur lors de l'annulation.`, 'error');
+    }
   };
 
-  const handleRemoveMember = (member) => {
-    setMembers(prev => prev.filter(item => item.id !== member.id));
-    showToast(`${member.name} a été retiré de l'espace organisateur.`, 'danger');
+  const handleRemoveMember = async (member) => {
+    try {
+      await organizerApi.removeTeamMember(member.id);
+      setMembers(prev => prev.filter(item => item.id !== member.id));
+      showToast(`${member.name} a été retiré de l'espace organisateur.`, 'danger');
+    } catch (err) {
+      showToast(`Erreur lors de la suppression du membre.`, 'error');
+    }
   };
 
   useEffect(() => {
     const fetchMembers = async () => {
       try {
         setLoading(true);
-        const data = await usersApi.getTalents({ role: 'organizer' });
-        if (Array.isArray(data)) {
-          setMembers(data.map(mapUserToMember));
+        const data = await organizerApi.getTeamMembers();
+        const results = data.results || data || [];
+        
+        const ownerMember = {
+          id: 'owner',
+          name: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Vous (Propriétaire)',
+          email: profile?.email || '',
+          avatar: profile?.avatar || '',
+          initials: (profile?.firstName || 'O').charAt(0).toUpperCase(),
+          role: 'Propriétaire',
+          status: 'Actif',
+        };
+
+        if (Array.isArray(results)) {
+          setMembers([ownerMember, ...results.map(mapUserToMember)]);
         } else {
-          setMembers([]);
+          setMembers([ownerMember]);
         }
       } catch (err) {
         console.error("Erreur api", err);
@@ -84,21 +118,18 @@ export default function OrganizerMembers() {
     fetchMembers();
   }, []);
 
-  const handleInvite = (e) => {
+  const handleInvite = async (e) => {
     e.preventDefault();
     if (inviteEmail) {
-      setMembers(prev => [...prev, {
-        id: Date.now(),
-        name: inviteEmail,
-        email: inviteEmail,
-        avatar: '',
-        initials: inviteEmail.charAt(0).toUpperCase(),
-        role: roleLabels[inviteRole],
-        status: 'Invitation en attente',
-      }]);
-      showToast(`Invitation envoyée à ${inviteEmail} !`, 'success');
-      setIsInviteModalOpen(false);
-      setInviteEmail('');
+      try {
+        const response = await organizerApi.inviteTeamMember({ email: inviteEmail, role: inviteRole });
+        setMembers(prev => [...prev, mapUserToMember(response)]);
+        showToast(`Invitation envoyée à ${inviteEmail} !`, 'success');
+        setIsInviteModalOpen(false);
+        setInviteEmail('');
+      } catch (err) {
+        showToast(`Erreur lors de l'invitation.`, 'error');
+      }
     }
   };
 
@@ -194,8 +225,8 @@ export default function OrganizerMembers() {
                                   onChange={(e) => handleRoleChange(member.id, e.target.value)}
                                   className="rounded-md border-0 py-1.5 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6"
                                 >
-                                  {Object.keys(roleDefinitions).map(roleName => (
-                                    <option key={roleName}>{roleName}</option>
+                                  {Object.entries(roleLabels).filter(([k,v]) => ['admin', 'editor', 'viewer'].includes(k)).map(([key, label]) => (
+                                    <option key={key} value={key}>{label}</option>
                                   ))}
                                 </select>
                               )}

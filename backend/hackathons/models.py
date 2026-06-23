@@ -19,8 +19,8 @@ class Hackathon(models.Model):
     organizer = models.ForeignKey(OrganizerProfile, on_delete=models.CASCADE, related_name='hackathons')
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     deadline = models.CharField(max_length=100, blank=True, null=True)
     location = models.CharField(max_length=200, blank=True, null=True)
     type = models.CharField(max_length=50, choices=Format.choices, default=Format.ONLINE)
@@ -29,6 +29,23 @@ class Hackathon(models.Model):
     status = models.CharField(max_length=50, choices=Status.choices, default=Status.DRAFT)
     logo_text = models.CharField(max_length=10, blank=True, null=True)
     keywords = models.CharField(max_length=255, blank=True, null=True)
+
+    # Nouveaux champs dynamiques
+    logo = models.ImageField(upload_to='hackathon_logos/', blank=True, null=True)
+    banner = models.ImageField(upload_to='hackathon_banners/', blank=True, null=True)
+    overview = models.TextField(blank=True, null=True)
+    rules = models.TextField(blank=True, null=True)
+    resources = models.TextField(blank=True, null=True)
+    faqs = models.JSONField(default=list, blank=True)
+    jury_questions = models.JSONField(default=list, blank=True)
+    min_team_size = models.IntegerField(default=2)
+    max_team_size = models.IntegerField(default=5)
+    participant_limit = models.IntegerField(blank=True, null=True)
+    registration_start = models.DateTimeField(blank=True, null=True)
+    registration_end = models.DateTimeField(blank=True, null=True)
+    technologies = models.CharField(max_length=255, blank=True, null=True)
+    registration_mode = models.CharField(max_length=50, default='open')
+    results_published = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -42,6 +59,7 @@ class Team(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     leader = models.ForeignKey(ParticipantProfile, on_delete=models.CASCADE, related_name='led_teams')
+    mentor = models.ForeignKey('HackathonMentor', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_teams')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -57,11 +75,20 @@ class TeamMember(models.Model):
         return f"{self.participant.user.email} in {self.team.name}"
 
 class Submission(models.Model):
+    class Status(models.TextChoices):
+        SUBMITTED = 'Soumis', 'Soumis'
+        EVALUATED = 'Évalué', 'Évalué'
+
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='submissions')
     title = models.CharField(max_length=255)
     description = models.TextField()
     github_url = models.URLField(blank=True, null=True)
     demo_url = models.URLField(blank=True, null=True)
+    status = models.CharField(max_length=50, choices=Status.choices, default=Status.SUBMITTED)
+    scores = models.JSONField(blank=True, null=True)
+    jury_answers = models.JSONField(blank=True, null=True)
+    feedback = models.TextField(blank=True, null=True)
+    total_score = models.FloatField(blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -98,3 +125,14 @@ class HackathonAnnouncement(models.Model):
 
     def __str__(self):
         return f"[{self.hackathon.title}] {self.title}"
+
+class HackathonDiscussion(models.Model):
+    hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE, related_name='discussions')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='hackathon_discussions')
+    title = models.CharField(max_length=255)
+    category = models.CharField(max_length=100, blank=True, null=True, default='Général')
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"[{self.hackathon.title}] {self.title} by {self.author.email}"

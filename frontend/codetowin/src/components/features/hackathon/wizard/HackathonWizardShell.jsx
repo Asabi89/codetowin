@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import StepProgress from '../../../common/StepProgress';
 import WizardStep1General from './WizardStep1General';
@@ -34,13 +34,34 @@ export default function HackathonWizardShell({
   onSaveDraft,
   onDelete, // Seulement pour l'édition
   logoProps,
-  bannerProps
+  bannerProps,
+  errors = {}
 }) {
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = STEPS.length;
   
-  // L'état complet du formulaire
-  const [formData, setFormData] = useState(initialData);
+  // L'état complet du formulaire (initialisé depuis le localStorage si mode create)
+  const [formData, setFormData] = useState(() => {
+    if (mode === 'create') {
+      const saved = localStorage.getItem('hackathonDraftForm');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          return { ...initialData, ...parsed };
+        } catch (e) {
+          console.warn('Erreur lecture brouillon auto:', e);
+        }
+      }
+    }
+    return initialData;
+  });
+
+  // Sauvegarde automatique dans le localStorage à chaque modification
+  useEffect(() => {
+    if (mode === 'create') {
+      localStorage.setItem('hackathonDraftForm', JSON.stringify(formData));
+    }
+  }, [formData, mode]);
 
   const updateForm = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -83,6 +104,28 @@ export default function HackathonWizardShell({
         </div>
       </div>
 
+      {Object.keys(errors).length > 0 && (
+        <div className="mb-6 rounded-md bg-red-50 p-4 border border-red-200">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">Le formulaire contient des erreurs :</h3>
+              <div className="mt-2 text-sm text-red-700">
+                <ul className="list-disc pl-5 space-y-1">
+                  {Object.entries(errors).map(([key, msg], i) => (
+                    <li key={i}><strong>{key} :</strong> {Array.isArray(msg) ? msg.join(', ') : msg}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="lg:grid lg:grid-cols-12 lg:gap-x-8">
         
         {/* Sidebar */}
@@ -104,16 +147,16 @@ export default function HackathonWizardShell({
           <div className="shadow sm:overflow-hidden sm:rounded-xl bg-white">
             
             <div className={currentStep === 1 ? 'block' : 'hidden'}>
-              <WizardStep1General formData={formData} updateForm={updateForm} />
+              <WizardStep1General formData={formData} updateForm={updateForm} errors={errors} />
             </div>
             <div className={currentStep === 2 ? 'block' : 'hidden'}>
               <WizardStep2Content formData={formData} updateForm={updateForm} />
             </div>
             <div className={currentStep === 3 ? 'block' : 'hidden'}>
-              <WizardStep3Dates formData={formData} updateForm={updateForm} />
+              <WizardStep3Dates formData={formData} updateForm={updateForm} errors={errors} />
             </div>
             <div className={currentStep === 4 ? 'block' : 'hidden'}>
-              <WizardStep4Format formData={formData} updateForm={updateForm} />
+              <WizardStep4Format formData={formData} updateForm={updateForm} errors={errors} />
             </div>
             <div className={currentStep === 5 ? 'block' : 'hidden'}>
               <WizardStep5Mentors formData={formData} updateForm={updateForm} />
@@ -122,7 +165,7 @@ export default function HackathonWizardShell({
               <WizardStep6Branding logoProps={logoProps} bannerProps={bannerProps} />
             </div>
             <div className={currentStep === 7 ? 'block' : 'hidden'}>
-              <WizardStep7Preview formData={formData} logoUrl={logoProps.url} bannerUrl={bannerProps.url} mode={mode} />
+              <WizardStep7Preview formData={formData} logoUrl={logoProps.url} bannerUrl={bannerProps.url} mode={mode} errors={errors} />
             </div>
 
             {/* Navigation Actions */}

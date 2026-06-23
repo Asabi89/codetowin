@@ -11,16 +11,40 @@ class UserSerializer(serializers.ModelSerializer):
     country = serializers.CharField(write_only=True, required=False, allow_blank=True)
     name = serializers.SerializerMethodField()
     full_name = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
+    display_name = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'full_name_in', 'country', 'first_name', 'last_name', 'name', 'full_name', 'role', 'password')
+        fields = ('id', 'username', 'email', 'full_name_in', 'country', 'first_name', 'last_name', 'name', 'full_name', 'role', 'password', 'avatar', 'display_name', 'must_change_password')
         extra_kwargs = {'password': {'write_only': True}}
 
     def get_name(self, obj):
         return f"{obj.first_name} {obj.last_name}".strip() or obj.email
 
     def get_full_name(self, obj):
+        return self.get_name(obj)
+
+    def get_avatar(self, obj):
+        try:
+            if obj.role == 'ORGANIZER' and hasattr(obj, 'organizer_profile') and obj.organizer_profile.logo:
+                return obj.organizer_profile.logo.url
+            if obj.role == 'PARTICIPANT' and hasattr(obj, 'participant_profile') and obj.participant_profile.avatar:
+                return obj.participant_profile.avatar.url
+            if obj.role == 'MENTOR' and hasattr(obj, 'mentor_profile') and obj.mentor_profile.avatar:
+                return obj.mentor_profile.avatar.url
+        except Exception:
+            pass
+        return None
+
+    def get_display_name(self, obj):
+        try:
+            if obj.role == 'ORGANIZER' and hasattr(obj, 'organizer_profile') and obj.organizer_profile.organization_name:
+                return obj.organizer_profile.organization_name
+            if obj.role == 'PARTICIPANT' and hasattr(obj, 'participant_profile') and obj.participant_profile.bio:
+                pass # can add logic if needed
+        except Exception:
+            pass
         return self.get_name(obj)
 
     def create(self, validated_data):
@@ -32,12 +56,16 @@ class UserSerializer(serializers.ModelSerializer):
         first_name = name_parts[0] if name_parts else ''
         last_name = name_parts[1] if len(name_parts) > 1 else ''
 
+        role = validated_data.get('role', User.Role.PARTICIPANT)
+        if isinstance(role, str):
+            role = role.upper()
+
         user = User.objects.create_user(
-            username=validated_data.get('email'), # Use email as username if not provided
+            username=validated_data.get('username', validated_data['email']), # Use username if provided, else email
             email=validated_data['email'],
             first_name=first_name,
             last_name=last_name,
-            role=validated_data.get('role', User.Role.PARTICIPANT),
+            role=role,
             password=validated_data['password']
         )
         

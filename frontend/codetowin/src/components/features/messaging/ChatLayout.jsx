@@ -5,7 +5,7 @@ import ChatStatus from './ChatStatus';
 import ChatListItem from './ChatListItem';
 import HeaderMenu from './HeaderMenu';
 import MessageBubble from './MessageBubble';
-import { ChatWebSocket } from '../../api/websocket';
+import { ChatWebSocket } from '../../../api/websocket';
 
 export default function ChatLayout({
   tabs,
@@ -74,6 +74,11 @@ export default function ChatLayout({
       }
 
       const ws = new ChatWebSocket(activeChatId, (incomingMessage) => {
+        if (incomingMessage.type === 'receipt') {
+          console.log('Message receipt received:', incomingMessage.id);
+          return;
+        }
+
         setChatMessages((current) => {
           const currentMessages = current[activeChatId] || [];
           // Avoid duplicate messages if we already optimisticly appended it
@@ -82,8 +87,8 @@ export default function ChatLayout({
               ...current,
               [activeChatId]: [...currentMessages, {
                 id: incomingMessage.id,
-                sender: incomingMessage.sender_id === 'me' ? 'me' : 'other', // Or derive properly from user session
-                senderName: incomingMessage.sender_email,
+                sender: incomingMessage.sender_id === 'me' ? 'me' : 'other', // Should derive from user profile ideally
+                senderName: incomingMessage.sender_name || incomingMessage.sender_email,
                 text: incomingMessage.content,
                 time: new Date(incomingMessage.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
               }],

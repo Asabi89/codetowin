@@ -44,4 +44,9 @@ export const authApi = {
    * Check if username and email are available
    */
   checkAvailability: (email, username) => apiClient.post('/auth/check-availability', { email, username }),
+
+  /**
+   * Forcer le changement de mot de passe (après invitation)
+   */
+  changePassword: (data) => apiClient.post('/auth/change-password', data),
 };

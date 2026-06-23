@@ -13,7 +13,7 @@ const roles = [
     key: "participant",
     title: "Participant",
     description: "Explorer les hackathons, rejoindre une équipe et soumettre des projets.",
-    icon: Trophy,
+    image: "/assets/roles/dev_participant_role.png",
     action: "/participant",
     label: "Continuer comme participant",
   },
@@ -21,7 +21,7 @@ const roles = [
     key: "organizer",
     title: "Organisateur",
     description: "Créer un hackathon et gérer participants, mentors, équipes et résultats.",
-    icon: Briefcase,
+    image: "/assets/roles/organiser.png",
     action: "/organizer/hackathons/create",
     label: "Continuer comme organisateur",
   },
@@ -29,7 +29,7 @@ const roles = [
     key: "mentor",
     title: "Mentor",
     description: "Accompagner les équipes, évaluer les soumissions et donner du feedback.",
-    icon: GraduationCap,
+    image: "/assets/roles/mentor_role.png",
     action: "/mentor",
     label: "Continuer comme mentor",
   },
@@ -86,8 +86,8 @@ export default function ChooseRole() {
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {roles.map((role) => (
             <Card key={role.title} className="relative text-center transition hover:-translate-y-1 hover:shadow-md">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-700">
-                <role.icon className="h-7 w-7" />
+              <div className="mx-auto flex h-32 w-32 items-center justify-center mb-4">
+                <img src={role.image} alt={role.title} className="h-full w-full object-contain" />
               </div>
               <h2 className="mt-5 text-xl font-bold text-slate-900">{role.title}</h2>
               <p className="mt-3 text-sm text-slate-600">{role.description}</p>

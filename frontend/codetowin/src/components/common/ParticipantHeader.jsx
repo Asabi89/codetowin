@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 
 export default function ParticipantHeader() {
-  const { profile, role, workspaceState, logout } = useContext(AuthContext);
+  const { profile, role, workspaceState, logout, registered } = useContext(AuthContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -32,12 +32,12 @@ export default function ParticipantHeader() {
   };
 
   const fullName =
-    profile
-      ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || 'User'
+    registered && profile
+      ? profile.name || `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || profile.username || 'User'
       : 'User';
   const username =
-    profile
-      ? `@${(profile.firstName || 'user').toLowerCase()}${(profile.lastName || '').toLowerCase()}`
+    registered && profile
+      ? `@${profile.username || (profile.firstName || 'user').toLowerCase() + (profile.lastName || '').toLowerCase()}`
       : '@user';
   const avatar =
     profile?.avatar ||
@@ -99,7 +99,7 @@ export default function ParticipantHeader() {
               to="/hackathons"
               className={`auth-nav-link${location.pathname === '/hackathons' ? ' active' : ''}`}
             >
-              Explorer
+              Explorer les hackathons
             </Link>
             {role !== 'participant' && (
               <Link
@@ -152,7 +152,7 @@ export default function ParticipantHeader() {
                 id="hk-header-avatar"
               />
               <span className="avatar-pill-name" id="hk-header-name">
-                {profile?.firstName || 'User'}
+                {profile?.username || profile?.firstName || 'User'}
               </span>
               <span className="ml-2 hidden rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-600 lg:inline-flex">
                 {currentRoleConfig.badge}

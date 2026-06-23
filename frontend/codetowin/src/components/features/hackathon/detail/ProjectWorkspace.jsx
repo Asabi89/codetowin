@@ -13,7 +13,8 @@ export default function ProjectWorkspace({
   registered,
   handleOnboardingJoin,
   isSubmitted,
-  setIsSubmitted
+  setIsSubmitted,
+  hackathon
 }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
@@ -86,6 +87,13 @@ export default function ProjectWorkspace({
     try {
       // Create drafting / saving process
       const submissionId = workspaceState.id || 'draft_1';
+      await submissionsApi.updateSubmission(submissionId, {
+        title: workspaceState.projectName,
+        description: workspaceState.detailsAbout || workspaceState.projectPitch,
+        github_url: workspaceState.detailsRepo,
+        demo_url: workspaceState.detailsDemo,
+        jury_answers: workspaceState.juryAnswers
+      });
       await submissionsApi.submitProject(submissionId);
       setIsSubmitted(true);
       setPreviewActive(true);
@@ -104,6 +112,28 @@ export default function ProjectWorkspace({
     { label: 'Questions', shortLabel: 'Questions', status: step === 4 ? 'current' : (step > 4 ? 'done' : 'pending') },
     { label: 'Envoi', shortLabel: 'Envoi', status: step === 5 ? 'current' : 'pending' },
   ];
+
+  const handleJuryAnswerChange = (questionIndex, value) => {
+    const currentAnswers = workspaceState.juryAnswers || {};
+    handleUpdateField('juryAnswers', {
+      ...currentAnswers,
+      [questionIndex]: value
+    });
+  };
+
+  const handleCheckboxChange = (questionIndex, option, isChecked) => {
+    const currentAnswers = workspaceState.juryAnswers || {};
+    const currentVal = Array.isArray(currentAnswers[questionIndex]) ? currentAnswers[questionIndex] : [];
+    let newVal;
+    if (isChecked) {
+      newVal = [...currentVal, option];
+    } else {
+      newVal = currentVal.filter(v => v !== option);
+    }
+    handleJuryAnswerChange(questionIndex, newVal);
+  };
+
+  const juryQuestions = hackathon?.jury_questions || [];
 
   const progressText = isSubmitted ? "100% completed" : "Step " + step + " of 5";
 
@@ -184,7 +214,7 @@ export default function ProjectWorkspace({
       </div>
 
       {previewActive ? (
-        <ProjectPreview workspaceState={workspaceState} techList={techList} />
+        <ProjectPreview workspaceState={workspaceState} techList={techList} hackathon={hackathon} />
       ) : (
         <div id="workspace-editor-flow" style={{ display: 'block' }}>
           <StepProgress
@@ -362,29 +392,99 @@ export default function ProjectWorkspace({
                     <p className="step-pane-desc">Réponds à ces quelques questions posées par les gentils organisateurs.</p>
                   </div>
                   <div className="form-grid">
-                    <div className="form-group">
-                      <label htmlFor="question-mcp-input" className="form-label">1. Décris les serveurs MCP de ton agent. Ils font quoi de beau ?<span className="required-asterisk">*</span></label>
-                      <textarea
-                        id="question-mcp-input"
-                        className="form-textarea"
-                        required
-                        placeholder="Je me suis connecté à..."
-                        value={workspaceState.questionMcp || ''}
-                        onChange={(e) => handleUpdateField('questionMcp', e.target.value)}
-                      ></textarea>
-                    </div>
-                    
-                    <div className="form-group">
-                      <label htmlFor="question-security-input" className="form-label">2. As-tu sécurisé ton agent contre les méchants qui voudraient le hacker ?<span className="required-asterisk">*</span></label>
-                      <textarea
-                        id="question-security-input"
-                        className="form-textarea"
-                        required
-                        placeholder="Oui j'ai fait..."
-                        value={workspaceState.questionSecurity || ''}
-                        onChange={(e) => handleUpdateField('questionSecurity', e.target.value)}
-                      ></textarea>
-                    </div>
+                    {juryQuestions.length > 0 ? (
+                      juryQuestions.map((q, idx) => {
+                        const val = (workspaceState.juryAnswers && workspaceState.juryAnswers[idx]);
+                        const qType = q.type || 'text';
+                        return (
+                          <div className="form-group" key={idx}>
+                            <label htmlFor={`question-jury-${idx}`} className="form-label">{idx + 1}. {q.question}<span className="required-asterisk">*</span></label>
+                            
+                            {(qType === 'text' || qType === 'url') && (
+                              <input
+                                type={qType}
+                                id={`question-jury-${idx}`}
+                                className="form-input"
+                                required
+                                placeholder="Votre réponse..."
+                                value={val || ''}
+                                onChange={(e) => handleJuryAnswerChange(idx, e.target.value)}
+                              />
+                            )}
+
+                            {qType === 'textarea' && (
+                              <textarea
+                                id={`question-jury-${idx}`}
+                                className="form-textarea"
+                                required
+                                placeholder="Votre réponse détaillée..."
+                                value={val || ''}
+                                onChange={(e) => handleJuryAnswerChange(idx, e.target.value)}
+                              ></textarea>
+                            )}
+
+                            {qType === 'select' && (
+                              <select
+                                id={`question-jury-${idx}`}
+                                className="form-input"
+                                required
+                                value={val || ''}
+                                onChange={(e) => handleJuryAnswerChange(idx, e.target.value)}
+                              >
+                                <option value="" disabled>Sélectionnez une option...</option>
+                                {(q.options || []).map((opt, i) => (
+                                  <option key={i} value={opt}>{opt}</option>
+                                ))}
+                              </select>
+                            )}
+
+                            {qType === 'radio' && (
+                              <div className="flex flex-col gap-2 mt-2">
+                                {(q.options || []).map((opt, i) => (
+                                  <label key={i} className="flex items-center gap-2 cursor-pointer text-sm text-slate-700">
+                                    <input
+                                      type="radio"
+                                      name={`question-jury-${idx}`}
+                                      value={opt}
+                                      checked={val === opt}
+                                      onChange={(e) => handleJuryAnswerChange(idx, e.target.value)}
+                                      className="text-brand-600 focus:ring-brand-500"
+                                      required
+                                    />
+                                    {opt}
+                                  </label>
+                                ))}
+                              </div>
+                            )}
+
+                            {qType === 'checkbox' && (
+                              <div className="flex flex-col gap-2 mt-2">
+                                {(q.options || []).map((opt, i) => {
+                                  const isChecked = Array.isArray(val) && val.includes(opt);
+                                  return (
+                                    <label key={i} className="flex items-center gap-2 cursor-pointer text-sm text-slate-700">
+                                      <input
+                                        type="checkbox"
+                                        value={opt}
+                                        checked={isChecked}
+                                        onChange={(e) => handleCheckboxChange(idx, opt, e.target.checked)}
+                                        className="rounded text-brand-600 focus:ring-brand-500"
+                                      />
+                                      {opt}
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            )}
+
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="bg-slate-50 p-6 rounded-lg text-center text-slate-500 italic">
+                        Aucune question n'a été configurée pour ce hackathon. Vous pouvez passer à l'étape suivante.
+                      </div>
+                    )}
                   </div>
                   <div className="step-actions-footer">
                     <button type="button" className="btn-action-secondary" onClick={() => handleJumpToStep(3)}>Retour</button>

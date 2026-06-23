@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function WizardStep7Preview({ formData, logoUrl, bannerUrl, mode }) {
+export default function WizardStep7Preview({ formData, logoUrl, bannerUrl, mode, errors = {} }) {
   return (
     <div className="space-y-6 py-6 px-4 sm:p-6">
       <div>
@@ -25,6 +25,24 @@ export default function WizardStep7Preview({ formData, logoUrl, bannerUrl, mode 
           <p className="mt-2 text-slate-600">{formData.description || 'Description du hackathon...'}</p>
         </div>
       </div>
+      {Object.keys(errors).length > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+          <div className="flex">
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">Erreurs de validation du formulaire</h3>
+              <div className="mt-2 text-sm text-red-700">
+                <ul className="list-disc pl-5 space-y-1">
+                  {Object.entries(errors).map(([field, msg]) => (
+                    <li key={field}>
+                      <strong>{field}:</strong> {Array.isArray(msg) ? msg.join(', ') : msg}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="bg-brand-50 border border-brand-200 rounded-md p-4">
         <div className="flex">
           <div className="ml-3">

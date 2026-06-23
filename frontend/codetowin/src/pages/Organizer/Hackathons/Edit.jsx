@@ -31,21 +31,22 @@ export default function OrganizerEditHackathon() {
           title: data?.title || 'Fintech Builders Challenge',
           description: data?.description || "Révolutionnez le paiement mobile en Afrique de l'Ouest avec des solutions innovantes.",
           format: data?.format || 'Hybride (En ligne + Présentiel)',
-          registrationMode: 'open',
+          registrationMode: data?.registration_mode || 'open',
           participantLimit: '150',
-          minTeamSize: '2',
-          maxTeamSize: '5',
-          registrationStart: '',
-          registrationEnd: '',
-          hackathonStart: '',
-          submissionDeadline: '',
-          overview: "Ce hackathon vise à...",
-          resources: '',
-          rules: '',
-          themes: 'Fintech, Mobile Money',
-          technologies: 'React Native, Node.js',
+          minTeamSize: data?.min_team_size?.toString() || '2',
+          maxTeamSize: data?.max_team_size?.toString() || '5',
+          registrationStart: data?.registration_start || '',
+          registrationEnd: data?.registration_end || '',
+          hackathonStart: data?.start_date || '',
+          submissionDeadline: data?.end_date || '',
+          overview: data?.overview || "Ce hackathon vise à...",
+          resources: data?.resources || '',
+          rules: data?.rules || '',
+          themes: data?.interest || 'Fintech, Mobile Money',
+          technologies: data?.technologies || 'React Native, Node.js',
           selectedMentors: [],
-          faqs: [{ question: "Les équipes peuvent-elles être formées avant l'événement ?", answer: "Oui" }]
+          faqs: Array.isArray(data?.faqs) && data.faqs.length > 0 ? data.faqs : [{ question: "Les équipes peuvent-elles être formées avant l'événement ?", answer: "Oui" }],
+          jury_questions: Array.isArray(data?.jury_questions) ? data.jury_questions : []
         };
         
         setInitialData(fetchedData);
@@ -76,7 +77,8 @@ export default function OrganizerEditHackathon() {
           themes: '',
           technologies: '',
           selectedMentors: [],
-          faqs: []
+          faqs: [],
+          jury_questions: []
         });
         logoProps.setUrl('https://ui-avatars.com/api/?name=F+B&background=047857&color=fff&size=128&rounded=true');
         bannerProps.setUrl('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=80');
@@ -94,10 +96,24 @@ export default function OrganizerEditHackathon() {
       const payload = {
         title: formData.title,
         description: formData.description,
-        format: formData.format,
+        type: formData.format,
         status: customStatus || 'brouillon',
         logo: logoUrl,
-        banner: bannerUrl
+        banner: bannerUrl,
+        overview: formData.overview,
+        rules: formData.rules,
+        resources: formData.resources,
+        faqs: formData.faqs,
+        jury_questions: formData.jury_questions,
+        min_team_size: parseInt(formData.minTeamSize, 10) || 2,
+        max_team_size: parseInt(formData.maxTeamSize, 10) || 5,
+        registration_start: formData.registrationStart || null,
+        registration_end: formData.registrationEnd || null,
+        start_date: formData.hackathonStart || new Date().toISOString().split('T')[0],
+        end_date: formData.submissionDeadline || new Date().toISOString().split('T')[0],
+        technologies: formData.technologies,
+        registration_mode: formData.registrationMode,
+        interest: formData.themes,
       };
       await hackathonsApi.updateHackathon(id, payload);
       showToast("Les modifications ont été enregistrées avec succès !", "success");

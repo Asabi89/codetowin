@@ -21,6 +21,20 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 @api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def change_password(request):
+    user = request.user
+    password = request.data.get('password')
+    if not password:
+        return Response({'error': 'Mot de passe requis.'}, status=400)
+        
+    user.set_password(password)
+    user.must_change_password = False
+    user.save()
+    
+    return Response({'status': 'Mot de passe mis à jour avec succès.'})
+
+@api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def log_otp(request):
     email = request.data.get('email', 'Unknown')

@@ -30,7 +30,7 @@ export default function TalentProfile({ embedded = false, showBackLink = true })
       setLoading(true);
       try {
         const response = await usersApi.getUserById(id || '1');
-        const user = response.data;
+        const user = response.data || response;
         
         // Enrich with mock details for the frontend simulation if needed
         const enrichedTalent = {

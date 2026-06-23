@@ -44,7 +44,7 @@ export const normalizeStatus = (status = '') => {
   const value = String(status).toLowerCase();
   if (['active', 'published', 'publié', 'publie'].includes(value)) return 'publie';
   if (['draft', 'brouillon'].includes(value)) return 'brouillon';
-  if (['pending', 'attente', 'en attente', 'pending_review'].includes(value)) return 'attente';
+  if (['pending', 'attente', 'en attente', 'pending_review', 'waiting'].includes(value)) return 'attente';
   if (['completed', 'termine', 'terminé', 'finished'].includes(value)) return 'termine';
   return status || 'brouillon';
 };
@@ -76,18 +76,43 @@ export const normalizeNotification = (notification) => ({
   title: notification.title || notification.subject || 'Notification',
   description: notification.description || notification.message || notification.content || '',
   time: notification.time || notification.created_at || '',
-  unread: notification.unread ?? !notification.read_at,
+  unread: !notification.is_read,
   iconBg: notification.iconBg || 'bg-slate-100',
 });
 
-export const normalizeTeam = (team) => ({
-  ...team,
-  id: team.id || team._id,
-  name: team.name || 'Équipe',
-  description: team.description || 'Pas de description fournie.',
-  detailPath: team.detailPath || `/mentor/teams/${team.id || team._id}`,
-  status: team.status || (team.submission ? 'Soumission en cours' : 'Pas encore de projet'),
-});
+export const normalizeTeam = (team) => {
+  const normalizedMembers = team.members ? team.members.map(m => ({
+    name: m.name || m.participant?.user?.get_full_name || 'Membre',
+    avatar: m.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name || 'M')}&background=F1F5F9&color=334155`,
+    role: m.role || 'Member'
+  })) : [];
+  
+  // Si le leader est passé séparément, mais d'après le serializer il est déjà dans members
+  if (team.leader && !normalizedMembers.find(m => m.role === 'Leader')) {
+    const leaderAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(team.leader?.user?.get_full_name || 'L')}&background=0F172A&color=fff`;
+    normalizedMembers.unshift({ name: team.leader.user?.get_full_name, avatar: leaderAvatar, role: 'Leader' });
+  }
+
+  let statusText = team.status || (team.submission_details ? 'Projet soumis' : 'En développement');
+  if (team.submission_details?.status === 'Évalué') statusText = 'Évalué';
+
+  return {
+    ...team,
+    id: team.id || team._id,
+    name: team.name || team.team_name || 'Équipe',
+    hackathon: team.hackathon_title || 'Hackathon Inconnu',
+    description: team.description || 'Pas de description fournie.',
+    detailPath: team.detailPath || `/mentor/teams/${team.id || team._id}`,
+    status: statusText,
+    statusTone: statusText === 'Évalué' ? 'success' : statusText === 'Projet soumis' ? 'info' : 'warning',
+    memberCount: normalizedMembers.length,
+    members: normalizedMembers,
+    mentor: team.mentor_details ? {
+      name: team.mentor_details.name || 'Mentor',
+      avatar: team.mentor_details.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(team.mentor_details.name || 'M')}&background=3b82f6&color=fff`
+    } : null,
+  };
+};
 
 export const normalizeSubmission = (submission) => {
   const team = submission.team || {};

@@ -46,6 +46,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Save message to DB
         message = await self.save_message(user, self.conversation_id, content)
 
+        # Send a receipt back to the sender immediately (to clear loading states etc.)
+        await self.send(text_data=json.dumps({
+            'type': 'receipt',
+            'id': message.id,
+            'status': 'sent'
+        }))
+
         # Send message to room group
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -54,6 +61,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'id': message.id,
                 'content': message.content,
                 'sender_email': user.email,
+                'sender_name': await self.get_user_full_name(user),
                 'sender_id': user.id,
                 'created_at': message.created_at.isoformat()
             }
@@ -63,9 +71,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
+            'type': 'message',
             'id': event['id'],
             'content': event['content'],
             'sender_email': event['sender_email'],
+            'sender_name': event.get('sender_name', ''),
             'sender_id': event['sender_id'],
             'created_at': event['created_at']
         }))
@@ -82,3 +92,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def save_message(self, user, conversation_id, content):
         conv = Conversation.objects.get(id=conversation_id)
         return Message.objects.create(conversation=conv, sender=user, content=content)
+
+    @database_sync_to_async
+    def get_user_full_name(self, user):
+        return user.get_full_name() or user.email

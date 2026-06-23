@@ -4,7 +4,6 @@ import PageHeader from '../../components/common/PageHeader';
 import SearchFilterBar from '../../components/common/SearchFilterBar';
 import SubmissionCard from '../../components/features/submissions/SubmissionCard';
 import { submissionsApi } from '../../api/submissions';
-import { MENTOR_SUBMISSIONS_MOCK } from '../../mockdata/mentor';
 import { extractArray, normalizeSubmission } from '../../services/normalizers';
 import { useExportCSV } from '../../hooks/useExportCSV';
 
@@ -47,12 +46,9 @@ export default function MentorHackathonSubmissions() {
         const apiSubmissions = extractArray(data);
         if (apiSubmissions.length > 0) {
           setSubmissions(apiSubmissions.map(normalizeSubmission));
-        } else {
-          setSubmissions(MENTOR_SUBMISSIONS_MOCK);
         }
       } catch (err) {
-        console.warn('Erreur lors du chargement des soumissions depuis l\'API, utilisation du fallback.', err);
-        setSubmissions(MENTOR_SUBMISSIONS_MOCK);
+        console.error('Erreur lors du chargement des soumissions', err);
       } finally {
         setLoading(false);
       }

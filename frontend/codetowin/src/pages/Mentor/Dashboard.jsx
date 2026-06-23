@@ -5,11 +5,6 @@ import { mentorsApi } from '../../api/mentors';
 import { notificationsApi } from '../../api/notifications';
 import { usersApi } from '../../api/users';
 import { extractArray, normalizeNotification, normalizeTeam } from '../../services/normalizers';
-import {
-  MENTOR_NOTIFICATIONS_MOCK,
-  MENTOR_TEAMS_MOCK,
-  MENTOR_INVITATIONS_MOCK
-} from '../../mockdata/mentor';
 import { MentorContext } from '../../context/MentorContext';
 
 export default function MentorDashboard() {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { submissionsApi } from "../../api/submissions";
-import { MENTOR_SUBMISSIONS_MOCK } from "../../mockdata/mentor";
 
 export default function MentorSubmissionDetails() {
   const { id } = useParams();
@@ -29,30 +28,9 @@ export default function MentorSubmissionDetails() {
             score: data.score,
             teamId: data.teamId || data.team?.id || 1
           });
-        } else {
-          const fallback = MENTOR_SUBMISSIONS_MOCK.find(s => String(s.id) === String(id)) || MENTOR_SUBMISSIONS_MOCK[0];
-          setSubmission({
-            ...fallback,
-            hackathonName: 'Fintech Builders Challenge',
-            figmaUrl: 'https://figma.com/file/.../ecotrade',
-            submittedAt: '15 Juin 2026 à 23:45',
-            githubUrl: fallback.githubUrl || 'https://github.com/ecopay/app-v1',
-            demoUrl: fallback.demoUrl || 'https://youtu.be/dQw4w9WgXcQ',
-            teamId: fallback.id || 1
-          });
         }
       } catch (err) {
-        console.warn('API error, using mock data for submission details', err);
-        const fallback = MENTOR_SUBMISSIONS_MOCK.find(s => String(s.id) === String(id)) || MENTOR_SUBMISSIONS_MOCK[0];
-        setSubmission({
-          ...fallback,
-          hackathonName: 'Fintech Builders Challenge',
-          figmaUrl: 'https://figma.com/file/.../ecotrade',
-          submittedAt: '15 Juin 2026 à 23:45',
-          githubUrl: fallback.githubUrl || 'https://github.com/ecopay/app-v1',
-          demoUrl: fallback.demoUrl || 'https://youtu.be/dQw4w9WgXcQ',
-          teamId: fallback.id || 1
-        });
+        console.error('API error', err);
       } finally {
         setLoading(false);
       }

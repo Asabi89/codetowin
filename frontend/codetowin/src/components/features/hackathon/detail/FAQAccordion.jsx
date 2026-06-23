@@ -1,26 +1,17 @@
 import React, { useState } from 'react';
 
-export default function FAQAccordion() {
+export default function FAQAccordion({ faqs: propFaqs }) {
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   const toggleFaq = (index) => {
     setOpenFaqIndex(prev => prev === index ? null : index);
   };
 
-  const faqs = [
-    {
-      question: "Les débutants peuvent-ils jouer ?",
-      answer: "Carrément ! On adore les petits nouveaux. Google Cloud vous donne plein d'exemples et d'environnements bac à sable pour vous lancer facilement."
-    },
-    {
-      question: "Je peux ramener mes potes ?",
-      answer: "Oui, vous pouvez être jusqu'à 4 dans une équipe. Mais tu peux aussi jouer les loups solitaires si tu préfères !"
-    },
-    {
-      question: "Je peux utiliser un vieux projet ?",
-      answer: "Non, tout le code de ton agent doit être produit pendant les dates officielles du hackathon. C'est plus juste pour tout le monde !"
-    }
-  ];
+  const faqs = propFaqs || [];
+
+  if (faqs.length === 0) {
+    return <p className="text-slate-500 italic text-center">Aucune question fréquente n'a encore été ajoutée par les organisateurs.</p>;
+  }
 
   return (
     <div className="faq-accordion-group">

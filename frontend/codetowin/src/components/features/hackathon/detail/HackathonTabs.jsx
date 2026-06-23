@@ -13,12 +13,12 @@ export default function HackathonTabs({ activeTab, setActiveTab }) {
   ];
 
   return (
-    <nav className="tab-nav" id="tab-nav" aria-label="Screen Tabs Navigation">
+    <nav className="tab-nav flex overflow-x-auto whitespace-nowrap flex-nowrap" id="tab-nav" aria-label="Screen Tabs Navigation" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
       {tabs.map(tab => (
         <button
           key={tab.id}
           type="button"
-          className={`tab-link ${activeTab === tab.id ? 'active' : ''}`}
+          className={`tab-link whitespace-nowrap px-4 py-2 flex-shrink-0 ${activeTab === tab.id ? 'active' : ''}`}
           onClick={() => setActiveTab(tab.id)}
         >
           {tab.label}

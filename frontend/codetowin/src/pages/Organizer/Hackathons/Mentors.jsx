@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { mentorsApi } from '../../../api/mentors';
+import { hackathonsApi } from '../../../api/hackathons';
 import { teamsApi } from '../../../api/teams';
 import { useToast } from '../../../context/ToastContext';
 import { extractArray } from '../../../services/normalizers';
@@ -67,7 +68,7 @@ export default function OrganizerMentors() {
       try {
         setLoading(true);
         const [mentorsData, teamsData] = await Promise.all([
-          mentorsApi.getMentors(),
+          hackathonsApi.getMentors(id),
           teamsApi.getTeamsByHackathon(id)
         ]);
 
@@ -422,16 +423,16 @@ export default function OrganizerMentors() {
                                 <div className="flex h-6 items-center">
                                   <input 
                                     type="checkbox" 
-                                    checked={team.mentor?.id === selectedMentor?.id || (team.mentor?.name === selectedMentor?.name)}
+                                    checked={team.mentor_details?.id === selectedMentor?.id || (team.mentor_details?.name === selectedMentor?.name)}
                                     onChange={async (e) => {
                                       const isChecked = e.target.checked;
                                       try {
                                         if (isChecked) {
                                           await teamsApi.assignMentor(team.id, { mentor_id: selectedMentor.id });
-                                          setTeams(prev => prev.map(t => t.id === team.id ? { ...t, mentor: selectedMentor } : t));
+                                          setTeams(prev => prev.map(t => t.id === team.id ? { ...t, mentor_details: selectedMentor } : t));
                                         } else {
                                           await teamsApi.assignMentor(team.id, { mentor_id: null });
-                                          setTeams(prev => prev.map(t => t.id === team.id ? { ...t, mentor: null } : t));
+                                          setTeams(prev => prev.map(t => t.id === team.id ? { ...t, mentor_details: null } : t));
                                         }
                                       } catch (err) {
                                         console.error("Erreur api", err);
@@ -442,7 +443,7 @@ export default function OrganizerMentors() {
                                 </div>
                                 <div className="ml-3 text-sm leading-6">
                                   <label className="font-medium text-slate-900 cursor-pointer">{team.name}</label>
-                                  <p className="text-slate-500">{team.members?.length || team.memberCount || 0} membres</p>
+                                  <p className="text-slate-500">{team.members_details?.length || team.memberCount || 0} membres</p>
                                 </div>
                               </div>
                             ))}

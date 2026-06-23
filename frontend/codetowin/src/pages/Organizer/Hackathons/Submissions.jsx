@@ -40,7 +40,7 @@ export default function OrganizerSubmissions() {
 
   const filteredSubmissions = submissions.filter(sub => {
     const matchesSearch = sub.projectName.toLowerCase().includes(searchQuery.toLowerCase()) || sub.teamName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'Tous les statuts' || sub.status === statusFilter;
+    const matchesStatus = statusFilter === 'Tous les statuts' || sub.statusLabel === statusFilter;
     return matchesSearch && matchesStatus;
   });
 

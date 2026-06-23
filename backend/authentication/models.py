@@ -14,6 +14,8 @@ class User(AbstractUser):
         choices=Role.choices,
         default=Role.PARTICIPANT,
     )
+    
+    must_change_password = models.BooleanField(default=False)
 
     # Email must be unique for authentication
     email = models.EmailField(_('email address'), unique=True)

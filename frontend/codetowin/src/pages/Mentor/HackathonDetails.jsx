@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { hackathonsApi } from '../../api/hackathons';
+import { marked } from 'marked';
 
 const fallbackHackathon = {
   title: 'AI for Climate Africa',
@@ -46,6 +47,9 @@ const normalizeHackathon = (data) => {
     organizerName: data.organizerName || organizer.name || fallbackHackathon.organizerName,
     organizerDescription: data.organizerDescription || organizer.description || fallbackHackathon.organizerDescription,
     organizerLogo: data.organizerLogo || organizer.logo || fallbackHackathon.organizerLogo,
+    overview: data.overview || '',
+    rules: data.rules || '',
+    resources: data.resources || '',
   };
 };
 
@@ -193,103 +197,27 @@ export default function MentorHackathonDetails() {
         {/* Tab Content (Vue d'ensemble) */}
         {activeTab === 'tab-overview' && (
           <div id="tab-overview" className="tab-content mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 block">
-            <div className="prose prose-slate max-w-none prose-a:text-brand-600 hover:prose-a:text-brand-500">
-              <h3>À propos du Hackathon</h3>
-              <p>L'Afrique face à des défis climatiques sans précédent. Ce hackathon vise à rassembler les esprits les plus brillants pour développer des solutions tangibles basées sur l'Intelligence Artificielle et l'Internet des Objets (IoT).</p>
-              
-              <h4>Objectifs Principaux :</h4>
-              <ul>
-                <li><strong>Agriculture de précision :</strong> Modèles de prédiction pour optimiser l'utilisation de l'eau et des engrais.</li>
-                <li><strong>Prévention des catastrophes :</strong> Systèmes d'alerte précoce pour les inondations et les sécheresses.</li>
-                <li><strong>Gestion énergétique :</strong> Algorithmes d'optimisation pour les micro-réseaux solaires.</li>
-              </ul>
-
-              <h4>Calendrier de l'événement</h4>
-              <div className="not-prose my-6">
-                <div className="flow-root">
-                  <ul role="list" className="-mb-8">
-                    <li>
-                      <div className="relative pb-8">
-                        <span className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-brand-200" aria-hidden="true"></span>
-                        <div className="relative flex space-x-3">
-                          <div>
-                            <span className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center ring-8 ring-white">
-                              <svg className="h-4 w-4 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-                            </span>
-                          </div>
-                          <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
-                            <div><p className="text-sm text-slate-500">Début du Hackathon (Cérémonie d'ouverture)</p></div>
-                            <div className="whitespace-nowrap text-right text-sm font-medium text-slate-900">12 Août, 09:00</div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="relative pb-8">
-                        <span className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-brand-200" aria-hidden="true"></span>
-                        <div className="relative flex space-x-3">
-                          <div>
-                            <span className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center ring-8 ring-white">
-                              <svg className="h-4 w-4 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
-                            </span>
-                          </div>
-                          <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
-                            <div><p className="text-sm text-slate-500">Session de Mentorat 1</p></div>
-                            <div className="whitespace-nowrap text-right text-sm font-medium text-slate-900">12 Août, 15:00</div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="relative pb-8">
-                        <div className="relative flex space-x-3">
-                          <div>
-                            <span className="h-8 w-8 rounded-full bg-brand-500 flex items-center justify-center ring-8 ring-white">
-                              <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
-                            </span>
-                          </div>
-                          <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
-                            <div><p className="text-sm font-medium text-slate-900">Limite des soumissions</p></div>
-                            <div className="whitespace-nowrap text-right text-sm font-medium text-brand-600">14 Août, 12:00</div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-            </div>
+            <div className="prose prose-slate max-w-none prose-a:text-brand-600 hover:prose-a:text-brand-500"
+                 dangerouslySetInnerHTML={{ __html: hackathon.overview ? marked.parse(hackathon.overview) : '<p class="text-slate-500 italic">Aucune vue d\'ensemble fournie.</p>' }}
+            />
           </div>
         )}
         
         {/* Tab Content (Règles) */}
         {activeTab === 'tab-rules' && (
           <div id="tab-rules" className="tab-content mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 block">
-            <div className="prose prose-slate max-w-none">
-              <h3>Règlement du Hackathon</h3>
-              <ul>
-                <li><strong>Équipes :</strong> De 2 à 5 membres maximum.</li>
-                <li><strong>Code original :</strong> Tout le code doit être écrit pendant l'événement. Vous pouvez utiliser des librairies open-source publiques, mais aucune partie de l'application principale ne doit être pré-codée.</li>
-                <li><strong>Propriété intellectuelle :</strong> Vous conservez la propriété de tout ce que vous créez pendant le hackathon.</li>
-                <li><strong>Soumission :</strong> Une vidéo de démonstration de 3 minutes maximum est obligatoire, accompagnée d'un dépôt GitHub public.</li>
-              </ul>
-            </div>
+            <div className="prose prose-slate max-w-none"
+                 dangerouslySetInnerHTML={{ __html: hackathon.rules ? marked.parse(hackathon.rules) : '<p class="text-slate-500 italic">Aucune règle définie.</p>' }}
+            />
           </div>
         )}
 
         {/* Tab Content (Ressources) */}
         {activeTab === 'tab-resources' && (
           <div id="tab-resources" className="tab-content mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 block">
-            <div className="prose prose-slate max-w-none">
-              <h3>Ressources et APIs</h3>
-              <p>Voici les ressources mises à votre disposition par nos partenaires :</p>
-              <ul>
-                <li><a href="https://developer.accuweather.com/" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">API Météo de précision (AccuWeather)</a> - Clés d'API fournies le jour J.</li>
-                <li><a href="https://data.humdata.org/" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">Dataset Agriculture (Sénégal 2020-2025)</a> - Données sur les rendements agricoles.</li>
-                <li><a href="https://aws.amazon.com/activate/" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">Cloud Computing AWS</a> - $100 de crédits pour chaque équipe inscrite.</li>
-              </ul>
-            </div>
+            <div className="prose prose-slate max-w-none"
+                 dangerouslySetInnerHTML={{ __html: hackathon.resources ? marked.parse(hackathon.resources) : '<p class="text-slate-500 italic">Aucune ressource fournie.</p>' }}
+            />
           </div>
         )}
 

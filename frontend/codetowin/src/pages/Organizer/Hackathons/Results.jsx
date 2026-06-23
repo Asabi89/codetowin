@@ -1,16 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { certificatesApi } from '../../../api/certificates';
 import { hackathonsApi } from '../../../api/hackathons';
+import { submissionsApi } from '../../../api/submissions';
 
 export default function OrganizerResults() {
   const { id } = useParams();
   const [leaderboard, setLeaderboard] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isPublished, setIsPublished] = useState(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
+
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        setLoading(true);
+        // Fetch hackathon info to check if results are published
+        const hackathon = await hackathonsApi.getHackathonById(id);
+        if (hackathon) {
+          setIsPublished(hackathon.results_published);
+        }
+
+        // Fetch submissions and sort by total_score
+        const submissions = await submissionsApi.getSubmissionsByHackathon(id);
+        if (submissions && Array.isArray(submissions)) {
+          const sorted = submissions
+            .filter(s => s.status === 'Évalué' && s.total_score != null)
+            .sort((a, b) => b.total_score - a.total_score)
+            .map((s, index) => ({
+              id: s.id,
+              rank: index + 1,
+              team: s.team_name,
+              project: s.project_name || s.title,
+              score: `${s.total_score} pts`,
+              status: hackathon.results_published ? 'Générés' : 'En attente'
+            }));
+          setLeaderboard(sorted);
+        }
+      } catch (err) {
+        console.error("Erreur lors du chargement des résultats:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchResults();
+  }, [id]);
 
   const handleGenerateSingle = async (itemId) => {
     try {
@@ -50,6 +87,17 @@ export default function OrganizerResults() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center p-8 flex-1">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600"></div>
+          <p className="text-sm font-medium text-slate-500">Calcul du classement...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
         
@@ -81,62 +129,64 @@ export default function OrganizerResults() {
         </div>
 
         {/* Podium Section */}
-        <div className="mt-8 mb-12">
-          <h2 className="text-lg font-medium text-slate-900 mb-6 text-center">Les Gagnants</h2>
-          <div className="flex flex-col sm:flex-row items-end justify-center gap-4 sm:gap-6 px-4">
-            
-            {/* 2nd Place */}
-            <div className="flex flex-col items-center order-2 sm:order-1 w-full sm:w-64">
-              <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center border-4 border-silver-400 mb-4 shadow-lg z-10 relative">
-                <span className="text-2xl font-bold text-silver-500">2</span>
-              </div>
-              <div className="w-full bg-white border-t-4 border-silver-400 rounded-t-xl rounded-b-md shadow-md p-4 text-center pb-8 pt-8 -mt-8">
-                <h3 className="font-bold text-slate-900 text-lg">CodeMakers</h3>
-                <p className="text-sm text-slate-500 mt-1">EcoTrade App</p>
-                <div className="mt-3 inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-sm font-medium text-slate-800">
-                  85 pts
+        {leaderboard.length >= 3 && (
+          <div className="mt-8 mb-12">
+            <h2 className="text-lg font-medium text-slate-900 mb-6 text-center">Les Gagnants</h2>
+            <div className="flex flex-col sm:flex-row items-end justify-center gap-4 sm:gap-6 px-4">
+              
+              {/* 2nd Place */}
+              <div className="flex flex-col items-center order-2 sm:order-1 w-full sm:w-64">
+                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center border-4 border-silver-400 mb-4 shadow-lg z-10 relative">
+                  <span className="text-2xl font-bold text-silver-500">2</span>
                 </div>
+                <div className="w-full bg-white border-t-4 border-silver-400 rounded-t-xl rounded-b-md shadow-md p-4 text-center pb-8 pt-8 -mt-8">
+                  <h3 className="font-bold text-slate-900 text-lg truncate px-2">{leaderboard[1].team}</h3>
+                  <p className="text-sm text-slate-500 mt-1 truncate px-2">{leaderboard[1].project}</p>
+                  <div className="mt-3 inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-sm font-medium text-slate-800">
+                    {leaderboard[1].score}
+                  </div>
+                </div>
+                <div className="w-full h-24 bg-gradient-to-b from-silver-400/20 to-transparent rounded-b-xl -mt-2"></div>
               </div>
-              <div className="w-full h-24 bg-gradient-to-b from-silver-400/20 to-transparent rounded-b-xl -mt-2"></div>
-            </div>
 
-            {/* 1st Place */}
-            <div className="flex flex-col items-center order-1 sm:order-2 w-full sm:w-72">
-              <div className="relative">
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2">
-                  <svg className="h-8 w-8 text-gold-400 drop-shadow" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z" clipRule="evenodd" /></svg>
+              {/* 1st Place */}
+              <div className="flex flex-col items-center order-1 sm:order-2 w-full sm:w-72">
+                <div className="relative">
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2">
+                    <svg className="h-8 w-8 text-gold-400 drop-shadow" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z" clipRule="evenodd" /></svg>
+                  </div>
+                  <div className="w-20 h-20 rounded-full bg-gold-400/10 flex items-center justify-center border-4 border-gold-400 mb-4 shadow-xl z-10 relative">
+                    <span className="text-3xl font-bold text-gold-500">1</span>
+                  </div>
                 </div>
-                <div className="w-20 h-20 rounded-full bg-gold-400/10 flex items-center justify-center border-4 border-gold-400 mb-4 shadow-xl z-10 relative">
-                  <span className="text-3xl font-bold text-gold-500">1</span>
+                <div className="w-full bg-white border-t-4 border-gold-400 rounded-t-xl rounded-b-md shadow-lg p-5 text-center pb-12 pt-10 -mt-10">
+                  <h3 className="font-bold text-slate-900 text-xl truncate px-2">{leaderboard[0].team}</h3>
+                  <p className="text-sm text-slate-500 mt-1 truncate px-2">{leaderboard[0].project}</p>
+                  <div className="mt-4 inline-flex items-center rounded-full bg-gold-400/20 px-3 py-1 text-sm font-bold text-gold-500">
+                    {leaderboard[0].score}
+                  </div>
                 </div>
+                <div className="w-full h-32 bg-gradient-to-b from-gold-400/20 to-transparent rounded-b-xl -mt-2"></div>
               </div>
-              <div className="w-full bg-white border-t-4 border-gold-400 rounded-t-xl rounded-b-md shadow-lg p-5 text-center pb-12 pt-10 -mt-10">
-                <h3 className="font-bold text-slate-900 text-xl">AgriTech Innovators</h3>
-                <p className="text-sm text-slate-500 mt-1">AgriSense IoT</p>
-                <div className="mt-4 inline-flex items-center rounded-full bg-gold-400/20 px-3 py-1 text-sm font-bold text-gold-500">
-                  94 pts
-                </div>
-              </div>
-              <div className="w-full h-32 bg-gradient-to-b from-gold-400/20 to-transparent rounded-b-xl -mt-2"></div>
-            </div>
 
-            {/* 3rd Place */}
-            <div className="flex flex-col items-center order-3 sm:order-3 w-full sm:w-64">
-              <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center border-4 border-bronze-400 mb-4 shadow-md z-10 relative">
-                <span className="text-2xl font-bold text-bronze-500">3</span>
-              </div>
-              <div className="w-full bg-white border-t-4 border-bronze-400 rounded-t-xl rounded-b-md shadow-sm p-4 text-center pb-6 pt-8 -mt-8">
-                <h3 className="font-bold text-slate-900 text-lg">Data Rangers</h3>
-                <p className="text-sm text-slate-500 mt-1">ClimaStats Dashboard</p>
-                <div className="mt-3 inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-sm font-medium text-slate-800">
-                  81 pts
+              {/* 3rd Place */}
+              <div className="flex flex-col items-center order-3 sm:order-3 w-full sm:w-64">
+                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center border-4 border-bronze-400 mb-4 shadow-md z-10 relative">
+                  <span className="text-2xl font-bold text-bronze-500">3</span>
                 </div>
+                <div className="w-full bg-white border-t-4 border-bronze-400 rounded-t-xl rounded-b-md shadow-sm p-4 text-center pb-6 pt-8 -mt-8">
+                  <h3 className="font-bold text-slate-900 text-lg truncate px-2">{leaderboard[2].team}</h3>
+                  <p className="text-sm text-slate-500 mt-1 truncate px-2">{leaderboard[2].project}</p>
+                  <div className="mt-3 inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-sm font-medium text-slate-800">
+                    {leaderboard[2].score}
+                  </div>
+                </div>
+                <div className="w-full h-16 bg-gradient-to-b from-bronze-400/20 to-transparent rounded-b-xl -mt-2"></div>
               </div>
-              <div className="w-full h-16 bg-gradient-to-b from-bronze-400/20 to-transparent rounded-b-xl -mt-2"></div>
-            </div>
 
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Leaderboard Table */}
         <div className="mt-8">
@@ -206,6 +256,13 @@ export default function OrganizerResults() {
                           </td>
                         </tr>
                       ))}
+                      {leaderboard.length === 0 && (
+                        <tr>
+                          <td colSpan="6" className="py-8 text-center text-sm text-slate-500">
+                            Aucune soumission évaluée pour le moment.
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
