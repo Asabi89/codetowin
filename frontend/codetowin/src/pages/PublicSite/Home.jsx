@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { hackathonsApi } from '../../api/hackathons';
+import { formatDate } from '../../services/formatters';
 import '../../styles/pages/participant/home.css';
 
 export default function Home() {
@@ -107,34 +108,38 @@ export default function Home() {
               hackathons.map((hackathon) => (
                 <article key={hackathon.id} className="hackathon-card">
                   <div className="hackathon-banner">
-                    <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-                      <defs>
-                        <linearGradient id={`home-card-${hackathon.id}-bg`} x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#0c3629" />
-                          <stop offset="100%" stopColor="#04110d" />
-                        </linearGradient>
-                        <radialGradient id={`home-card-${hackathon.id}-glow`} cx="36%" cy="42%" r="58%">
-                          <stop offset="0%" stopColor="#19e58f" stopOpacity="0.22" />
-                          <stop offset="100%" stopColor="#19e58f" stopOpacity="0" />
-                        </radialGradient>
-                      </defs>
-                      <rect width="400" height="200" fill={`url(#home-card-${hackathon.id}-bg)`} />
-                      <rect width="400" height="200" fill={`url(#home-card-${hackathon.id}-glow)`} />
-                      <circle cx="122" cy="88" r="68" fill="#0f5d44" opacity="0.84" />
-                      <circle cx="122" cy="88" r="68" fill="none" stroke="#19e58f" strokeWidth="0.6" opacity="0.32" />
-                      <g fill="rgba(255,255,255,0.58)" fontFamily="Inter,sans-serif" fontSize="8" fontWeight="700" letterSpacing="0.5">
-                        <text x="18" y="24">CODETOWIN · {hackathon.interest || 'INNOVATION'}</text>
-                      </g>
-                      <text x="18" y="132" fontFamily="Inter,sans-serif" fontSize="28" fontWeight="900" fill="white">
-                        {hackathon.logo_text || hackathon.logoText || hackathon.title.substring(0, 10)}
-                      </text>
-                    </svg>
+                    {hackathon.banner ? (
+                      <img src={hackathon.banner} alt={`${hackathon.title} banner`} className="h-full w-full object-cover" />
+                    ) : (
+                      <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                        <defs>
+                          <linearGradient id={`home-card-${hackathon.id}-bg`} x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#0c3629" />
+                            <stop offset="100%" stopColor="#04110d" />
+                          </linearGradient>
+                          <radialGradient id={`home-card-${hackathon.id}-glow`} cx="36%" cy="42%" r="58%">
+                            <stop offset="0%" stopColor="#19e58f" stopOpacity="0.22" />
+                            <stop offset="100%" stopColor="#19e58f" stopOpacity="0" />
+                          </radialGradient>
+                        </defs>
+                        <rect width="400" height="200" fill={`url(#home-card-${hackathon.id}-bg)`} />
+                        <rect width="400" height="200" fill={`url(#home-card-${hackathon.id}-glow)`} />
+                        <circle cx="122" cy="88" r="68" fill="#0f5d44" opacity="0.84" />
+                        <circle cx="122" cy="88" r="68" fill="none" stroke="#19e58f" strokeWidth="0.6" opacity="0.32" />
+                        <g fill="rgba(255,255,255,0.58)" fontFamily="Inter,sans-serif" fontSize="8" fontWeight="700" letterSpacing="0.5">
+                          <text x="18" y="24">CODETOWIN · {hackathon.interest || 'INNOVATION'}</text>
+                        </g>
+                        <text x="18" y="132" fontFamily="Inter,sans-serif" fontSize="28" fontWeight="900" fill="white">
+                          {hackathon.logo_text || hackathon.logoText || hackathon.title.substring(0, 10)}
+                        </text>
+                      </svg>
+                    )}
                   </div>
 
                   <div className="hackathon-body">
                     <div className="hackathon-top-row">
                       <span className="hackathon-date">
-                        {hackathon.start_date || hackathon.start ? `${hackathon.start_date || hackathon.start}` : 'À venir'}
+                        {hackathon.start_date || hackathon.start ? formatDate(hackathon.start_date || hackathon.start) : 'À venir'}
                       </span>
                       <span className="hackathon-participants flex items-center gap-1">
                         <svg width="15" height="15" fill="none" viewBox="0 0 16 16" stroke="#555555" strokeWidth="1.5">

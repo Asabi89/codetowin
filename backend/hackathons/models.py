@@ -58,9 +58,16 @@ class Team(models.Model):
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE, related_name='teams')
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    invite_token = models.CharField(max_length=32, unique=True, blank=True, null=True)
     leader = models.ForeignKey(ParticipantProfile, on_delete=models.CASCADE, related_name='led_teams')
     mentor = models.ForeignKey('HackathonMentor', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_teams')
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.invite_token:
+            import uuid
+            self.invite_token = uuid.uuid4().hex[:12]
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} ({self.hackathon.title})"

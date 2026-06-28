@@ -225,6 +225,36 @@ class TeamViewSet(viewsets.ModelViewSet):
         )
         return Response({'status': 'Joined team successfully'})
 
+    @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated], url_path='join-by-token')
+    def join_by_token(self, request):
+        if request.user.role != 'PARTICIPANT':
+            return Response({'error': 'Seuls les participants peuvent rejoindre une équipe'}, status=status.HTTP_403_FORBIDDEN)
+        
+        token = request.data.get('token')
+        if not token:
+            return Response({'error': 'Token manquant'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        from .models import Team
+        team = Team.objects.filter(invite_token=token).first()
+        if not team:
+            return Response({'error': 'Lien d\'invitation invalide'}, status=status.HTTP_404_NOT_FOUND)
+            
+        hackathon = team.hackathon
+        current_size = team.members.count() + 1
+        if current_size >= hackathon.max_team_size:
+            return Response({'error': f'Cette équipe a atteint sa taille maximale de {hackathon.max_team_size} membres.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if getattr(team, 'leader_id', None) == request.user.participant_profile.id or team.members.filter(participant=request.user.participant_profile).exists():
+             return Response({'error': 'Vous êtes déjà membre de cette équipe'}, status=status.HTTP_400_BAD_REQUEST)
+
+        from .models import TeamMember
+        member, created = TeamMember.objects.get_or_create(
+            team=team,
+            participant=request.user.participant_profile,
+            defaults={'role': 'Member'}
+        )
+        return Response({'status': 'Vous avez rejoint l\'équipe avec succès !', 'team_id': team.id})
+
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def invite(self, request, pk=None):
         if str(pk) == 'team_1':

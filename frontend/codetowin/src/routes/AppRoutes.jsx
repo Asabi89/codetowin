@@ -23,9 +23,11 @@ const ResetPassword = lazy(() => import("../pages/Auth/ResetPassword"));
 const ChooseRole = lazy(() => import("../pages/Auth/ChooseRole"));
 const VerifyEmail = lazy(() => import("../pages/Auth/VerifyEmail"));
 const ForceChangePassword = lazy(() => import("../pages/Auth/ForceChangePassword"));
+const GithubCallback = lazy(() => import("../pages/Auth/GithubCallback"));
 const Profile = lazy(() => import("../pages/Participant/Profile"));
 const ParticipantProfile = lazy(() => import("../pages/Participant/index"));
 const ParticipantJoinHackathon = lazy(() => import("../pages/Participant/JoinHackathon"));
+const JoinTeam = lazy(() => import("../pages/Participant/JoinTeam"));
 const ParticipantNotifications = lazy(() => import("../pages/Participant/Notifications"));
 const ParticipantSettings = lazy(() => import("../pages/Participant/Settings"));
 const ParticipantMessages = lazy(() => import("../pages/Participant/Messages"));
@@ -276,6 +278,7 @@ export default function AppRoutes() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/oauth/github/callback" element={<GithubCallback />} />
         
         <Route 
           path="/force-change-password" 
@@ -399,6 +402,14 @@ export default function AppRoutes() {
         <Route
           path="/mentors/:id"
           element={<PublicProfileRoute type="mentors" />}
+        />
+        <Route
+          path="/invite/:token"
+          element={
+            <MainLayout>
+              <JoinTeam />
+            </MainLayout>
+          }
         />
 
         {/* Participant Routes */}

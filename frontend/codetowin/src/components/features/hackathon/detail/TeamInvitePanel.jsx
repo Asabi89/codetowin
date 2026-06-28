@@ -41,7 +41,8 @@ export default function TeamInvitePanel({ workspaceState, updateWorkspaceState, 
   };
 
   const handleCopyInviteLink = () => {
-    navigator.clipboard.writeText('https://codetowin.org/hackathon/google-cloud-rapid-agent/invite/a29df83c');
+    const inviteToken = team?.invite_token || "unknown";
+    navigator.clipboard.writeText(window.location.origin + '/invite/' + inviteToken);
     showToast("Lien d'invitation copié !", 'success');
   };
 

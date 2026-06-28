@@ -1,6 +1,4 @@
 import { apiClient } from './client';
-import { participantCertificates } from '../mockdata/participant';
-
 export const certificatesApi = {
   /**
    * Récupère la liste des certificats obtenus par l'utilisateur connecté

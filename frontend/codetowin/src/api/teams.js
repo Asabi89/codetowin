@@ -1,6 +1,4 @@
 import { apiClient } from './client';
-import { openTeams, participantTeam } from '../mockdata/participant';
-
 export const teamsApi = {
   /**
    * Récupère la liste des équipes d'un hackathon
@@ -42,6 +40,14 @@ export const teamsApi = {
    */
   joinTeam: async (teamId) => {
     return await apiClient.post(`/teams/${teamId}/join`);
+  },
+
+  /**
+   * Rejoindre une équipe par lien d'invitation
+   * @param {string} token
+   */
+  joinTeamByToken: async (token) => {
+    return await apiClient.post(`/teams/join-by-token/`, { token });
   },
 
   /**

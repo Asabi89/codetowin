@@ -5,21 +5,27 @@ from authentication.serializers import UserSerializer
 
 class HackathonRegistrationSerializer(serializers.ModelSerializer):
     participant_name = serializers.CharField(source='participant.user.get_name', read_only=True)
-    user_details = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
     
     class Meta:
         model = HackathonRegistration
         fields = '__all__'
         read_only_fields = ('hackathon', 'participant', 'status', 'registered_at')
 
-    def get_user_details(self, obj):
-        user = obj.participant.user
+    def get_user(self, obj):
+        u = obj.participant.user
+        skills_str = obj.participant.skills or ""
+        skills_list = [s.strip() for s in skills_str.split(',')] if skills_str else []
+        avatar_url = obj.participant.avatar.url if obj.participant.avatar else None
+        
         return {
-            'id': user.id,
-            'name': user.get_full_name() or user.username,
-            'email': user.email,
-            'avatar': getattr(user, 'avatar_url', None) or f"https://ui-avatars.com/api/?name={user.get_full_name() or user.username}&background=random",
-            'country': getattr(obj.participant, 'country', 'Sénégal')
+            'id': u.id,
+            'name': u.get_full_name() or u.username,
+            'email': u.email,
+            'avatar': avatar_url or getattr(u, 'avatar_url', None) or f"https://ui-avatars.com/api/?name={u.get_full_name() or u.username}&background=random",
+            'country': obj.participant.country or 'Sénégal',
+            'role': u.get_role_display() if hasattr(u, 'get_role_display') else u.role,
+            'skills': skills_list
         }
 
 class HackathonAnnouncementSerializer(serializers.ModelSerializer):
@@ -50,9 +56,11 @@ class Base64ImageField(serializers.ImageField):
 
 class HackathonSerializer(serializers.ModelSerializer):
     organizer_name = serializers.CharField(source='organizer.organization_name', read_only=True)
+    organizer_logo = serializers.ImageField(source='organizer.logo', read_only=True)
     participants_count = serializers.SerializerMethodField()
     teams_count = serializers.SerializerMethodField()
     submissions_count = serializers.SerializerMethodField()
+    is_registered = serializers.SerializerMethodField()
     
     logo = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
     banner = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
@@ -86,13 +94,22 @@ class HackathonSerializer(serializers.ModelSerializer):
         return data
 
     def get_participants_count(self, obj):
-        return TeamMember.objects.filter(team__hackathon=obj).count()
+        return obj.registrations.count()
 
     def get_teams_count(self, obj):
         return obj.teams.count()
 
     def get_submissions_count(self, obj):
         return Submission.objects.filter(team__hackathon=obj).count()
+
+    def get_is_registered(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated and hasattr(request.user, 'participant_profile'):
+            return HackathonRegistration.objects.filter(
+                hackathon=obj, 
+                participant=request.user.participant_profile
+            ).exists()
+        return False
 
 class TeamSerializer(serializers.ModelSerializer):
     members_details = serializers.SerializerMethodField()
@@ -103,7 +120,7 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = '__all__'
-        read_only_fields = ('leader', 'created_at')
+        read_only_fields = ('leader', 'created_at', 'invite_token')
 
     def get_members_details(self, obj):
         # Leader is also a member

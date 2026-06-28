@@ -1,13 +1,13 @@
 import React, { useState, useContext } from 'react';
 import { useLocation, useNavigate, Link, useParams } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
 import { AuthContext } from '../../context/AuthContext';
-import { getDemoAccount, getRoleHome } from '../../mockdata/demoAccounts';
 
 const roleConfig = {
   participant: {
     title: 'Connexion Développeur',
-    sideBg: 'bg-indigo-100',
-    sideImage: "https://storage.googleapis.com/devitary-image-host.appspot.com/15848031292911696601-undraw_designer_life_w96d.svg"
+    sideBg: 'bg-brand-100',
+    sideImage: "/assets/illustrations/1000353279.png"
   },
   organizer: {
     title: 'Connexion Organisateur',
@@ -16,7 +16,7 @@ const roleConfig = {
   },
   mentor: {
     title: 'Connexion Mentor',
-    sideBg: 'bg-blue-100',
+    sideBg: 'bg-green-100',
     sideImage: "https://illustrations.popsy.co/amber/teaching.svg"
   }
 };
@@ -27,18 +27,22 @@ export default function Login() {
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useContext(AuthContext);
+  const { login, socialLogin } = useContext(AuthContext);
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
 
   const resolveRedirect = (loginEmail) => {
-    const demoAccount = getDemoAccount(loginEmail);
+    const pendingToken = sessionStorage.getItem("pending_invite_token");
+    if (pendingToken) {
+      sessionStorage.removeItem("pending_invite_token");
+      return `/invite/${pendingToken}`;
+    }
     if (from && from !== '/' && from !== '/login') {
       return from;
     }
-    return demoAccount?.redirectTo || getRoleHome(demoAccount?.role || role);
+    return role === 'participant' ? '/participant' : role === 'organizer' ? '/organizer' : '/mentor';
   };
 
   const handleSubmit = async (e) => {
@@ -55,10 +59,25 @@ export default function Login() {
     }
   };
 
-  const handleSocialLogin = (provider) => {
-    const loginEmail = `${provider.toLowerCase()}user@codetowin.com`;
-    login(loginEmail, { role });
-    navigate(from && from !== '/' ? from : getRoleHome(role), { replace: true });
+  const handleGoogleLoginSuccess = async (tokenResponse) => {
+    try {
+      await socialLogin('google', tokenResponse.access_token, role);
+      navigate(resolveRedirect(), { replace: true });
+    } catch (err) {
+      console.error(err);
+      setErrorMsg("Erreur lors de la connexion Google.");
+    }
+  };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: handleGoogleLoginSuccess,
+    onError: () => setErrorMsg("Échec de la connexion Google"),
+  });
+
+  const handleGithubLogin = () => {
+    const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID || 'YOUR_GITHUB_CLIENT_ID';
+    const redirectUri = window.location.origin + '/oauth/github/callback?role=' + role;
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=user:email`;
   };
 
   return (
@@ -77,8 +96,9 @@ export default function Login() {
                     <div className="w-full flex-1 mt-8">
                         <div className="flex flex-col items-center">
                             <button
-                                onClick={() => handleSocialLogin('Google')}
-                                className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-50 text-indigo-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
+                                onClick={() => googleLogin()}
+                                type="button"
+                                className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-brand-50 text-brand-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
                                 <div className="bg-white p-2 rounded-full">
                                     <svg className="w-4" viewBox="0 0 533.5 544.3">
                                         <path d="M533.5 278.4c0-18.5-1.5-37.1-4.7-55.3H272.1v104.8h147c-6.1 33.8-25.7 63.7-54.4 82.7v68h87.7c51.5-47.4 81.1-117.4 81.1-200.2z" fill="#4285f4" />
@@ -91,8 +111,9 @@ export default function Login() {
                             </button>
 
                             <button
-                                onClick={() => handleSocialLogin('GitHub')}
-                                className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-50 text-indigo-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5">
+                                onClick={handleGithubLogin}
+                                type="button"
+                                className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-brand-50 text-brand-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5">
                                 <div className="bg-white p-1 rounded-full">
                                     <svg className="w-6" viewBox="0 0 32 32">
                                         <path fillRule="evenodd" d="M16 4C9.371 4 4 9.371 4 16c0 5.3 3.438 9.8 8.207 11.387.602.11.82-.258.82-.578 0-.286-.011-1.04-.015-2.04-3.34.723-4.043-1.609-4.043-1.609-.547-1.387-1.332-1.758-1.332-1.758-1.09-.742.082-.726.082-.726 1.203.086 1.836 1.234 1.836 1.234 1.07 1.836 2.808 1.305 3.492 1 .11-.777.422-1.305.762-1.605-2.664-.301-5.465-1.332-5.465-5.93 0-1.313.469-2.383 1.234-3.223-.121-.3-.535-1.523.117-3.175 0 0 1.008-.32 3.301 1.23A11.487 11.487 0 0116 9.805c1.02.004 2.047.136 3.004.402 2.293-1.55 3.297-1.23 3.297-1.23.656 1.652.246 2.875.12 3.175.77.84 1.231 1.91 1.231 3.223 0 4.61-2.804 5.621-5.476 5.922.43.367.812 1.101.812 2.219 0 1.605-.011 2.898-.011 3.293 0 .32.214.695.824.578C24.566 25.797 28 21.3 28 16c0-6.629-5.371-12-12-12z" />
@@ -111,19 +132,19 @@ export default function Login() {
                         <form className="mx-auto max-w-xs" onSubmit={handleSubmit}>
                             {errorMsg && <div className="text-red-500 text-sm mb-4 text-center font-medium">{errorMsg}</div>}
                             <input
-                                className="w-full px-8 py-4 rounded-lg font-medium bg-slate-50 border border-slate-200 placeholder-slate-400 text-sm focus:outline-none focus:border-indigo-400 focus:bg-white focus:ring-1 focus:ring-indigo-400 transition-colors"
+                                className="w-full px-8 py-4 rounded-lg font-medium bg-slate-50 border border-slate-200 placeholder-slate-400 text-sm focus:outline-none focus:border-brand-400 focus:bg-white focus:ring-1 focus:ring-brand-400 transition-colors"
                                 type="text" placeholder="Email ou pseudo"
                                 value={email} onChange={(e) => setEmail(e.target.value)} required />
                             <input
-                                className="w-full px-8 py-4 rounded-lg font-medium bg-slate-50 border border-slate-200 placeholder-slate-400 text-sm focus:outline-none focus:border-indigo-400 focus:bg-white focus:ring-1 focus:ring-indigo-400 transition-colors mt-5"
+                                className="w-full px-8 py-4 rounded-lg font-medium bg-slate-50 border border-slate-200 placeholder-slate-400 text-sm focus:outline-none focus:border-brand-400 focus:bg-white focus:ring-1 focus:ring-brand-400 transition-colors mt-5"
                                 type="password" placeholder="Mot de passe"
                                 value={password} onChange={(e) => setPassword(e.target.value)} required />
                             <div className="mt-3 text-right">
-                                <Link to="/forgot-password" className="text-xs text-indigo-600 font-medium hover:text-indigo-800 transition-colors">Mot de passe oublié ?</Link>
+                                <Link to="/forgot-password" className="text-xs text-brand-600 font-medium hover:text-brand-800 transition-colors">Mot de passe oublié ?</Link>
                             </div>
                             <button
                                 type="submit"
-                                className="mt-5 tracking-wide font-semibold bg-indigo-600 text-white w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
+                                className="mt-5 tracking-wide font-semibold bg-brand-600 text-white w-full py-4 rounded-lg hover:bg-brand-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
                                 <svg className="w-6 h-6 -ml-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                                     <circle cx="8.5" cy="7" r="4" />
@@ -133,16 +154,25 @@ export default function Login() {
                             </button>
                             <p className="mt-6 text-xs text-slate-600 text-center">
                                 Pas encore de compte ?{' '}
-                                <Link to={`/signup?role=${role}`} className="border-b border-indigo-500 border-dotted text-indigo-600 font-medium hover:text-indigo-800 transition-colors">
+                                <Link to={`/signup?role=${role}`} className="border-b border-brand-500 border-dotted text-brand-600 font-medium hover:text-brand-800 transition-colors">
                                     Créer un compte
                                 </Link>
                             </p>
+
+                            <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col items-center gap-2">
+                                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Vous n'êtes pas {role === 'participant' ? 'participant' : role === 'mentor' ? 'mentor' : 'organisateur'} ?</p>
+                                <div className="flex gap-4 text-xs">
+                                    {role !== 'participant' && <Link to="/login/participant" className="text-slate-600 hover:text-brand-600 font-medium">Connexion Participant</Link>}
+                                    {role !== 'organizer' && <Link to="/login/organizer" className="text-slate-600 hover:text-brand-600 font-medium">Connexion Organisateur</Link>}
+                                    {role !== 'mentor' && <Link to="/login/mentor" className="text-slate-600 hover:text-brand-600 font-medium">Connexion Mentor</Link>}
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
-            <div className={`flex-1 ${config.sideBg} text-center hidden lg:flex`}>
-                <div className="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
+            <div className={`flex-1 ${config.sideBg} text-center hidden lg:flex items-center justify-center`}>
+                <div className="w-full h-full bg-contain bg-center bg-no-repeat m-6 xl:m-8 scale-110"
                     style={{ backgroundImage: `url('${config.sideImage}')` }}>
                 </div>
             </div>

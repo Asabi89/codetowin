@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { mockCertificates } from '../../mockdata/certificates';
+import { certificatesApi } from '../../api/certificates';
 
 export default function CertificateVerification() {
   const [code, setCode] = useState('');
@@ -14,19 +14,23 @@ export default function CertificateVerification() {
     setLoading(true);
     setSearched(false);
 
-    // Simulate short network delay
-    setTimeout(() => {
-      const upperCode = code.trim().toUpperCase();
-      const certificate = mockCertificates[upperCode];
-      
-      if (certificate) {
-        setResult(certificate);
-      } else {
+    const verify = async () => {
+      try {
+        const upperCode = code.trim().toUpperCase();
+        const certificate = await certificatesApi.verifyCertificate(upperCode);
+        if (certificate) {
+          setResult(certificate);
+        } else {
+          setResult(null);
+        }
+      } catch (err) {
         setResult(null);
+      } finally {
+        setLoading(false);
+        setSearched(true);
       }
-      setLoading(false);
-      setSearched(true);
-    }, 800);
+    };
+    verify();
   };
 
   return (

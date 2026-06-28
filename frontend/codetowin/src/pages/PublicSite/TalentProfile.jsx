@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { mockTalentsDetails } from '../../mockdata/talents';
 import useAuth from '../../hooks/useAuth';
 import { usersApi } from '../../api/users';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -32,12 +31,11 @@ export default function TalentProfile({ embedded = false, showBackLink = true })
         const response = await usersApi.getUserById(id || '1');
         const user = response.data || response;
         
-        // Enrich with mock details for the frontend simulation if needed
         const enrichedTalent = {
           ...user,
-          ...(mockTalentsDetails[user.id] || {}),
-          hackathons: mockTalentsDetails[user.id]?.hackathons || [],
-          bio: mockTalentsDetails[user.id]?.bio || 'Ce talent partage une identité publique minimale. Les détails complets dépendent de ses paramètres de visibilité.',
+          hackathons: user.hackathons || [],
+          bio: user.bio || 'Ce talent partage une identité publique minimale. Les détails complets dépendent de ses paramètres de visibilité.',
+          skills: user.skills || [],
         };
         
         setTalent(enrichedTalent);

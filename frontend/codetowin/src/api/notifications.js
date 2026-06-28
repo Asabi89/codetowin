@@ -1,6 +1,4 @@
 import { apiClient } from './client';
-import { participantNotifications } from '../mockdata/participant';
-
 export const notificationsApi = {
   /**
    * Récupère toutes les notifications de l'utilisateur connecté

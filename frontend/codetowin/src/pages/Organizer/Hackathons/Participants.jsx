@@ -13,6 +13,7 @@ export default function OrganizerParticipants() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('Tous les statuts');
   const [isBulkDropdownOpen, setIsBulkDropdownOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
   const dropdownRef = useRef(null);
   
   // Handlers for outside click
@@ -34,10 +35,11 @@ export default function OrganizerParticipants() {
         if (Array.isArray(data)) {
           const mapped = data.map(reg => ({
             id: reg.id,
-            name: reg.user_details?.name || reg.participant_name || 'Utilisateur',
-            email: reg.user_details?.email || '',
-            avatar: reg.user_details?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(reg.participant_name || 'U')}&background=047857&color=fff`,
-            country: reg.user_details?.country || 'Sénégal',
+            userId: reg.user?.id,
+            name: reg.user?.name || reg.participant_name || 'Utilisateur',
+            email: reg.user?.email || '',
+            avatar: reg.user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(reg.participant_name || 'U')}&background=047857&color=fff`,
+            country: reg.user?.country || 'Sénégal',
             team: reg.teamName || reg.team || null,
             status: reg.status === 'approved' ? 'Approuvé' : reg.status === 'rejected' ? 'Rejeté' : 'En attente',
             date: reg.registered_at ? new Date(reg.registered_at).toLocaleDateString() : 'Il y a 2 heures',
@@ -89,6 +91,75 @@ export default function OrganizerParticipants() {
     }
   };
 
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedIds(filteredParticipants.map(p => p.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectOne = (id) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  const handleExportCSV = () => {
+    const headers = ['Nom', 'Email', 'Pays', 'Equipe', 'Statut', 'Date'];
+    const rows = filteredParticipants.map(p => [
+      p.name,
+      p.email,
+      p.country,
+      p.team || 'Sans équipe',
+      p.status,
+      p.date
+    ]);
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(r => r.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'participants.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      await Promise.all(selectedIds.map(id => hackathonsApi.approveRegistration(id)));
+      setParticipants(prev => prev.map(p => selectedIds.includes(p.id) ? { ...p, status: 'Approuvé' } : p));
+      showToast(`${selectedIds.length} participant(s) approuvé(s).`, "success");
+      setSelectedIds([]);
+      setIsBulkDropdownOpen(false);
+    } catch (err) {
+      showToast("Erreur lors de l'approbation groupée.", "error");
+    }
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      await Promise.all(selectedIds.map(id => hackathonsApi.rejectRegistration(id)));
+      setParticipants(prev => prev.map(p => selectedIds.includes(p.id) ? { ...p, status: 'Rejeté' } : p));
+      showToast(`${selectedIds.length} participant(s) rejeté(s).`, "success");
+      setSelectedIds([]);
+      setIsBulkDropdownOpen(false);
+    } catch (err) {
+      showToast("Erreur lors du rejet groupé.", "error");
+    }
+  };
+
+  const handleBulkMessage = () => {
+    if (selectedIds.length === 0) return;
+    const emails = participants.filter(p => selectedIds.includes(p.id)).map(p => p.email).join(',');
+    window.location.href = `mailto:?bcc=${emails}`;
+    setIsBulkDropdownOpen(false);
+  };
+
   const filteredParticipants = participants.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.email.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'Tous les statuts' || p.status === statusFilter;
@@ -114,7 +185,7 @@ export default function OrganizerParticipants() {
           <p className="mt-2 text-sm text-slate-700">Gérez les inscriptions à votre hackathon.</p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-          <button type="button" className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+          <button type="button" onClick={handleExportCSV} className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
             <svg className="-ml-1 mr-2 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
             Exporter CSV
           </button>
@@ -162,19 +233,19 @@ export default function OrganizerParticipants() {
             {isBulkDropdownOpen && (
               <div className="absolute right-0 top-full mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
                 <div className="py-1">
-                  <button className="text-slate-700 block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900">
+                  <button onClick={handleBulkApprove} className="text-slate-700 block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50" disabled={selectedIds.length === 0}>
                     <span className="flex items-center">
                       <CheckCircle2 className="mr-2 h-4 w-4 text-brand-600" />
-                      Approuver la sélection
+                      Approuver la sélection ({selectedIds.length})
                     </span>
                   </button>
-                  <button className="text-slate-700 block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900">
+                  <button onClick={handleBulkReject} className="text-slate-700 block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50" disabled={selectedIds.length === 0}>
                     <span className="flex items-center">
                       <XCircle className="mr-2 h-4 w-4 text-red-600" />
-                      Rejeter la sélection
+                      Rejeter la sélection ({selectedIds.length})
                     </span>
                   </button>
-                  <button className="text-slate-700 block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900">
+                  <button onClick={handleBulkMessage} className="text-slate-700 block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50" disabled={selectedIds.length === 0}>
                     <span className="flex items-center">
                       <Mail className="mr-2 h-4 w-4 text-blue-600" />
                       Envoyer un message
@@ -195,7 +266,12 @@ export default function OrganizerParticipants() {
                   <thead className="bg-slate-50">
                     <tr>
                       <th scope="col" className="relative px-7 sm:w-12 sm:px-6">
-                        <input type="checkbox" className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
+                        <input 
+                          type="checkbox" 
+                          checked={selectedIds.length > 0 && selectedIds.length === filteredParticipants.length}
+                          onChange={handleSelectAll}
+                          className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" 
+                        />
                       </th>
                       <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900">Participant</th>
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Pays</th>
@@ -211,7 +287,12 @@ export default function OrganizerParticipants() {
                     {filteredParticipants.map((participant) => (
                       <tr key={participant.id}>
                         <td className="relative px-7 sm:w-12 sm:px-6">
-                          <input type="checkbox" className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
+                          <input 
+                            type="checkbox" 
+                            checked={selectedIds.includes(participant.id)}
+                            onChange={() => handleSelectOne(participant.id)}
+                            className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" 
+                          />
                         </td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3">
                           <div className="flex items-center">
@@ -219,7 +300,7 @@ export default function OrganizerParticipants() {
                               <img className="h-10 w-10 rounded-full" src={participant.avatar} alt="" />
                             </div>
                             <div className="ml-4">
-                              <Link to={`/organizer/public/talents/${participant.id || participant.name.toLowerCase().replace(/\s+/g, '-')}`} className="font-medium text-slate-900 hover:text-brand-600">{participant.name}</Link>
+                              <Link to={`/organizer/public/talents/${participant.userId || participant.name.toLowerCase().replace(/\s+/g, '-')}`} className="font-medium text-slate-900 hover:text-brand-600">{participant.name}</Link>
                               <div className="text-sm text-slate-500">{participant.email}</div>
                             </div>
                           </div>
@@ -248,7 +329,7 @@ export default function OrganizerParticipants() {
                             </>
                           )}
                           {participant.status === 'Approuvé' && (
-                            <button className="text-slate-400 hover:text-slate-500" title="Contacter">
+                            <button onClick={() => window.location.href = `mailto:${participant.email}`} className="text-slate-400 hover:text-slate-500" title="Contacter">
                               <Mail className="h-5 w-5" />
                             </button>
                           )}

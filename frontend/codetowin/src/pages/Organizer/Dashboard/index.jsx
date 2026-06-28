@@ -4,7 +4,6 @@ import { Users, ShieldCheck, FileCheck2, Activity } from 'lucide-react';
 import DashboardStatCard from '../../../components/common/DashboardStatCard';
 import Badge from '../../../components/common/Badge';
 import { hackathonsApi } from '../../../api/hackathons';
-import { HACKATHONS_DATA_MOCK } from '../../../mockdata/organizer';
 import { extractArray, normalizeHackathon, normalizeStatus } from '../../../services/normalizers';
 import { OrganizerContext } from '../../../context/OrganizerContext';
 import { AuthContext } from '../../../context/AuthContext';

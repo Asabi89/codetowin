@@ -307,7 +307,7 @@ export default function Hackathons() {
         ) : (
           <>
             {/* Cards list */}
-            <section className="cards">
+            <section className="cards grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-4">
               {filteredHackathons.map((hackathon) => (
                 <article
                   key={hackathon.id}
@@ -315,7 +315,15 @@ export default function Hackathons() {
                   onClick={() => navigate(`/hackathons/${hackathon.id}`)}
                 >
                   <div className="card-top">
-                    <div className="card-logo" aria-hidden="true"><span>{hackathon.logoText}</span></div>
+                    <div className="card-logo" aria-hidden="true">
+                      {hackathon.logo ? (
+                        <img src={hackathon.logo} alt={hackathon.title} className="w-full h-full object-cover rounded-[14px]" />
+                      ) : hackathon.organizer_logo ? (
+                        <img src={hackathon.organizer_logo} alt={hackathon.organizer_name} className="w-full h-full object-cover rounded-[14px]" />
+                      ) : (
+                        <span>{hackathon.logoText}</span>
+                      )}
+                    </div>
                     <div className="card-location">
                       <span className="card-location-status">{hackathon.online ? 'Online' : 'In person'}</span>
                       <span className="card-location-place">{hackathon.location}</span>
