@@ -1,6 +1,4 @@
 import { apiClient } from './client';
-import { initialHackathons } from '../mockdata/hackathons';
-
 export const hackathonsApi = {
   /**
    * Récupère la liste de tous les hackathons avec filtres optionnels
@@ -64,7 +62,7 @@ export const hackathonsApi = {
   },
 
   createAnnouncement: async (id, data) => {
-    return await apiClient.post(`/hackathons/${id}/announcements/`, data);
+    return await apiClient.post(`/hackathons/${id}/announcements`, data);
   },
 
   getDiscussions: async (id) => {
@@ -72,7 +70,7 @@ export const hackathonsApi = {
   },
 
   createDiscussion: async (id, data) => {
-    return await apiClient.post(`/hackathons/${id}/discussions/`, data);
+    return await apiClient.post(`/hackathons/${id}/discussions`, data);
   },
 
   /**

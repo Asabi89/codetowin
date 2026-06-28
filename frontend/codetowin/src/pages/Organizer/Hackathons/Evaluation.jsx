@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Code, ExternalLink, Activity } from 'lucide-react';
 import { submissionsApi } from '../../../api/submissions';
-import { SUBMISSIONS_MOCK } from '../../../mockdata/organizer';
 import { useToast } from '../../../context/ToastContext';
 
 export default function OrganizerEvaluation() {
@@ -44,15 +43,13 @@ export default function OrganizerEvaluation() {
           }
           if (data.feedback) setFeedback(data.feedback);
         } else {
-          const mock = SUBMISSIONS_MOCK.find(s => String(s.id) === String(submissionId)) || SUBMISSIONS_MOCK[0];
-          setSubmission(mock);
-          if (mock.score && mock.score !== '-') {
-            const val = parseFloat(mock.score) / 4;
-            setScores({ innovation: val, faisabilite: val, impact: val, ux: val });
-          }
+          showToast("Soumission introuvable.", "error");
+          navigate(`/organizer/hackathons/${id}/submissions`);
         }
       } catch (err) {
         console.warn("Erreur lors de la récupération de la soumission.", err);
+        showToast("Erreur lors du chargement de la soumission.", "error");
+        navigate(`/organizer/hackathons/${id}/submissions`);
       } finally {
         setLoading(false);
       }

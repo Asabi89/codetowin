@@ -13,7 +13,7 @@ const STEPS = [
   { id: 1, title: 'Informations générales' },
   { id: 2, title: 'Contenu détaillé' },
   { id: 3, title: 'Dates et calendrier' },
-  { id: 4, title: 'Thèmes & Format' },
+  { id: 4, title: 'Thèmes & Technologies' },
   { id: 5, title: 'Mentors' },
   { id: 6, title: 'Branding' },
   { id: 7, title: 'Preview & Soumission' },

@@ -9,6 +9,8 @@ urlpatterns = [
     path('api/auth/', include('authentication.urls')),
     path('api/', include('hackathons.urls')),
     path('api/', include('core_api.urls')),
+    path('api/', include('participant.urls')),
+    path('api/', include('mentor.urls')),
     path('api/organizer/', include('organizer.urls')),
 
     # Swagger / OpenAPI

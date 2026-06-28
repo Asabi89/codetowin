@@ -78,12 +78,22 @@ export default function Team() {
 
         <Card>
           <h2 className="text-lg font-bold text-slate-900">Invitation</h2>
-          <p className="mt-2 break-all rounded-lg bg-slate-50 p-3 text-sm text-slate-600">{team.inviteLink}</p>
+          <p className="mt-2 break-all rounded-lg bg-slate-50 p-3 text-sm text-slate-600">
+            {team.invite_token ? `${window.location.origin}/invite/${team.invite_token}` : "Lien d'invitation non disponible"}
+          </p>
           <Button
             className="mt-4 w-full"
             variant="outline"
             icon={Copy}
-            onClick={() => showToast("Lien d’invitation copié.", "success")}
+            onClick={() => {
+              const link = team.invite_token ? `${window.location.origin}/invite/${team.invite_token}` : "";
+              if (link) {
+                navigator.clipboard.writeText(link);
+                showToast("Lien d’invitation copié.", "success");
+              } else {
+                showToast("Aucun lien à copier.", "warning");
+              }
+            }}
           >
             Copier le lien
           </Button>

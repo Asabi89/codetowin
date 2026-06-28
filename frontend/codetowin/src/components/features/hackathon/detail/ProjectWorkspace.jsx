@@ -137,7 +137,7 @@ export default function ProjectWorkspace({
 
   const progressText = isSubmitted ? "100% completed" : "Step " + step + " of 5";
 
-  if (!registered) {
+  if (!hackathon?.is_registered) {
     return (
       <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'var(--bg-subtle)', borderRadius: '1.5rem' }}>
         <div style={{ width: '4rem', height: '4rem', borderRadius: '50%', background: 'var(--green-light)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
@@ -153,7 +153,7 @@ export default function ProjectWorkspace({
           Remplis ton profil et inscris-toi pour lancer ton projet et trouver tes coéquipiers géniaux.
         </p>
         <button type="button" className="btn-primary" onClick={handleOnboardingJoin}>
-          Compléter mon profil &amp; Rejoindre
+          Rejoindre l'hackathon
         </button>
       </div>
     );

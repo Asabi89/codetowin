@@ -93,7 +93,7 @@ export default function Profile() {
   };
 
   const handleSkillKey = (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
+    if (e.key === 'Enter' || e.keyCode === 13 || e.key === ',') {
       e.preventDefault();
       addTag(skillInput, skills, setSkills);
       setSkillInput('');
@@ -101,10 +101,30 @@ export default function Profile() {
   };
 
   const handleInterestKey = (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
+    if (e.key === 'Enter' || e.keyCode === 13 || e.key === ',') {
       e.preventDefault();
       addTag(interestInput, interests, setInterests);
       setInterestInput('');
+    }
+  };
+
+  const handleSkillChange = (e) => {
+    const val = e.target.value;
+    if (val.endsWith(',')) {
+      addTag(val.slice(0, -1), skills, setSkills);
+      setSkillInput('');
+    } else {
+      setSkillInput(val);
+    }
+  };
+
+  const handleInterestChange = (e) => {
+    const val = e.target.value;
+    if (val.endsWith(',')) {
+      addTag(val.slice(0, -1), interests, setInterests);
+      setInterestInput('');
+    } else {
+      setInterestInput(val);
     }
   };
 
@@ -272,13 +292,24 @@ export default function Profile() {
                         >×</button>
                       </span>
                     ))}
-                    <input
-                      type="text" className="tags-input-text"
-                      placeholder={skills.length === 0 ? 'Ajouter un truc cool...' : ''}
-                      value={skillInput}
-                      onChange={e => setSkillInput(e.target.value)}
-                      onKeyDown={handleSkillKey}
-                    />
+                    <div style={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: '150px' }}>
+                      <input
+                        type="text" className="tags-input-text" style={{ flex: 1 }}
+                        placeholder={skills.length === 0 ? 'Ajouter un truc cool...' : ''}
+                        value={skillInput}
+                        onChange={handleSkillChange}
+                        onKeyDown={handleSkillKey}
+                      />
+                      {skillInput.trim() && (
+                        <button 
+                          type="button" 
+                          onClick={() => { addTag(skillInput, skills, setSkills); setSkillInput(''); }}
+                          style={{ background: 'var(--teal)', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '0.8rem', cursor: 'pointer', marginLeft: '4px' }}
+                        >
+                          Ajouter
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -300,13 +331,24 @@ export default function Profile() {
                         >×</button>
                       </span>
                     ))}
-                    <input
-                      type="text" className="tags-input-text"
-                      placeholder={interests.length === 0 ? 'Ajouter un intérêt...' : ''}
-                      value={interestInput}
-                      onChange={e => setInterestInput(e.target.value)}
-                      onKeyDown={handleInterestKey}
-                    />
+                    <div style={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: '150px' }}>
+                      <input
+                        type="text" className="tags-input-text" style={{ flex: 1 }}
+                        placeholder={interests.length === 0 ? 'Ajouter un intérêt...' : ''}
+                        value={interestInput}
+                        onChange={handleInterestChange}
+                        onKeyDown={handleInterestKey}
+                      />
+                      {interestInput.trim() && (
+                        <button 
+                          type="button" 
+                          onClick={() => { addTag(interestInput, interests, setInterests); setInterestInput(''); }}
+                          style={{ background: 'var(--teal)', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '0.8rem', cursor: 'pointer', marginLeft: '4px' }}
+                        >
+                          Ajouter
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </>

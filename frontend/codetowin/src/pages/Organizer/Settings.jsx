@@ -3,7 +3,10 @@ import SecuritySettings from '../../components/features/settings/SecuritySetting
 import { organizerApi } from '../../api/organizer';
 import useAuth from '../../hooks/useAuth';
 
+import { useNavigate } from 'react-router-dom';
+
 export default function OrganizerSettings() {
+  const navigate = useNavigate();
   const { updateProfileContext } = useAuth();
   const [activeTab, setActiveTab] = useState('info');
   const [profile, setProfile] = useState({
@@ -79,7 +82,7 @@ export default function OrganizerSettings() {
         firstName: profile.organization_name,
         avatar: logo 
       });
-      alert('Profil mis à jour avec succès');
+      navigate('/organizer');
     } catch (err) {
       console.error("Failed to save profile:", err);
       alert('Erreur lors de la mise à jour du profil');

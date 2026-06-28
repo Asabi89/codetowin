@@ -51,7 +51,7 @@ export default function HackathonHero({ registered, setActiveTab, handleOnboardi
           </div>
         </div>
         <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-start' }}>
-          {registered ? (
+          {hackathon.is_registered ? (
             <button type="button" className="btn-primary" onClick={() => {
               setActiveTab('my-project');
               setTimeout(() => {
@@ -65,7 +65,7 @@ export default function HackathonHero({ registered, setActiveTab, handleOnboardi
             </button>
           ) : (
             <button type="button" className="btn-primary" onClick={handleOnboardingJoin}>
-              Rejoindre l'aventure !
+              Rejoindre l'hackathon
             </button>
           )}
         </div>

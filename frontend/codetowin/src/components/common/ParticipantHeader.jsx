@@ -86,7 +86,7 @@ export default function ParticipantHeader() {
       <div className="auth-header-inner">
         {/* Left: Logo + Nav */}
         <div className="auth-header-left">
-          <Link to={currentRoleConfig.dashboardTo} className="brand-link" aria-label="CodeToWin">
+          <Link to={role === 'participant' ? '/hackathons' : currentRoleConfig.dashboardTo} className="brand-link" aria-label="CodeToWin">
             <img
               src="/assets/brand/codetowin-brand.png"
               alt="CodeToWin"

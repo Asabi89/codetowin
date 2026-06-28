@@ -16,7 +16,7 @@ import ProjectWorkspace from '../../components/features/hackathon/detail/Project
 import FAQAccordion from '../../components/features/hackathon/detail/FAQAccordion';
 
 export default function HackathonDetail() {
-  const { workspaceState, registered, updateWorkspaceState, resetWorkspace, isAuthenticated } = useContext(AuthContext);
+  const { workspaceState, registered, updateWorkspaceState, resetWorkspace } = useContext(AuthContext);
   const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,6 +36,9 @@ export default function HackathonDetail() {
   const [newDiscussionContent, setNewDiscussionContent] = useState('');
   const [showDiscussionForm, setShowDiscussionForm] = useState(false);
   const [submittingDiscussion, setSubmittingDiscussion] = useState(false);
+
+  const [participantSearch, setParticipantSearch] = useState('');
+  const [participantFilter, setParticipantFilter] = useState('Tous');
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -69,6 +72,18 @@ export default function HackathonDetail() {
     fetchHackathonData();
   }, [id, showToast]);
 
+  // Clear workspace if navigating to a different hackathon
+  useEffect(() => {
+    if (hackathon) {
+      if (workspaceState.currentHackathonId && workspaceState.currentHackathonId !== hackathon.id) {
+        resetWorkspace();
+        updateWorkspaceState({ currentHackathonId: hackathon.id });
+      } else if (!workspaceState.currentHackathonId) {
+        updateWorkspaceState({ currentHackathonId: hackathon.id });
+      }
+    }
+  }, [hackathon, workspaceState.currentHackathonId]);
+
   useEffect(() => {
     if (!hackathon) return;
     
@@ -95,11 +110,27 @@ export default function HackathonDetail() {
     fetchTabData();
   }, [activeTab, hackathon]);
 
-  const handleOnboardingJoin = () => {
-    if (!isAuthenticated) {
+  const [joining, setJoining] = useState(false);
+
+  const handleHackathonJoin = async () => {
+    if (!registered) {
       navigate('/auth/signup');
     } else {
-      navigate('/profile');
+      setJoining(true);
+      try {
+        await hackathonsApi.register(hackathon.id, { motivation: "Je veux participer !" });
+        showToast("Vous avez rejoint le hackathon avec succès !", "success");
+        setHackathon({ ...hackathon, is_registered: true });
+        setActiveTab('my-project');
+      } catch (error) {
+        if (error.response && error.response.data && error.response.data.error) {
+           showToast(error.response.data.error, "error");
+        } else {
+           showToast("Erreur lors de l'inscription à ce hackathon.", "error");
+        }
+      } finally {
+        setJoining(false);
+      }
     }
   };
 
@@ -129,7 +160,7 @@ export default function HackathonDetail() {
           <HackathonHero 
             registered={registered} 
             setActiveTab={setActiveTab} 
-            handleOnboardingJoin={handleOnboardingJoin} 
+            handleOnboardingJoin={handleHackathonJoin} 
             hackathon={hackathon}
           />
 
@@ -159,7 +190,7 @@ export default function HackathonDetail() {
                     updateWorkspaceState={updateWorkspaceState}
                     resetWorkspace={handleResetWorkspace}
                     registered={registered}
-                    handleOnboardingJoin={handleOnboardingJoin}
+                    handleOnboardingJoin={handleHackathonJoin}
                     isSubmitted={workspaceState.submitted}
                     setIsSubmitted={setIsSubmitted}
                     hackathon={hackathon}
@@ -176,13 +207,29 @@ export default function HackathonDetail() {
                   
                   <div className="search-filter-row">
                     <div className="search-box-wrap">
-                      <input type="text" placeholder="Cherche des potes, des skills..." />
+                      <input 
+                        type="text" 
+                        placeholder="Cherche des potes, des skills..." 
+                        value={participantSearch}
+                        onChange={(e) => setParticipantSearch(e.target.value)}
+                      />
                     </div>
                     <div className="filter-chips-list">
-                      <span className="filter-chip-item active">Tous</span>
-                      <span className="filter-chip-item">Bricoleurs</span>
-                      <span className="filter-chip-item">Artistes</span>
-                      <span className="filter-chip-item">Chefs d'orchestre</span>
+                      <span 
+                        className={`filter-chip-item ${participantFilter === 'Tous' ? 'active' : ''}`}
+                        onClick={() => setParticipantFilter('Tous')}
+                      >
+                        Tous
+                      </span>
+                      {Array.from(new Set(participants.flatMap(p => p.user?.skills || []))).filter(Boolean).slice(0, 5).map(skill => (
+                        <span 
+                          key={skill}
+                          className={`filter-chip-item ${participantFilter === skill ? 'active' : ''}`}
+                          onClick={() => setParticipantFilter(skill)}
+                        >
+                          {skill}
+                        </span>
+                      ))}
                     </div>
                   </div>
 
@@ -192,7 +239,14 @@ export default function HackathonDetail() {
                         <LoadingSpinner message="Chargement des participants..." />
                       </div>
                     ) : participants.length > 0 ? (
-                      participants.map(reg => (
+                      participants.filter(reg => {
+                        const searchLower = participantSearch.toLowerCase();
+                        const matchesSearch = !participantSearch || 
+                          reg.user?.name?.toLowerCase().includes(searchLower) || 
+                          reg.user?.skills?.some(s => s.toLowerCase().includes(searchLower));
+                        const matchesFilter = participantFilter === 'Tous' || reg.user?.skills?.includes(participantFilter);
+                        return matchesSearch && matchesFilter;
+                      }).map(reg => (
                         <div className="user-profile-card" key={reg.id}>
                           <div className="user-avatar-wrap">
                             <img src={reg.user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(reg.user.name)}&background=random`} alt={reg.user.name} className="profile-avatar" />
@@ -277,7 +331,7 @@ export default function HackathonDetail() {
                     <div className="search-box-wrap" style={{ flex: 1, marginRight: '1rem' }}>
                       <input type="text" placeholder="Cherche de quoi papoter..." />
                     </div>
-                    {isAuthenticated ? (
+                    {registered ? (
                       <button onClick={() => setShowDiscussionForm(!showDiscussionForm)} className="btn-action-primary">
                         {showDiscussionForm ? 'Annuler' : 'Nouveau truc à dire'}
                       </button>

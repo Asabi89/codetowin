@@ -49,4 +49,8 @@ export const authApi = {
    * Forcer le changement de mot de passe (après invitation)
    */
   changePassword: (data) => apiClient.post('/auth/change-password', data),
+
+  googleLogin: (token, role) => apiClient.post('/auth/google/', { token, role }),
+
+  githubLogin: (code, role) => apiClient.post('/auth/github/', { code, role }),
 };

@@ -106,6 +106,41 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const socialLogin = async (provider, tokenOrCode, role) => {
+    try {
+      let response;
+      if (provider === 'google') {
+        response = await authApi.googleLogin(tokenOrCode, role);
+      } else if (provider === 'github') {
+        response = await authApi.githubLogin(tokenOrCode, role);
+      }
+      
+      const token = response.access || response.token;
+      if (token) {
+        localStorage.setItem(TOKEN_KEY, token);
+      }
+      
+      const user = await authApi.getMe();
+      
+      setState(prev => ({
+        ...prev,
+        registered: true,
+        profile: {
+           ...user,
+           firstName: user.display_name || user.first_name || '',
+           lastName: user.last_name || '',
+           email: user.email,
+           avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.display_name || user.username || 'User')}&background=047857&color=fff`
+        },
+        role: user.role ? user.role.toLowerCase() : 'participant'
+      }));
+      return true;
+    } catch (err) {
+      console.error("Social login failed", err);
+      throw err;
+    }
+  };
+
   const registerUser = async (profileData) => {
     try {
       // Map frontend fields to backend fields
@@ -172,6 +207,7 @@ export const AuthProvider = ({ children }) => {
       role: state.role,
       loading,
       login,
+      socialLogin,
       registerUser,
       updateProfileContext,
       logout,

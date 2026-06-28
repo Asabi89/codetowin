@@ -2,9 +2,9 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Trophy, FileText, Clock, CheckCircle } from 'lucide-react';
 import { hackathonsApi } from '../../../api/hackathons';
-import { HACKATHONS_DATA_MOCK } from '../../../mockdata/organizer';
 import { extractArray, normalizeHackathon, normalizeStatus } from '../../../services/normalizers';
 import { OrganizerContext } from '../../../context/OrganizerContext';
+import { formatDate } from '../../../services/formatters';
 
 const STATUS_BADGE_MAP = {
   publie: { label: 'Publié', classes: 'bg-green-100 text-green-800' },
@@ -139,9 +139,13 @@ const OrganizerHackathons = () => {
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 sm:pl-6">
                           <div className="flex items-center">
                             <div className="h-10 w-10 flex-shrink-0">
-                              <div className={`flex h-10 w-10 items-center justify-center rounded ${hackathon.iconBg || 'bg-brand-50'} ${hackathon.iconColor || 'text-brand-700'}`}>
-                                {hackathon.icon || getDefaultIcon(hackathon.status)}
-                              </div>
+                              {hackathon.logo || hackathon.organizer_logo ? (
+                                <img className="h-10 w-10 rounded object-cover" src={hackathon.logo || hackathon.organizer_logo} alt={hackathon.title} />
+                              ) : (
+                                <div className={`flex h-10 w-10 items-center justify-center rounded ${hackathon.iconBg || 'bg-brand-50'} ${hackathon.iconColor || 'text-brand-700'}`}>
+                                  {hackathon.icon || getDefaultIcon(hackathon.status)}
+                                </div>
+                              )}
                             </div>
                             <div className="ml-4">
                               <div className="font-medium text-slate-900">{hackathon.title}</div>
@@ -159,7 +163,7 @@ const OrganizerHackathons = () => {
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.participants || '-'}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.teams || '-'}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.submissions || '-'}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.deadline || 'Non planifié'}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">{hackathon.deadline && hackathon.deadline !== 'Non planifié' ? formatDate(hackathon.deadline) : 'Non planifié'}</td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                           {hackathon.status === 'brouillon' ? (
                             <Link to={`/organizer/hackathons/edit/${hackathon.id}`} className="text-brand-600 hover:text-brand-900">Éditer<span className="sr-only">, {hackathon.title}</span></Link>

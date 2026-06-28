@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { useGoogleLogin } from '@react-oauth/google';
 import { authApi } from '../../api/auth';
 
 const validSignupRoles = ['participant', 'organizer', 'mentor'];
@@ -12,8 +13,8 @@ const roleLabels = {
     heading: 'Rejoins-nous !',
     subtitle: 'Crée ton compte participant',
     redirectTo: '/choose-role',
-    sideBg: 'bg-indigo-100',
-    sideImage: "https://storage.googleapis.com/devitary-image-host.appspot.com/15848031292911696601-undraw_designer_life_w96d.svg"
+    sideBg: 'bg-brand-100',
+    sideImage: "/assets/illustrations/1000353279.png"
   },
   organizer: {
     title: 'Organisateur',
@@ -28,7 +29,7 @@ const roleLabels = {
     heading: 'Deviens Mentor',
     subtitle: 'Accompagne les équipes',
     redirectTo: '/mentor',
-    sideBg: 'bg-blue-100',
+    sideBg: 'bg-green-100',
     sideImage: "https://illustrations.popsy.co/amber/teaching.svg"
   },
 };
@@ -39,7 +40,7 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
-  const { registerUser } = useContext(AuthContext);
+  const { registerUser, socialLogin } = useContext(AuthContext);
   const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -86,17 +87,25 @@ export default function Signup() {
     }
   };
 
-  const handleSocialSignup = (provider) => {
-    registerUser({
-      firstName: `${provider}User`,
-      lastName: '',
-      email: `${provider.toLowerCase()}user@codetowin.com`,
-      role: role,
-      title: roleContext.title,
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80'
-    });
-    
-    navigate(hasExplicitRole ? roleContext.redirectTo : '/choose-role');
+  const handleGoogleLoginSuccess = async (tokenResponse) => {
+    try {
+      await socialLogin('google', tokenResponse.access_token, role);
+      navigate(hasExplicitRole ? roleContext.redirectTo : '/choose-role');
+    } catch (err) {
+      console.error(err);
+      setFieldErrors({ general: "Erreur lors de l'inscription Google." });
+    }
+  };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: handleGoogleLoginSuccess,
+    onError: () => setFieldErrors({ general: "Échec de la connexion Google" }),
+  });
+
+  const handleGithubLogin = () => {
+    const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID || 'YOUR_GITHUB_CLIENT_ID';
+    const redirectUri = window.location.origin + '/oauth/github/callback?role=' + role;
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=user:email`;
   };
 
   return (
@@ -116,8 +125,9 @@ export default function Signup() {
                     <div className="w-full flex-1 mt-6">
                         <div className="flex flex-col items-center">
                             <button
-                                onClick={() => handleSocialSignup('Google')}
-                                className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-50 text-indigo-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
+                                onClick={() => googleLogin()}
+                                type="button"
+                                className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-brand-50 text-brand-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
                                 <div className="bg-white p-2 rounded-full">
                                     <svg className="w-4" viewBox="0 0 533.5 544.3">
                                         <path d="M533.5 278.4c0-18.5-1.5-37.1-4.7-55.3H272.1v104.8h147c-6.1 33.8-25.7 63.7-54.4 82.7v68h87.7c51.5-47.4 81.1-117.4 81.1-200.2z" fill="#4285f4" />
@@ -130,8 +140,9 @@ export default function Signup() {
                             </button>
 
                             <button
-                                onClick={() => handleSocialSignup('GitHub')}
-                                className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-50 text-indigo-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5">
+                                onClick={handleGithubLogin}
+                                type="button"
+                                className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-brand-50 text-brand-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5">
                                 <div className="bg-white p-1 rounded-full">
                                     <svg className="w-6" viewBox="0 0 32 32">
                                         <path fillRule="evenodd" d="M16 4C9.371 4 4 9.371 4 16c0 5.3 3.438 9.8 8.207 11.387.602.11.82-.258.82-.578 0-.286-.011-1.04-.015-2.04-3.34.723-4.043-1.609-4.043-1.609-.547-1.387-1.332-1.758-1.332-1.758-1.09-.742.082-.726.082-.726 1.203.086 1.836 1.234 1.836 1.234 1.07 1.836 2.808 1.305 3.492 1 .11-.777.422-1.305.762-1.605-2.664-.301-5.465-1.332-5.465-5.93 0-1.313.469-2.383 1.234-3.223-.121-.3-.535-1.523.117-3.175 0 0 1.008-.32 3.301 1.23A11.487 11.487 0 0116 9.805c1.02.004 2.047.136 3.004.402 2.293-1.55 3.297-1.23 3.297-1.23.656 1.652.246 2.875.12 3.175.77.84 1.231 1.91 1.231 3.223 0 4.61-2.804 5.621-5.476 5.922.43.367.812 1.101.812 2.219 0 1.605-.011 2.898-.011 3.293 0 .32.214.695.824.578C24.566 25.797 28 21.3 28 16c0-6.629-5.371-12-12-12z" />
@@ -151,31 +162,31 @@ export default function Signup() {
                             {fieldErrors.general && <div className="text-red-500 text-sm mb-4 text-center font-medium">{fieldErrors.general}</div>}
                             
                             <input
-                                className={`w-full px-8 py-4 rounded-lg font-medium bg-slate-50 border ${fieldErrors.username ? 'border-red-400' : 'border-slate-200'} placeholder-slate-400 text-sm focus:outline-none focus:border-indigo-400 focus:bg-white focus:ring-1 focus:ring-indigo-400 transition-colors`}
+                                className={`w-full px-8 py-4 rounded-lg font-medium bg-slate-50 border ${fieldErrors.username ? 'border-red-400' : 'border-slate-200'} placeholder-slate-400 text-sm focus:outline-none focus:border-brand-400 focus:bg-white focus:ring-1 focus:ring-brand-400 transition-colors`}
                                 type="text" placeholder="Pseudo"
                                 value={username} onChange={(e) => setUsername(e.target.value)} required />
                             {fieldErrors.username && <p className="text-red-500 text-xs mt-1">{fieldErrors.username}</p>}
 
                             <input
-                                className={`w-full px-8 py-4 rounded-lg font-medium bg-slate-50 border ${fieldErrors.email ? 'border-red-400' : 'border-slate-200'} placeholder-slate-400 text-sm focus:outline-none focus:border-indigo-400 focus:bg-white focus:ring-1 focus:ring-indigo-400 transition-colors mt-4`}
+                                className={`w-full px-8 py-4 rounded-lg font-medium bg-slate-50 border ${fieldErrors.email ? 'border-red-400' : 'border-slate-200'} placeholder-slate-400 text-sm focus:outline-none focus:border-brand-400 focus:bg-white focus:ring-1 focus:ring-brand-400 transition-colors mt-4`}
                                 type="email" placeholder="Adresse Email"
                                 value={email} onChange={(e) => setEmail(e.target.value)} required />
                             {fieldErrors.email && <p className="text-red-500 text-xs mt-1">{fieldErrors.email}</p>}
 
                             <input
-                                className={`w-full px-8 py-4 rounded-lg font-medium bg-slate-50 border ${fieldErrors.password ? 'border-red-400' : 'border-slate-200'} placeholder-slate-400 text-sm focus:outline-none focus:border-indigo-400 focus:bg-white focus:ring-1 focus:ring-indigo-400 transition-colors mt-4`}
+                                className={`w-full px-8 py-4 rounded-lg font-medium bg-slate-50 border ${fieldErrors.password ? 'border-red-400' : 'border-slate-200'} placeholder-slate-400 text-sm focus:outline-none focus:border-brand-400 focus:bg-white focus:ring-1 focus:ring-brand-400 transition-colors mt-4`}
                                 type="password" placeholder="Mot de passe"
                                 value={password} onChange={(e) => setPassword(e.target.value)} required />
 
                             <input
-                                className={`w-full px-8 py-4 rounded-lg font-medium bg-slate-50 border ${fieldErrors.password ? 'border-red-400' : 'border-slate-200'} placeholder-slate-400 text-sm focus:outline-none focus:border-indigo-400 focus:bg-white focus:ring-1 focus:ring-indigo-400 transition-colors mt-4`}
+                                className={`w-full px-8 py-4 rounded-lg font-medium bg-slate-50 border ${fieldErrors.password ? 'border-red-400' : 'border-slate-200'} placeholder-slate-400 text-sm focus:outline-none focus:border-brand-400 focus:bg-white focus:ring-1 focus:ring-brand-400 transition-colors mt-4`}
                                 type="password" placeholder="Confirmer le mot de passe"
                                 value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} required />
                             {fieldErrors.password && <p className="text-red-500 text-xs mt-1">{fieldErrors.password}</p>}
 
                             <button
                                 type="submit"
-                                className="mt-5 tracking-wide font-semibold bg-indigo-600 text-white w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
+                                className="mt-5 tracking-wide font-semibold bg-brand-600 text-white w-full py-4 rounded-lg hover:bg-brand-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
                                 <svg className="w-6 h-6 -ml-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                                     <circle cx="8.5" cy="7" r="4" />
@@ -185,27 +196,36 @@ export default function Signup() {
                             </button>
                             <p className="mt-6 text-xs text-slate-600 text-center">
                                 J'accepte les{' '}
-                                <Link to="/conditions" className="border-b border-indigo-500 border-dotted text-indigo-600 hover:text-indigo-800">
+                                <Link to="/conditions" className="border-b border-brand-500 border-dotted text-brand-600 hover:text-brand-800">
                                     Conditions d'utilisation
                                 </Link>{' '}
                                 et la{' '}
-                                <Link to="/politique" className="border-b border-indigo-500 border-dotted text-indigo-600 hover:text-indigo-800">
+                                <Link to="/politique" className="border-b border-brand-500 border-dotted text-brand-600 hover:text-brand-800">
                                     Politique de confidentialité
                                 </Link>
                                 {' '}de CodeToWin.
                             </p>
                             <p className="mt-4 text-sm text-slate-600 text-center font-medium">
                                 Déjà un compte ?{' '}
-                                <Link to={`/login/${role}`} className="border-b border-indigo-500 border-dotted text-indigo-600 hover:text-indigo-800">
+                                <Link to={`/login/${role}`} className="border-b border-brand-500 border-dotted text-brand-600 hover:text-brand-800">
                                     Se connecter
                                 </Link>
                             </p>
+
+                            <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col items-center gap-2">
+                                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Vous n'êtes pas {role === 'participant' ? 'participant' : role === 'mentor' ? 'mentor' : 'organisateur'} ?</p>
+                                <div className="flex gap-4 text-xs">
+                                    {role !== 'participant' && <Link to="/signup?role=participant" className="text-slate-600 hover:text-brand-600 font-medium">Inscription Participant</Link>}
+                                    {role !== 'organizer' && <Link to="/signup?role=organizer" className="text-slate-600 hover:text-brand-600 font-medium">Inscription Organisateur</Link>}
+                                    {role !== 'mentor' && <Link to="/signup?role=mentor" className="text-slate-600 hover:text-brand-600 font-medium">Inscription Mentor</Link>}
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
-            <div className={`flex-1 ${roleContext.sideBg} text-center hidden lg:flex`}>
-                <div className="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
+            <div className={`flex-1 ${roleContext.sideBg} text-center hidden lg:flex items-center justify-center`}>
+                <div className="w-full h-full bg-contain bg-center bg-no-repeat m-6 xl:m-8 scale-110"
                     style={{ backgroundImage: `url('${roleContext.sideImage}')` }}>
                 </div>
             </div>
