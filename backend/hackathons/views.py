@@ -297,11 +297,15 @@ class TeamViewSet(viewsets.ModelViewSet):
             defaults={'role': 'Member'}
         )
         
+        # Build dynamic invite URL
+        origin = request.headers.get('Origin') or "https://codetowin.pro"
+        invite_url = f"{origin}/invite/{team.invite_token}"
+
         # Send Email
         context = {
             'organizationName': team.hackathon.title,
             'roleName': "Membre de l'équipe " + team.name,
-            'inviteUrl': "http://localhost:5173/login", # or frontend URL
+            'inviteUrl': invite_url,
             'tempPassword': temp_password
         }
         
