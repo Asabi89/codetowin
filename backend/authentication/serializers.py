@@ -14,6 +14,9 @@ class UserSerializer(serializers.ModelSerializer):
     avatar = serializers.SerializerMethodField()
     display_name = serializers.SerializerMethodField()
 
+    # Override role field to accept lowercase (DRF ChoiceField rejects lowercase before validate_role runs)
+    role = serializers.CharField(required=False, default='PARTICIPANT')
+
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'full_name_in', 'country', 'first_name', 'last_name', 'name', 'full_name', 'role', 'password', 'avatar', 'display_name', 'must_change_password')
@@ -25,7 +28,11 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_role(self, value):
         """Accept role in any case: participant, PARTICIPANT, Participant"""
         if isinstance(value, str):
-            return value.upper()
+            upper = value.upper()
+            valid = [r[0] for r in User.Role.choices]
+            if upper not in valid:
+                raise serializers.ValidationError(f'"{value}" is not a valid role. Choose from: {", ".join(valid)}')
+            return upper
         return value
 
     def get_name(self, obj):
