@@ -122,7 +122,7 @@ systemctl status codetowin-api --no-pager
 # ---- Frontend Build ----
 echo ""
 echo "[6/7] Build du frontend React..."
-mkdir -p /var/www/codetowin
+mkdir -p /var/www/codetowin-front
 cd /var/www/codetowin-api/frontend/codetowin
 
 # Production env
@@ -134,8 +134,8 @@ FEEOF
 
 npm install --silent
 npm run build
-cp -r dist/* /var/www/codetowin/
-chown -R www-data:www-data /var/www/codetowin
+cp -r dist/* /var/www/codetowin-front/
+chown -R www-data:www-data /var/www/codetowin-front
 
 # ---- Nginx Config ----
 echo ""
@@ -146,7 +146,7 @@ cat > /etc/nginx/sites-available/codetowin-frontend << NGINXFE
 server {
     listen 80;
     server_name codetowin.pro www.codetowin.pro;
-    root /var/www/codetowin;
+    root /var/www/codetowin-front;
     index index.html;
 
     # React Router - serve index.html for all routes
