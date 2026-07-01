@@ -43,11 +43,10 @@ class RegisterView(generics.CreateAPIView):
                 'dashboardUrl': f"{front_url}/login"
             })
             plain_message = strip_tags(html_message)
-            
             send_mail(
                 subject="Bienvenue sur HACKafri 🚀",
                 message=plain_message,
-                from_email=None,
+                from_email="HACKafri <contact@codetowin.pro>",
                 recipient_list=[user.email],
                 html_message=html_message
             )
@@ -102,11 +101,10 @@ def log_otp(request):
     try:
         html_message = render_to_string('emails/email-otp.html', {'otp': otp})
         plain_message = strip_tags(html_message)
-        
         send_mail(
             subject="Code de vérification HACKafri",
             message=plain_message,
-            from_email=None,
+            from_email="HACKafri <otp@codetowin.pro>",
             recipient_list=[email],
             html_message=html_message
         )

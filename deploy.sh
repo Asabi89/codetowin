@@ -65,6 +65,8 @@ cat > /var/www/codetowin-api/backend/production.env << 'ENVEOF'
 DJANGO_SECRET_KEY=codetowin-prod-secret-key-$(openssl rand -hex 32)
 DJANGO_DEBUG=False
 DJANGO_ALLOWED_HOSTS=api.codetowin.pro,72.62.181.25
+EMAIL_HOST_USER=b08cd1001@smtp-brevo.com
+DEFAULT_FROM_EMAIL=HACKafri <contact@codetowin.pro>
 CORS_ALLOWED_ORIGINS=https://codetowin.pro,https://www.codetowin.pro
 ENVEOF
 fi
@@ -97,9 +99,7 @@ After=network.target
 User=www-data
 Group=www-data
 WorkingDirectory=/var/www/codetowin-api/backend
-Environment="DJANGO_SETTINGS_MODULE=codetowin.settings"
-Environment="DJANGO_DEBUG=False"
-Environment="ALLOWED_HOSTS=api.codetowin.pro,72.62.181.25"
+EnvironmentFile=/var/www/codetowin-api/backend/production.env
 ExecStart=/var/www/codetowin-api/backend/venv/bin/gunicorn \\
     --workers 3 \\
     --bind 127.0.0.1:${API_PORT} \\
