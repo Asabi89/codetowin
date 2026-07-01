@@ -74,11 +74,10 @@ class OrganizerTeamMemberViewSet(viewsets.ModelViewSet):
             'tempPassword': temp_password,
         })
         plain_message = strip_tags(html_message)
-        
         send_mail(
-            subject=f"Invitation à rejoindre l'équipe {org_name} sur HACKafri",
+            subject=f"Invitation à rejoindre l'équipe {org_name} sur CodeToWin",
             message=plain_message,
-            from_email=None,  # Uses DEFAULT_FROM_EMAIL
+            from_email="CodeToWin <invite@codetowin.pro>",
             recipient_list=[email],
             html_message=html_message
         )

@@ -3,7 +3,7 @@ import django
 import sys
 
 # Setup Django environment
-sys.path.append('c:\\Users\\admin\\Documents\\project\\HACKafri\\backend')
+sys.path.append('c:\\Users\\admin\\Documents\\project\\CodeToWin\\backend')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'codetowin.settings')
 django.setup()
 

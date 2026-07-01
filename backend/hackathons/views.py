@@ -93,11 +93,10 @@ class HackathonViewSet(viewsets.ModelViewSet):
                     'dashboardUrl': f"{front_url}/mentor/invitations"
                 })
                 plain_message = strip_tags(html_message)
-                
                 send_mail(
                     subject=f"Invitation Mentor - {hackathon.title}",
                     message=plain_message,
-                    from_email=None,
+                    from_email="CodeToWin <invite@codetowin.pro>",
                     recipient_list=[mentor.user.email],
                     html_message=html_message
                 )
@@ -376,7 +375,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             send_mail(
                 subject=f"Invitation à rejoindre l'équipe {team.name}",
                 message=plain_message,
-                from_email="no-reply@codetowin.org",
+                from_email="CodeToWin <invite@codetowin.pro>",
                 recipient_list=[email],
                 html_message=html_message
             )
