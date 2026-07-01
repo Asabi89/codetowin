@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue sur HACKafri</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; color: #334155; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .header { background-color: #4f46e5; padding: 40px 20px; text-align: center; color: white; }
+        .header h1 { margin: 0; font-size: 24px; font-weight: bold; }
+        .content { padding: 32px; line-height: 1.6; }
+        .content h2 { color: #0f172a; font-size: 20px; margin-top: 0; }
+        .button-container { text-align: center; margin: 32px 0; }
+        .button { background-color: #4f46e5; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; }
+        .footer { background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 14px; color: #64748b; }
+        .footer a { color: #4f46e5; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bienvenue sur HACKafri 🚀</h1>
+        </div>
+        <div class="content">
+            <h2>Bonjour {{ name }},</h2>
+            <p>Nous sommes ravis de vous compter parmi nous ! Votre compte a été créé avec succès.</p>
+            <p>HACKafri est la plateforme de référence pour les hackathons technologiques en Afrique. Vous pouvez dès maintenant explorer les hackathons ouverts, former une équipe, et commencer à innover.</p>
+            <div class="button-container">
+                <a href="{{ dashboardUrl }}" class="button" style="color: white;">Accéder à mon tableau de bord</a>
+            </div>
+            <p>Si vous avez des questions ou si vous avez besoin d'aide pour démarrer, n'hésitez pas à nous contacter.</p>
+            <p>L'équipe HACKafri</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 CodeToWin. Tous droits réservés.</p>
+            <p><a href="https://codetowin.pro">codetowin.pro</a></p>
+        </div>
+    </div>
+</body>
+</html>

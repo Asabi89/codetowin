@@ -10,6 +10,33 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = UserSerializer
 
+    def perform_create(self, serializer):
+        user = serializer.save()
+        
+        # Send welcome email
+        try:
+            from django.core.mail import send_mail
+            from django.template.loader import render_to_string
+            from django.utils.html import strip_tags
+            import os
+            
+            front_url = os.environ.get('FRONTEND_URL', 'https://codetowin.pro')
+            html_message = render_to_string('emails/email-welcome.html', {
+                'name': user.username,
+                'dashboardUrl': f"{front_url}/login"
+            })
+            plain_message = strip_tags(html_message)
+            
+            send_mail(
+                subject="Bienvenue sur HACKafri 🚀",
+                message=plain_message,
+                from_email=None,
+                recipient_list=[user.email],
+                html_message=html_message
+            )
+        except Exception as e:
+            print(f"Error sending welcome email to {user.email}: {e}")
+
 class ProfileView(generics.RetrieveUpdateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserSerializer

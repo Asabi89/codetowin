@@ -401,4 +401,45 @@ class SubmissionViewSet(viewsets.ModelViewSet):
                 from rest_framework.exceptions import ValidationError
                 raise ValidationError({'error': f'La taille maximale de l\'équipe pour soumettre est de {hackathon.max_team_size} personnes.'})
                 
-        serializer.save()
+        submission = serializer.save()
+        self._send_submission_email(submission)
+
+    def perform_update(self, serializer):
+        old_status = self.get_object().status
+        submission = serializer.save()
+        if old_status != 'Soumis' and submission.status == 'Soumis':
+            self._send_submission_email(submission)
+
+    def _send_submission_email(self, submission):
+        try:
+            from django.core.mail import send_mail
+            from django.template.loader import render_to_string
+            from django.utils.html import strip_tags
+            import os
+            
+            front_url = os.environ.get('FRONTEND_URL', 'https://codetowin.pro')
+            team = submission.team
+            hackathon = team.hackathon
+            
+            # Send to team leader
+            recipient_email = team.leader.user.email
+            
+            html_message = render_to_string('emails/email-project-submitted.html', {
+                'teamName': team.name,
+                'hackathonName': hackathon.title,
+                'projectName': submission.title,
+                'submissionDate': submission.submitted_at.strftime("%d/%m/%Y"),
+                'projectUrl': f"{front_url}/participant/hackathons/{hackathon.slug}?tab=my-project"
+            })
+            plain_message = strip_tags(html_message)
+            
+            send_mail(
+                subject=f"Confirmation de soumission - {hackathon.title}",
+                message=plain_message,
+                from_email=None,
+                recipient_list=[recipient_email],
+                html_message=html_message
+            )
+        except Exception as e:
+            print(f"Error sending submission email: {e}")
+
