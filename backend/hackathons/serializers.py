@@ -82,8 +82,8 @@ class HackathonSerializer(serializers.ModelSerializer):
         if registration_start and registration_end and registration_start > registration_end:
             raise serializers.ValidationError({"registration_end": "La date de fin d'inscription doit être postérieure au début d'inscription."})
             
-        if registration_end and start_date and registration_end > start_date:
-            raise serializers.ValidationError({"registration_end": "La date de fin d'inscription ne peut pas dépasser la date de début du hackathon."})
+        # Note: registration_end can be <= start_date (registrations close before hackathon starts)
+        # We only validate that registration_start < registration_end
 
         # Validation des équipes
         min_team_size = data.get('min_team_size', 1)

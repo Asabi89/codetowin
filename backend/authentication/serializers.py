@@ -17,7 +17,16 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'full_name_in', 'country', 'first_name', 'last_name', 'name', 'full_name', 'role', 'password', 'avatar', 'display_name', 'must_change_password')
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'username': {'required': False},
+        }
+
+    def validate_role(self, value):
+        """Accept role in any case: participant, PARTICIPANT, Participant"""
+        if isinstance(value, str):
+            return value.upper()
+        return value
 
     def get_name(self, obj):
         return f"{obj.first_name} {obj.last_name}".strip() or obj.email
@@ -59,6 +68,7 @@ class UserSerializer(serializers.ModelSerializer):
         role = validated_data.get('role', User.Role.PARTICIPANT)
         if isinstance(role, str):
             role = role.upper()
+        validated_data['role'] = role
 
         user = User.objects.create_user(
             username=validated_data.get('username', validated_data['email']), # Use username if provided, else email
