@@ -37,16 +37,23 @@ class OrganizerTeamMemberViewSet(viewsets.ModelViewSet):
         
         temp_password = None
         if not user:
+            import random
+            import string
             temp_password = get_random_string(10)
+            base_username = email.split('@')[0]
+            username = base_username
+            while User.objects.filter(username=username).exists():
+                username = base_username + "".join(random.choices(string.ascii_lowercase + string.digits, k=4))
+                
             user = User.objects.create_user(
                 email=email,
-                username=email.split('@')[0],
+                username=username,
                 password=temp_password,
                 role='ORGANIZER',
                 must_change_password=True
             )
             from organizer.models import OrganizerProfile
-            OrganizerProfile.objects.create(user=user)
+            OrganizerProfile.objects.get_or_create(user=user)
             status = 'active'
             
         member = serializer.save(

@@ -475,6 +475,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             from django.core.mail import send_mail
             from django.template.loader import render_to_string
             from django.utils.html import strip_tags
+            from django.utils import timezone
             import os
             
             front_url = os.environ.get('FRONTEND_URL', 'https://codetowin.pro')
@@ -482,13 +483,19 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             hackathon = team.hackathon
             
             # Send to team leader
-            recipient_email = team.leader.user.email
+            if hasattr(team, 'leader') and team.leader and hasattr(team.leader, 'user') and team.leader.user:
+                recipient_email = team.leader.user.email
+            else:
+                print("Submission email failed: No valid team leader found.")
+                return
+                
+            submitted_date = getattr(submission, 'submitted_at', None) or timezone.now()
             
             html_message = render_to_string('emails/email-project-submitted.html', {
                 'teamName': team.name,
                 'hackathonName': hackathon.title,
                 'projectName': submission.title,
-                'submissionDate': submission.submitted_at.strftime("%d/%m/%Y"),
+                'submissionDate': submitted_date.strftime("%d/%m/%Y"),
                 'projectUrl': f"{front_url}/participant/hackathons/{hackathon.slug}?tab=my-project"
             })
             plain_message = strip_tags(html_message)
@@ -501,5 +508,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
                 html_message=html_message
             )
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             print(f"Error sending submission email: {e}")
 

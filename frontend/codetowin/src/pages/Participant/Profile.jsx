@@ -161,7 +161,14 @@ export default function Profile() {
       await usersApi.updateProfile(profileData);
       updateProfileContext(profileData);
       showToast("Profil enregistré avec succès !", "success");
-      navigate('/participant');
+      
+      const pendingHackathon = localStorage.getItem('pendingHackathonJoin');
+      if (pendingHackathon) {
+        localStorage.removeItem('pendingHackathonJoin');
+        navigate(`/hackathons/${pendingHackathon}`);
+      } else {
+        navigate('/participant');
+      }
     } catch (error) {
       console.error(error);
       showToast("Erreur lors de l'enregistrement du profil.", "error");

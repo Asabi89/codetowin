@@ -114,7 +114,9 @@ export default function HackathonDetail() {
 
   const handleHackathonJoin = async () => {
     if (!registered) {
-      navigate('/auth/signup');
+      // Save intent to local storage so we can join after profile completion
+      localStorage.setItem('pendingHackathonJoin', hackathon.id);
+      navigate('/signup');
     } else {
       setJoining(true);
       try {
