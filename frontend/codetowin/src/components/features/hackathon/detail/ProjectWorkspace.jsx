@@ -85,21 +85,42 @@ export default function ProjectWorkspace({
     
     setSubmitting(true);
     try {
-      // Create drafting / saving process
-      const submissionId = workspaceState.id || 'draft_1';
-      await submissionsApi.updateSubmission(submissionId, {
-        title: workspaceState.projectName,
-        description: workspaceState.detailsAbout || workspaceState.projectPitch,
-        github_url: workspaceState.detailsRepo,
-        demo_url: workspaceState.detailsDemo,
-        jury_answers: workspaceState.juryAnswers
-      });
-      await submissionsApi.submitProject(submissionId);
-      setIsSubmitted(true);
-      setPreviewActive(true);
-      showToast("Projet soumis avec succès !", "success");
+      let submissionId = workspaceState.id;
+      const submissionData = {
+        title: workspaceState.projectName || 'Sans titre',
+        description: workspaceState.detailsAbout || workspaceState.projectPitch || '',
+        github_url: workspaceState.detailsRepo || '',
+        demo_url: workspaceState.detailsDemo || '',
+        jury_answers: workspaceState.juryAnswers || {}
+      };
+
+      if (!submissionId || submissionId === 'draft_1') {
+        if (!workspaceState.teamId) {
+          showToast("Erreur: Équipe introuvable. Veuillez créer une équipe d'abord.", "error");
+          setSubmitting(false);
+          return;
+        }
+        // Create new submission
+        const res = await submissionsApi.createSubmission(workspaceState.teamId, submissionData);
+        submissionId = res.id || res.data?.id;
+        handleUpdateField('id', submissionId);
+      } else {
+        // Update existing submission
+        await submissionsApi.updateSubmission(submissionId, submissionData);
+      }
+
+      // Finalize submission
+      if (submissionId) {
+        await submissionsApi.submitProject(submissionId);
+        setIsSubmitted(true);
+        setPreviewActive(true);
+        showToast("Projet soumis avec succès !", "success");
+      } else {
+        throw new Error("Missing submission ID");
+      }
     } catch (error) {
-      showToast("Erreur lors de la soumission.", "error");
+      console.error(error);
+      showToast("Erreur lors de la soumission du projet.", "error");
     } finally {
       setSubmitting(false);
     }

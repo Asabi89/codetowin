@@ -15,7 +15,7 @@ export const submissionsApi = {
    * @param {object} submissionData
    */
   createSubmission: async (teamId, submissionData) => {
-    return await apiClient.post(`/teams/${teamId}/submissions`, submissionData);
+    return await apiClient.post(`/submissions`, { team: teamId, ...submissionData });
   },
 
   /**
@@ -40,7 +40,7 @@ export const submissionsApi = {
    * @param {string|number} submissionId
    */
   submitProject: async (submissionId) => {
-    return await apiClient.post(`/submissions/${submissionId}/submit`);
+    return await apiClient.patch(`/submissions/${submissionId}`, { status: 'Soumis' });
   },
 
   /**
