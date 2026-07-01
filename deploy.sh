@@ -60,13 +60,14 @@ source venv/bin/activate
 pip install -q -r requirements.txt
 pip install -q gunicorn
 
-# Apply production settings
+if [ ! -f /var/www/codetowin-api/backend/production.env ]; then
 cat > /var/www/codetowin-api/backend/production.env << 'ENVEOF'
 DJANGO_SECRET_KEY=codetowin-prod-secret-key-$(openssl rand -hex 32)
 DJANGO_DEBUG=False
 DJANGO_ALLOWED_HOSTS=api.codetowin.pro,72.62.181.25
 CORS_ALLOWED_ORIGINS=https://codetowin.pro,https://www.codetowin.pro
 ENVEOF
+fi
 
 # Migrations & static files
 python manage.py migrate --noinput
