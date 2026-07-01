@@ -76,6 +76,34 @@ class HackathonViewSet(viewsets.ModelViewSet):
             mentor=mentor,
             defaults={'status': MentorInvitation.Status.PENDING}
         )
+        
+        if created:
+            try:
+                from django.core.mail import send_mail
+                from django.template.loader import render_to_string
+                from django.utils.html import strip_tags
+                import os
+                
+                front_url = os.environ.get('FRONTEND_URL', 'https://codetowin.pro')
+                
+                html_message = render_to_string('emails/email-mentor-invite.html', {
+                    'mentorName': mentor.user.username,
+                    'hackathonName': hackathon.title,
+                    'organizerName': hackathon.organizer.user.username,
+                    'dashboardUrl': f"{front_url}/mentor/invitations"
+                })
+                plain_message = strip_tags(html_message)
+                
+                send_mail(
+                    subject=f"Invitation Mentor - {hackathon.title}",
+                    message=plain_message,
+                    from_email=None,
+                    recipient_list=[mentor.user.email],
+                    html_message=html_message
+                )
+            except Exception as e:
+                print(f"Error sending mentor invite email: {e}")
+                
         return Response({'status': 'Invitation sent', 'id': invitation.id})
 
     @action(detail=True, methods=['post'], permission_classes=[IsOrganizerOrReadOnly])
@@ -179,6 +207,38 @@ class RegistrationViewSet(viewsets.ModelViewSet):
     queryset = HackathonRegistration.objects.all()
     serializer_class = HackathonRegistrationSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        registration = serializer.save()
+        
+        # Send hackathon joined email
+        try:
+            from django.core.mail import send_mail
+            from django.template.loader import render_to_string
+            from django.utils.html import strip_tags
+            import os
+            
+            front_url = os.environ.get('FRONTEND_URL', 'https://codetowin.pro')
+            participant = registration.participant
+            hackathon = registration.hackathon
+            
+            html_message = render_to_string('emails/email-hackathon-joined.html', {
+                'participantName': participant.user.username,
+                'hackathonName': hackathon.title,
+                'organizerName': hackathon.organizer.user.username,
+                'hackathonUrl': f"{front_url}/participant/hackathons/{hackathon.slug}"
+            })
+            plain_message = strip_tags(html_message)
+            
+            send_mail(
+                subject=f"Inscription confirmée : {hackathon.title}",
+                message=plain_message,
+                from_email=None,
+                recipient_list=[participant.user.email],
+                html_message=html_message
+            )
+        except Exception as e:
+            print(f"Error sending hackathon join email: {e}")
 
     @action(detail=True, methods=['patch'])
     def approve(self, request, pk=None):

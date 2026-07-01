@@ -134,6 +134,19 @@ export default function Profile() {
   // ── Submit ───────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Fix for mobile keyboards where 'Enter' submits the form instead of adding a tag
+    if (skillInput.trim()) {
+      addTag(skillInput, skills, setSkills);
+      setSkillInput('');
+      return;
+    }
+    if (interestInput.trim()) {
+      addTag(interestInput, interests, setInterests);
+      setInterestInput('');
+      return;
+    }
+
     setSaving(true);
     const profileData = {
       firstName, lastName, title, about, bio,

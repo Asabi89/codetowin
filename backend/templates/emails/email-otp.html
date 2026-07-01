@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre code de vérification HACKafri</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; color: #334155; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .header { background-color: #4f46e5; padding: 40px 20px; text-align: center; color: white; }
+        .header h1 { margin: 0; font-size: 24px; font-weight: bold; }
+        .content { padding: 32px; line-height: 1.6; text-align: center; }
+        .content h2 { color: #0f172a; font-size: 20px; margin-top: 0; }
+        .otp-container { background-color: #f1f5f9; padding: 20px; border-radius: 8px; margin: 30px auto; max-width: 250px; border: 2px dashed #4f46e5; }
+        .otp-code { font-size: 32px; font-weight: bold; color: #4f46e5; letter-spacing: 5px; margin: 0; }
+        .footer { background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 14px; color: #64748b; }
+        .footer a { color: #4f46e5; text-decoration: none; }
+        .warning { font-size: 13px; color: #94a3b8; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Vérification de votre adresse e-mail ✉️</h1>
+        </div>
+        <div class="content">
+            <h2>Bienvenue sur HACKafri !</h2>
+            <p>Pour finaliser votre inscription, veuillez utiliser le code de vérification ci-dessous. Ce code est valide pendant 10 minutes.</p>
+            
+            <div class="otp-container">
+                <p class="otp-code">{{ otp }}</p>
+            </div>
+            
+            <p class="warning">Si vous n'avez pas demandé ce code, vous pouvez ignorer cet e-mail.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 CodeToWin. Tous droits réservés.</p>
+            <p><a href="https://codetowin.pro">codetowin.pro</a></p>
+        </div>
+    </div>
+</body>
+</html>

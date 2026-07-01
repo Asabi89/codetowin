@@ -38,7 +38,7 @@ export const authApi = {
   /**
    * Log OTP to terminal
    */
-  logOtp: (email, otp) => apiClient.post('/auth/log-otp', { email, otp }),
+  sendOtp: (email) => apiClient.post('/auth/log-otp', { email }),
 
   /**
    * Check if username and email are available

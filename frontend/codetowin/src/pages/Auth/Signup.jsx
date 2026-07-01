@@ -73,16 +73,21 @@ export default function Signup() {
       return;
     }
 
-    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    authApi.logOtp(email, generatedOtp).catch(console.error);
+    try {
+      await authApi.sendOtp(email);
+    } catch (err) {
+      console.error(err);
+      setFieldErrors({ general: "Erreur lors de l'envoi du code de vérification." });
+      return;
+    }
     
     if (hasExplicitRole) {
       navigate('/verify-email', {
-        state: { email, username, password, otpCode: generatedOtp, role, hasExplicitRole: true }
+        state: { email, username, password, role, hasExplicitRole: true }
       });
     } else {
       navigate('/choose-role', {
-        state: { email, username, password, otpCode: generatedOtp, fromSignup: true, hasExplicitRole: false }
+        state: { email, username, password, fromSignup: true, hasExplicitRole: false }
       });
     }
   };

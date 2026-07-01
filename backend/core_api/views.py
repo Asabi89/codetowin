@@ -41,7 +41,42 @@ class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
 
     def perform_create(self, serializer):
-        serializer.save(sender=self.request.user)
+        message = serializer.save(sender=self.request.user)
+        
+        # Send new message email to other participants in the conversation
+        try:
+            from django.core.mail import send_mail
+            from django.template.loader import render_to_string
+            from django.utils.html import strip_tags
+            import os
+            
+            conversation = message.conversation
+            front_url = os.environ.get('FRONTEND_URL', 'https://codetowin.pro')
+            
+            # Find recipients (everyone in conversation except sender)
+            recipients = conversation.participants.exclude(id=self.request.user.id)
+            
+            # Get a short preview of the message
+            preview = message.content[:50] + '...' if len(message.content) > 50 else message.content
+            
+            for recipient in recipients:
+                html_message = render_to_string('emails/email-new-message.html', {
+                    'recipientName': recipient.username,
+                    'senderName': self.request.user.username,
+                    'messagePreview': preview,
+                    'messagesUrl': f"{front_url}/messages"
+                })
+                plain_message = strip_tags(html_message)
+                
+                send_mail(
+                    subject=f"Nouveau message de {self.request.user.username}",
+                    message=plain_message,
+                    from_email=None,
+                    recipient_list=[recipient.email],
+                    html_message=html_message
+                )
+        except Exception as e:
+            print(f"Error sending new message email: {e}")
 
     @action(detail=False, methods=['post'])
     def upload(self, request):

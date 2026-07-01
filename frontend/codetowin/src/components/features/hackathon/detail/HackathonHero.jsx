@@ -61,7 +61,7 @@ export default function HackathonHero({ registered, setActiveTab, handleOnboardi
                 }
               }, 100);
             }}>
-              Entrer dans l'espace projet
+              Accéder au hackathon
             </button>
           ) : (
             <button type="button" className="btn-primary" onClick={handleOnboardingJoin}>

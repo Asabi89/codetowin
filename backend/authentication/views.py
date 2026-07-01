@@ -10,6 +10,23 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = UserSerializer
 
+    def create(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        otp_provided = request.data.get('otpCode')
+        
+        # Verify OTP if provided (to support frontend flows that send OTP)
+        if otp_provided:
+            from django.core.cache import cache
+            cached_otp = cache.get(f"otp_{email}")
+            if not cached_otp or str(cached_otp) != str(otp_provided):
+                from rest_framework.response import Response
+                return Response({"error": "Code de vérification invalide ou expiré."}, status=400)
+            
+            # OTP is valid, delete from cache to prevent reuse
+            cache.delete(f"otp_{email}")
+            
+        return super().create(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         user = serializer.save()
         
@@ -64,11 +81,39 @@ def change_password(request):
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def log_otp(request):
-    email = request.data.get('email', 'Unknown')
-    otp = request.data.get('otp', 'Unknown')
-    print(f"\n" + "="*50, flush=True)
-    print(f"🔐 OTP CODE FOR {email}: {otp}", flush=True)
-    print("="*50 + "\n", flush=True)
+    # Now used to generate and actually send the OTP via email
+    email = request.data.get('email')
+    if not email:
+        return Response({'error': 'Email is required'}, status=400)
+        
+    import random
+    from django.core.cache import cache
+    from django.core.mail import send_mail
+    from django.template.loader import render_to_string
+    from django.utils.html import strip_tags
+    
+    # Generate 6 digit OTP
+    otp = str(random.randint(100000, 999999))
+    
+    # Store in cache for 15 minutes
+    cache.set(f"otp_{email}", otp, timeout=900)
+    
+    # Send email
+    try:
+        html_message = render_to_string('emails/email-otp.html', {'otp': otp})
+        plain_message = strip_tags(html_message)
+        
+        send_mail(
+            subject="Code de vérification HACKafri",
+            message=plain_message,
+            from_email=None,
+            recipient_list=[email],
+            html_message=html_message
+        )
+    except Exception as e:
+        print(f"Error sending OTP email: {e}")
+        return Response({'error': 'Failed to send email'}, status=500)
+        
     return Response({'status': 'ok'})
 
 from django.contrib.auth.validators import UnicodeUsernameValidator

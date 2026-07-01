@@ -152,6 +152,10 @@ export const AuthProvider = ({ children }) => {
         role: (profileData.role || 'PARTICIPANT').toUpperCase()
       };
       
+      if (profileData.otpCode) {
+        payload.otpCode = profileData.otpCode;
+      }
+      
       if (profileData.country !== undefined) {
         payload.country = profileData.country;
       }

@@ -16,14 +16,12 @@ export default function VerifyEmail() {
   const email = signupData?.email || '';
   const username = signupData?.username || '';
   const password = signupData?.password || '';
-  const initialOtp = signupData?.otpCode || '123456';
 
   // OTP inputs state (6 digits)
   const [otp, setOtp] = useState(new Array(6).fill(''));
   const [errorMsg, setErrorMsg] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(59);
-  const [currentOtpCode, setCurrentOtpCode] = useState(initialOtp);
 
   // Refs for focusing inputs
   const inputRefs = useRef([]);
@@ -37,13 +35,6 @@ export default function VerifyEmail() {
       return () => clearTimeout(timer);
     }
   }, [resendCountdown]);
-
-  // Log the active OTP to console for easy developer testing
-  useEffect(() => {
-    if (email) {
-      console.log(`[TESTING] OTP Code for ${email} is: ${currentOtpCode}`);
-    }
-  }, [currentOtpCode, email]);
 
   // Handle changes in the digit boxes
   const handleChange = (element, index) => {
@@ -98,24 +89,22 @@ export default function VerifyEmail() {
     }
   };
 
-  // Resend code simulated logic
-  const handleResendCode = () => {
-    // Generate a new 6-digit random OTP code
-    const newCode = Math.floor(100000 + Math.random() * 900000).toString();
-    setCurrentOtpCode(newCode);
-    
-    // Log OTP to terminal
-    authApi.logOtp(email, newCode).catch(console.error);
-
-    setOtp(new Array(6).fill(''));
-    setErrorMsg('');
-    setResendCountdown(59);
-    showToast(`Un nouveau code de vérification a été simulé. Vérifiez votre console !`, 'success');
-    inputRefs.current[0].focus();
+  // Resend code logic
+  const handleResendCode = async () => {
+    try {
+        await authApi.sendOtp(email);
+        setOtp(new Array(6).fill(''));
+        setErrorMsg('');
+        setResendCountdown(59);
+        showToast(`Un nouveau code de vérification a été envoyé !`, 'success');
+        inputRefs.current[0].focus();
+    } catch(e) {
+        showToast("Erreur lors de l'envoi de l'e-mail.", "error");
+    }
   };
 
   // Submit and verify code
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const enteredCode = otp.join('');
     
@@ -127,48 +116,51 @@ export default function VerifyEmail() {
     setIsVerifying(true);
     setErrorMsg('');
 
-    // Simulate network delay
-    setTimeout(async () => {
-      if (enteredCode === currentOtpCode) {
-        const userRole = signupData?.role || 'participant';
-        try {
-          await registerUser({
-            firstName: username || 'User',
-            lastName: '',
+    const userRole = signupData?.role || 'participant';
+    try {
+      await registerUser({
+        firstName: username || 'User',
+        lastName: '',
+        email: email || 'user@codetowin.com',
+        password: password,
+        role: userRole,
+        otpCode: enteredCode
+      });
+      
+      setIsVerifying(false);
+      showToast("Votre email a été vérifié et votre inscription est maintenant finalisée !", "success");
+      
+      if (!signupData?.hasExplicitRole) {
+        navigate('/choose-role', {
+          replace: true,
+          state: {
+            fromSignup: true,
             email: email || 'user@codetowin.com',
+            username: username || 'User',
             password: password,
-            role: userRole
-          });
-          
-          setIsVerifying(false);
-          showToast("Votre email a été vérifié et votre inscription est maintenant finalisée !", "success");
-          
-          if (!signupData?.hasExplicitRole) {
-            navigate('/choose-role', {
-              replace: true,
-              state: {
-                fromSignup: true,
-                email: email || 'user@codetowin.com',
-                username: username || 'User',
-                password: password,
-              },
-            });
-          } else if (userRole === 'organizer') {
-            navigate('/organizer/settings'); // Let them complete profile there
-          } else if (userRole === 'mentor') {
-            navigate('/mentor/settings'); // Let them complete profile there
-          } else {
-            navigate('/profile'); // Let them complete profile there
-          }
-        } catch (err) {
-          setIsVerifying(false);
-          setErrorMsg(`Erreur: ${err.message || 'Erreur inconnue'}`);
-        }
+          },
+        });
+      } else if (userRole === 'organizer') {
+        navigate('/organizer/settings'); // Let them complete profile there
+      } else if (userRole === 'mentor') {
+        navigate('/mentor/settings'); // Let them complete profile there
       } else {
-        setIsVerifying(false);
-        setErrorMsg('Code incorrect. Veuillez réessayer ou demander un nouveau code.');
+        navigate('/profile'); // Let them complete profile there
       }
-    }, 1000);
+    } catch (err) {
+      setIsVerifying(false);
+      
+      let message = 'Code incorrect ou expiré. Veuillez réessayer.';
+      if (err.message) {
+          try {
+              const parsedErrors = JSON.parse(err.message);
+              if (parsedErrors.error) message = parsedErrors.error;
+          } catch(e) {
+              message = err.message;
+          }
+      }
+      setErrorMsg(message);
+    }
   };
 
   // Fallback layout if user accesses page directly without signup state
@@ -211,11 +203,6 @@ export default function VerifyEmail() {
           <span className="verify-email-bold">{email}</span>. <br />
           Entre-le ci-dessous pour valider ton inscription.
         </p>
-
-        {/* DEVELOPMENT ONLY: Show OTP */}
-        <div style={{ backgroundColor: '#f0fdf4', color: '#166534', padding: '10px', borderRadius: '8px', marginBottom: '20px', textAlign: 'center', fontWeight: 'bold', border: '1px dashed #166534' }}>
-          [DEV MODE] Ton code OTP est : {currentOtpCode}
-        </div>
 
         {errorMsg && (
           <div style={{ color: '#ef4444', fontSize: '0.88rem', fontWeight: 600, marginBottom: '1.25rem', padding: '0.5rem 1rem', background: '#fef2f2', borderRadius: '8px' }}>

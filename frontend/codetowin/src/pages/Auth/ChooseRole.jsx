@@ -48,20 +48,13 @@ export default function ChooseRole() {
       return;
     }
 
-    const otpCode = location.state?.otpCode || Math.floor(100000 + Math.random() * 900000).toString();
     const email = location.state?.email || 'user@codetowin.com';
-
-    if (!location.state?.otpCode) {
-      // Log newly generated OTP
-      authApi.logOtp(email, otpCode).catch(console.error);
-    }
 
     navigate('/verify-email', {
       state: {
         email: email,
         username: location.state?.username || 'User',
         password: location.state?.password || '',
-        otpCode: otpCode,
         role: selectedRole.key,
         hasExplicitRole: true
       }
