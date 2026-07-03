@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StepProgress from '../../../common/StepProgress';
 import ProjectPreview from './ProjectPreview';
 import TeamInvitePanel from './TeamInvitePanel';
 import { submissionsApi } from '../../../../api/submissions';
+import { teamsApi } from '../../../../api/teams';
 import { useToast } from '../../../../context/ToastContext';
 import LoadingSpinner from '../../../common/LoadingSpinner';
 
@@ -27,6 +28,41 @@ export default function ProjectWorkspace({
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { showToast } = useToast();
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      const teamId = workspaceState.teamId || workspaceState.team?.id;
+      if (!teamId || teamId === 'team_1') return;
+      try {
+        const res = await teamsApi.getTeamById(teamId);
+        const teamData = res.data || res;
+        if (teamData && teamData.members_details) {
+          const formattedTeammates = teamData.members_details.map(m => ({
+            name: m.name,
+            email: m.email,
+            avatar: m.avatar,
+            role: m.role,
+            status: 'joined' // They are actually in the team on the backend
+          }));
+          
+          // Also keep any pending invites that we added locally but aren't yet in the backend
+          const localPending = (workspaceState.teammates || []).filter(
+            m => m.status === 'pending' && !formattedTeammates.find(t => t.email === m.name || t.name === m.name)
+          );
+          
+          updateWorkspaceState({ 
+            team: teamData,
+            teammates: [...formattedTeammates, ...localPending]
+          });
+        }
+      } catch (err) {
+        console.error("Failed to sync team details", err);
+      }
+    };
+    
+    // Only run this when workspace is opened
+    fetchTeam();
+  }, [workspaceState.teamId]); // Dependency on teamId so it fetches when team is created
 
   const handleUpdateField = (field, value) => {
     updateWorkspaceState({ [field]: value });
