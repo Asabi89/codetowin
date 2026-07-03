@@ -47,7 +47,7 @@ export const teamsApi = {
    * @param {string} token
    */
   joinTeamByToken: async (token) => {
-    return await apiClient.post(`/teams/join-by-token/`, { token });
+    return await apiClient.post(`/teams/join-by-token`, { token });
   },
 
   /**
