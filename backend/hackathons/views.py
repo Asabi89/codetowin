@@ -323,7 +323,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             return Response({'error': f'Cette équipe a atteint sa taille maximale de {hackathon.max_team_size} membres.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if getattr(team, 'leader_id', None) == request.user.participant_profile.id or team.members.filter(participant=request.user.participant_profile).exists():
-             return Response({'error': 'Vous êtes déjà membre de cette équipe'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'status': 'Vous faites déjà partie de cette équipe !', 'team_id': team.id}, status=status.HTTP_200_OK)
 
         from .models import TeamMember
         member, created = TeamMember.objects.get_or_create(
