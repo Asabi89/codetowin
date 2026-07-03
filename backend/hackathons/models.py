@@ -59,6 +59,7 @@ class Team(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     invite_token = models.CharField(max_length=32, unique=True, blank=True, null=True)
+    is_solo = models.BooleanField(default=False)
     leader = models.ForeignKey(ParticipantProfile, on_delete=models.CASCADE, related_name='led_teams')
     mentor = models.ForeignKey('HackathonMentor', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_teams')
     created_at = models.DateTimeField(auto_now_add=True)

@@ -121,9 +121,13 @@ export default function OrganizerTeams() {
                   <Link to={`/organizer/hackathons/${id || 1}/teams/${team.id}`} className="text-lg font-semibold text-slate-900 hover:text-brand-600 truncate">
                     {team.name}
                   </Link>
-                  <Badge variant="brand">
-                    {team.members_details?.length || team.memberCount || 0} membres
-                  </Badge>
+                  {team.is_solo ? (
+                    <Badge variant="purple">Solo</Badge>
+                  ) : (
+                    <Badge variant="brand">
+                      {team.members_details?.length || team.memberCount || 0} membres
+                    </Badge>
+                  )}
                 </div>
                 <p className="mt-2 text-sm text-slate-500 line-clamp-2">
                   {team.description || 'Pas de description fournie.'}
