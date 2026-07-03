@@ -405,7 +405,7 @@ export default function Participant() {
                           </svg>
                           {hackathon.location}
                         </span>
-                        <Link to={`/hackathons/${hackathon.id}`} className="text-sm font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1">
+                        <Link to={`/hackathons/${hackathon.id}?tab=my-project`} className="text-sm font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1">
                           Accéder <span aria-hidden="true">→</span>
                         </Link>
                       </div>

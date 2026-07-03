@@ -295,11 +295,16 @@ class TeamViewSet(viewsets.ModelViewSet):
         if current_size >= hackathon.max_team_size:
             return Response({'error': f'Cette équipe a atteint sa taille maximale de {hackathon.max_team_size} membres.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        from .models import TeamMember
+        from .models import TeamMember, HackathonRegistration
         member, created = TeamMember.objects.get_or_create(
             team=team,
             participant=request.user.participant_profile,
             defaults={'role': request.data.get('role', 'Member')}
+        )
+        HackathonRegistration.objects.get_or_create(
+            hackathon=team.hackathon,
+            participant=request.user.participant_profile,
+            defaults={'status': HackathonRegistration.Status.APPROVED}
         )
         return Response({'status': 'Joined team successfully'})
 
@@ -322,14 +327,25 @@ class TeamViewSet(viewsets.ModelViewSet):
         if current_size >= hackathon.max_team_size:
             return Response({'error': f'Cette équipe a atteint sa taille maximale de {hackathon.max_team_size} membres.'}, status=status.HTTP_400_BAD_REQUEST)
         
+        from .models import HackathonRegistration
         if getattr(team, 'leader_id', None) == request.user.participant_profile.id or team.members.filter(participant=request.user.participant_profile).exists():
+            HackathonRegistration.objects.get_or_create(
+                hackathon=hackathon,
+                participant=request.user.participant_profile,
+                defaults={'status': HackathonRegistration.Status.APPROVED}
+            )
             return Response({'status': 'Vous faites déjà partie de cette équipe !', 'team_id': team.id}, status=status.HTTP_200_OK)
 
-        from .models import TeamMember
+        from .models import TeamMember, HackathonRegistration
         member, created = TeamMember.objects.get_or_create(
             team=team,
             participant=request.user.participant_profile,
             defaults={'role': 'Member'}
+        )
+        HackathonRegistration.objects.get_or_create(
+            hackathon=hackathon,
+            participant=request.user.participant_profile,
+            defaults={'status': HackathonRegistration.Status.APPROVED}
         )
         return Response({'status': 'Vous avez rejoint l\'équipe avec succès !', 'team_id': team.id})
 
@@ -370,10 +386,16 @@ class TeamViewSet(viewsets.ModelViewSet):
             ParticipantProfile.objects.get_or_create(user=user)
             
         # Add to team
+        from .models import TeamMember, HackathonRegistration
         member, created = TeamMember.objects.get_or_create(
             team=team,
             participant=user.participant_profile,
             defaults={'role': 'Member'}
+        )
+        HackathonRegistration.objects.get_or_create(
+            hackathon=team.hackathon,
+            participant=user.participant_profile,
+            defaults={'status': HackathonRegistration.Status.APPROVED}
         )
         
         # Build dynamic invite URL
