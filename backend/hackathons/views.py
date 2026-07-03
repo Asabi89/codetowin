@@ -359,6 +359,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             # Generate generic password
             temp_password = "CodeToWin" + "".join(random.choices(string.digits, k=4)) + "!"
             user = User.objects.create_user(
+                username=email,
                 email=email,
                 password=temp_password,
                 role='PARTICIPANT'
