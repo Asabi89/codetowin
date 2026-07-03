@@ -132,13 +132,7 @@ Environment="DJANGO_DEBUG=False"
 Environment="ALLOWED_HOSTS=api.codetowin.pro,72.62.181.25"
 Environment="CORS_ALLOW_ALL=False"
 Environment="CORS_ALLOWED_ORIGINS=https://codetowin.pro,https://www.codetowin.pro"
-ExecStart=/var/www/codetowin-api/backend/venv/bin/gunicorn \\\\
-    --workers 3 \\\\
-    --bind 127.0.0.1:{GUNICORN_PORT} \\\\
-    --timeout 120 \\\\
-    --access-logfile /var/log/codetowin-api.log \\\\
-    --error-logfile /var/log/codetowin-api-error.log \\\\
-    codetowin.wsgi:application
+ExecStart=/var/www/codetowin-api/backend/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:{GUNICORN_PORT} --timeout 120 --access-logfile /var/log/codetowin-api.log --error-logfile /var/log/codetowin-api-error.log codetowin.wsgi:application
 Restart=always
 RestartSec=5
 

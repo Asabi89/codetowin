@@ -171,11 +171,30 @@ class HackathonViewSet(viewsets.ModelViewSet):
         discussions = hackathon.discussions.all().order_by('-created_at')
         from .serializers import HackathonDiscussionSerializer
         return Response(HackathonDiscussionSerializer(discussions, many=True).data)
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['get', 'post'], permission_classes=[permissions.IsAuthenticatedOrReadOnly])
     def teams(self, request, pk=None):
         hackathon = self.get_object()
-        teams = hackathon.teams.all()
         from .serializers import TeamSerializer
+        
+        if request.method == 'POST':
+            if not request.user.is_authenticated or not hasattr(request.user, 'participant_profile'):
+                return Response({'error': 'Seuls les participants peuvent créer des équipes.'}, status=status.HTTP_403_FORBIDDEN)
+                
+            data = request.data.copy()
+            data['hackathon'] = hackathon.id
+            serializer = TeamSerializer(data=data)
+            if serializer.is_valid():
+                team = serializer.save(hackathon=hackathon, leader=request.user.participant_profile)
+                from .models import TeamMember
+                TeamMember.objects.get_or_create(
+                    team=team,
+                    participant=request.user.participant_profile,
+                    defaults={'role': 'Leader'}
+                )
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        teams = hackathon.teams.all()
         return Response(TeamSerializer(teams, many=True).data)
 
     @action(detail=True, methods=['get'])
