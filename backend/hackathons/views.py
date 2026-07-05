@@ -197,6 +197,27 @@ class HackathonViewSet(viewsets.ModelViewSet):
         teams = hackathon.teams.all()
         return Response(TeamSerializer(teams, many=True).data)
 
+    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def my_team(self, request, pk=None):
+        hackathon = self.get_object()
+        from django.db.models import Q
+        from .serializers import TeamSerializer, SubmissionSerializer
+        if not hasattr(request.user, 'participant_profile'):
+            return Response({'error': 'Not a participant'}, status=400)
+            
+        team = hackathon.teams.filter(
+            Q(leader=request.user.participant_profile) | Q(members__participant=request.user.participant_profile)
+        ).distinct().first()
+        
+        if not team:
+            return Response({'team': None})
+            
+        team_data = TeamSerializer(team).data
+        submission = team.submissions.first()
+        sub_data = SubmissionSerializer(submission).data if submission else None
+        
+        return Response({'team': team_data, 'submission': sub_data})
+
     @action(detail=True, methods=['get'])
     def submissions(self, request, pk=None):
         hackathon = self.get_object()

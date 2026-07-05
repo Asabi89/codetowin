@@ -84,6 +84,46 @@ export default function HackathonDetail() {
     }
   }, [hackathon, workspaceState.currentHackathonId]);
 
+  // Fetch user's team if they are registered
+  useEffect(() => {
+    if (!hackathon || !registered) return;
+    
+    const fetchMyTeam = async () => {
+      try {
+        const res = await hackathonsApi.getMyTeam(hackathon.id);
+        const data = res.data || res;
+        if (data.team) {
+          const teamData = data.team;
+          const subData = data.submission;
+          
+          updateWorkspaceState({
+            teamId: teamData.id,
+            teamName: teamData.name,
+            teamDescription: teamData.description,
+            projectName: subData ? subData.title : teamData.name,
+            projectPitch: subData ? subData.description : teamData.description,
+            thumbnailUrl: subData ? subData.thumbnail_url : null,
+            detailsRepo: subData ? subData.github_url : "",
+            detailsDemo: subData ? subData.demo_url : "",
+            detailsVideo: subData ? subData.video_url : "",
+            teammates: teamData.members_details ? teamData.members_details.map(m => ({
+                name: m.name,
+                email: m.email,
+                avatar: m.avatar,
+                role: m.role,
+                status: 'joined'
+            })) : [],
+            submitted: !!subData
+          });
+        }
+      } catch (err) {
+        console.error("Failed to fetch user team", err);
+      }
+    };
+    
+    fetchMyTeam();
+  }, [hackathon, registered]);
+
   useEffect(() => {
     if (!hackathon) return;
     

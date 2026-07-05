@@ -81,6 +81,13 @@ export const hackathonsApi = {
   },
 
   /**
+   * Récupère l'équipe de l'utilisateur pour ce hackathon
+   */
+  getMyTeam: async (id) => {
+    return await apiClient.get(`/hackathons/${id}/my_team`);
+  },
+
+  /**
    * Récupère les soumissions d'un hackathon
    */
   getSubmissions: async (id) => {
