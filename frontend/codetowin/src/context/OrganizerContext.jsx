@@ -24,21 +24,7 @@ const initialDefaultState = {
 };
 
 export const OrganizerProvider = ({ children }) => {
-  const [state, setState] = useState(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch (e) {
-        console.error('Error parsing organizer state', e);
-      }
-    }
-    return initialDefaultState;
-  });
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [state]);
+  const [state, setState] = useState(initialDefaultState);
 
   const fetchMyHackathons = async () => {
     try {

@@ -97,9 +97,8 @@ export default function MentorProfile() {
       registerUser(updatedProfile);
       setSuccessMessage('Profil mis à jour avec succès !');
     } catch (err) {
-      console.warn('Erreur API lors de la mise à jour du profil, mise à jour locale uniquement.', err);
-      registerUser(updatedProfile);
-      setSuccessMessage('Profil mis à jour localement (hors ligne).');
+      console.warn('Erreur API lors de la mise à jour du profil', err);
+      setErrorMessage('Erreur lors de la mise à jour du profil. Veuillez réessayer.');
     } finally {
       setSaving(false);
     }

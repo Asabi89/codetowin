@@ -185,11 +185,16 @@ class HackathonViewSet(viewsets.ModelViewSet):
             serializer = TeamSerializer(data=data)
             if serializer.is_valid():
                 team = serializer.save(hackathon=hackathon, leader=request.user.participant_profile)
-                from .models import TeamMember
+                from .models import TeamMember, HackathonRegistration
                 TeamMember.objects.get_or_create(
                     team=team,
                     participant=request.user.participant_profile,
                     defaults={'role': 'Leader'}
+                )
+                HackathonRegistration.objects.get_or_create(
+                    hackathon=hackathon,
+                    participant=request.user.participant_profile,
+                    defaults={'status': HackathonRegistration.Status.APPROVED}
                 )
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -299,7 +304,14 @@ class TeamViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        serializer.save(leader=self.request.user.participant_profile)
+        team = serializer.save(leader=self.request.user.participant_profile)
+        # Register the leader
+        from .models import HackathonRegistration
+        HackathonRegistration.objects.get_or_create(
+            hackathon=team.hackathon,
+            participant=self.request.user.participant_profile,
+            defaults={'status': HackathonRegistration.Status.APPROVED}
+        )
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def join(self, request, pk=None):
