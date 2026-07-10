@@ -1,32 +1,67 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { hackathonsApi } from '../../../api/hackathons';
 
 export default function OrganizerAnnouncementDetails() {
   const { id, announcementId } = useParams();
 
-  // In a real app, you would fetch announcement details based on ID.
-  // Using static data matching the template for now.
-  const announcement = {
-    title: 'Rappel : Plus que 3 jours !',
-    sentDate: '15 Juin 2026 à 14h30',
-    status: 'Envoyée',
-    audience: 'Toutes les équipes formées',
-    channels: 'Notification plateforme, Email',
-    engagement: { rate: '68%', details: "d'ouverture (42/62)" },
-    content: `
-      <p>Bonjour à toutes les équipes,</p>
-      <p>Il ne vous reste plus que <strong>3 jours</strong> avant la clôture des soumissions pour le hackathon <em>AI for Climate Africa</em>.</p>
-      <p>N'oubliez pas que votre soumission doit impérativement inclure :</p>
-      <ul>
-        <li>Un lien vers votre repository GitHub (public).</li>
-        <li>Une vidéo de démonstration de 3 minutes maximum.</li>
-        <li>Une brève description de l'architecture technique.</li>
-      </ul>
-      <p>Si vous avez des questions de dernière minute, n'hésitez pas à solliciter les mentors sur la plateforme.</p>
-      <p>Bon courage pour le sprint final ! 🚀</p>
-      <p><em>L'équipe d'organisation</em></p>
-    `
-  };
+  const [announcement, setAnnouncement] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchAnnouncement = async () => {
+      try {
+        setLoading(true);
+        // There is no single announcement endpoint, so we fetch all and find
+        const data = await hackathonsApi.getAnnouncements(id);
+        let list = [];
+        if (Array.isArray(data)) {
+          list = data;
+        } else if (data && Array.isArray(data.data)) {
+          list = data.data;
+        }
+        
+        const found = list.find(a => String(a.id) === String(announcementId));
+        if (found) {
+          setAnnouncement({
+            title: found.title,
+            sentDate: new Date(found.created_at || new Date()).toLocaleString(),
+            status: 'Envoyée',
+            audience: 'Tous les participants',
+            channels: 'Notification plateforme, Email',
+            engagement: { rate: 'N/A', details: "Statistiques indisponibles" },
+            content: `<p>${found.content.replace(/\n/g, '<br/>')}</p>`
+          });
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'annonce", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnnouncement();
+  }, [id, announcementId]);
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center p-8 flex-1">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600"></div>
+          <p className="text-sm font-medium text-slate-500">Chargement de l'annonce...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!announcement) {
+    return (
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+         <div className="text-center py-12 bg-white rounded-lg border border-slate-200">
+           <h3 className="text-sm font-semibold text-slate-900">Annonce introuvable</h3>
+         </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">

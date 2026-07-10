@@ -22,10 +22,10 @@ export default function ProjectWorkspace({
   const [previewActive, setPreviewActive] = useState(false);
   const [step, setStep] = useState(1);
   const [techInput, setTechInput] = useState('');
-  const [techList, setTechList] = useState([]);
+  const techList = workspaceState.techList || [];
   
-  const [agreeGuidelines, setAgreeGuidelines] = useState(false);
-  const [agreeTerms, setAgreeTerms] = useState(false);
+  // Local state only for input
+  // removed agreeGuidelines, agreeTerms state
   const [submitting, setSubmitting] = useState(false);
   const { showToast } = useToast();
 
@@ -103,22 +103,32 @@ export default function ProjectWorkspace({
       e.preventDefault();
       const val = techInput.trim();
       if (val && !techList.includes(val)) {
-        setTechList([...techList, val]);
+        handleUpdateField('techList', [...techList, val]);
         setTechInput('');
       }
     }
   };
 
   const removeTech = (indexToRemove) => {
-    setTechList(techList.filter((_, index) => index !== indexToRemove));
+    handleUpdateField('techList', techList.filter((_, index) => index !== indexToRemove));
   };
 
   const handleSubmitProject = async () => {
-    if (!agreeGuidelines || !agreeTerms) {
+    if (!workspaceState.agreeGuidelines || !workspaceState.agreeTerms) {
       showToast("Veuillez accepter les conditions avant de soumettre.", "warning");
       return;
     }
     
+    if (hackathon && hackathon.min_team_size) {
+      const teamSize = (workspaceState.teammates || []).filter(m => m.status === 'joined').length;
+      // In the backend, the team size check includes the leader if they are not in the members list. But teammates here usually contains everyone including the leader if the backend returns it like that.
+      // Let's just check length of joined members.
+      if (teamSize < hackathon.min_team_size) {
+        showToast(`Votre équipe doit comporter au moins ${hackathon.min_team_size} membres inscrits pour pouvoir soumettre.`, "error");
+        return;
+      }
+    }
+
     setSubmitting(true);
     try {
       let submissionId = workspaceState.id;
@@ -156,7 +166,13 @@ export default function ProjectWorkspace({
       }
     } catch (error) {
       console.error(error);
-      showToast("Erreur lors de la soumission du projet.", "error");
+      if (error.response && error.response.data && error.response.data.error) {
+         showToast(error.response.data.error, "error");
+      } else if (error.response && error.response.data) {
+         showToast(JSON.stringify(error.response.data), "error");
+      } else {
+         showToast("Erreur lors de la soumission du projet.", "error");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -355,7 +371,7 @@ export default function ProjectWorkspace({
               )}
 
               {step === 2 && (
-                <TeamInvitePanel workspaceState={workspaceState} updateWorkspaceState={updateWorkspaceState} handleJumpToStep={handleJumpToStep} />
+                <TeamInvitePanel workspaceState={workspaceState} updateWorkspaceState={updateWorkspaceState} handleJumpToStep={handleJumpToStep} hackathon={hackathon} />
               )}
 
               {step === 3 && (
@@ -585,12 +601,12 @@ export default function ProjectWorkspace({
                         type="checkbox"
                         id="agree-guidelines"
                         style={{ marginTop: '0.25rem', cursor: 'pointer' }}
-                        checked={agreeGuidelines}
-                        onChange={(e) => setAgreeGuidelines(e.target.checked)}
+                        checked={workspaceState.agreeGuidelines || false}
+                        onChange={(e) => handleUpdateField('agreeGuidelines', e.target.checked)}
                         required
                       />
                       <label htmlFor="agree-guidelines" style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.4, cursor: 'pointer' }}>
-                        Je promets que tout mon code a été fait pendant le concours (1-11 Juin) et que je respecte toutes les règles. Juré craché !
+                        Je promets que tout mon code a été fait pendant le concours {hackathon?.start_date && hackathon?.end_date ? `(du ${new Date(hackathon.start_date).toLocaleDateString()} au ${new Date(hackathon.end_date).toLocaleDateString()})` : ''} et que je respecte toutes les règles. Juré craché !
                       </label>
                     </div>
                     
@@ -599,8 +615,8 @@ export default function ProjectWorkspace({
                         type="checkbox"
                         id="agree-terms"
                         style={{ marginTop: '0.25rem', cursor: 'pointer' }}
-                        checked={agreeTerms}
-                        onChange={(e) => setAgreeTerms(e.target.checked)}
+                        checked={workspaceState.agreeTerms || false}
+                        onChange={(e) => handleUpdateField('agreeTerms', e.target.checked)}
                         required
                       />
                       <label htmlFor="agree-terms" style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.4, cursor: 'pointer' }}>

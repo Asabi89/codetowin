@@ -33,8 +33,13 @@ export default function TalentProfile({ embedded = false, showBackLink = true })
         
         const enrichedTalent = {
           ...user,
+          fullName: user.display_name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username || user.email,
+          avatar: user.avatar || user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.display_name || user.username || 'User')}&background=047857&color=fff`,
+          title: user.title || user.headline || user.role || 'Participant',
+          city: user.city || 'Non renseigné',
+          country: user.country || 'Non renseigné',
           hackathons: user.hackathons || [],
-          bio: user.bio || 'Ce talent partage une identité publique minimale. Les détails complets dépendent de ses paramètres de visibilité.',
+          bio: user.bio || user.about || 'Ce talent partage une identité publique minimale. Les détails complets dépendent de ses paramètres de visibilité.',
           skills: user.skills || [],
         };
         

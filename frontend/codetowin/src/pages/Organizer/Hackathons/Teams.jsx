@@ -166,10 +166,10 @@ export default function OrganizerTeams() {
               </div>
 
               <div className="flex divide-x divide-slate-200">
-                <button className="flex flex-1 items-center justify-center gap-x-2 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                <Link to={`/organizer/messages?team=${team.id}`} className="flex flex-1 items-center justify-center gap-x-2 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                   <Mail className="h-5 w-5 text-slate-400" aria-hidden="true" />
                   Contacter
-                </button>
+                </Link>
                 <Link to={`/organizer/hackathons/${id || 1}/teams/${team.id}`} className="flex flex-1 items-center justify-center gap-x-2 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                   <Eye className="h-5 w-5 text-slate-400" aria-hidden="true" />
                   Détails

@@ -16,10 +16,18 @@ export default function OrganizerAnnouncements() {
       try {
         setLoading(true);
         const data = await hackathonsApi.getAnnouncements(id);
+        const mapAnnouncement = a => ({
+          ...a,
+          status: 'Envoyée',
+          isDraft: false,
+          to: 'Tous les participants',
+          date: new Date(a.created_at || new Date()).toLocaleDateString()
+        });
+
         if (Array.isArray(data)) {
-          setAnnouncements(data);
+          setAnnouncements(data.map(mapAnnouncement));
         } else if (data && Array.isArray(data.data)) {
-          setAnnouncements(data.data);
+          setAnnouncements(data.data.map(mapAnnouncement));
         } else {
           setAnnouncements([]);
         }

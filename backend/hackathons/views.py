@@ -96,7 +96,7 @@ class HackathonViewSet(viewsets.ModelViewSet):
                 send_mail(
                     subject=f"Invitation Mentor - {hackathon.title}",
                     message=plain_message,
-                    from_email="CodeToWin <invite@codetowin.pro>",
+                    from_email=None,
                     recipient_list=[mentor.user.email],
                     html_message=html_message
                 )
@@ -450,7 +450,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             send_mail(
                 subject=f"Invitation à rejoindre l'équipe {team.name}",
                 message=plain_message,
-                from_email="CodeToWin <invite@codetowin.pro>",
+                from_email=None,
                 recipient_list=[email],
                 html_message=html_message
             )
