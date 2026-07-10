@@ -100,12 +100,17 @@ export default function HackathonDetail() {
             teamId: teamData.id,
             teamName: teamData.name,
             teamDescription: teamData.description,
-            projectName: subData ? subData.title : teamData.name,
-            projectPitch: subData ? subData.description : teamData.description,
-            thumbnailUrl: subData ? subData.thumbnail_url : null,
-            detailsRepo: subData ? subData.github_url : "",
-            detailsDemo: subData ? subData.demo_url : "",
-            detailsVideo: subData ? subData.video_url : "",
+            // If there's an existing submission, load all its data
+            id: subData ? subData.id : workspaceState.id,
+            projectName: subData ? subData.title : (workspaceState.projectName || teamData.name),
+            projectPitch: subData ? subData.description : (workspaceState.projectPitch || ''),
+            detailsAbout: subData ? subData.description : (workspaceState.detailsAbout || ''),
+            detailsRepo: subData ? (subData.github_url || '') : (workspaceState.detailsRepo || ''),
+            detailsDemo: subData ? (subData.demo_url || '') : (workspaceState.detailsDemo || ''),
+            detailsVideo: subData ? (subData.video_url || '') : (workspaceState.detailsVideo || ''),
+            juryAnswers: subData ? (subData.jury_answers || {}) : (workspaceState.juryAnswers || {}),
+            techList: workspaceState.techList || [],
+            submitted: subData ? (subData.status === 'Soumis') : false,
             teammates: teamData.members_details ? teamData.members_details.map(m => ({
                 name: m.name,
                 email: m.email,
@@ -113,7 +118,6 @@ export default function HackathonDetail() {
                 role: m.role,
                 status: 'joined'
             })) : [],
-            submitted: !!subData
           });
         }
       } catch (err) {

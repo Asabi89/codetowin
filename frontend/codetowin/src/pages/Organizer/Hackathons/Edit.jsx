@@ -26,26 +26,26 @@ export default function OrganizerEditHackathon() {
         setLoading(true);
         const data = await hackathonsApi.getHackathonById(id);
         
-        // Simuler ou récupérer les données complètes
+        // Load real data from API
         const fetchedData = {
-          title: data?.title || 'Fintech Builders Challenge',
-          description: data?.description || "Révolutionnez le paiement mobile en Afrique de l'Ouest avec des solutions innovantes.",
-          format: data?.format || 'Hybride (En ligne + Présentiel)',
+          title: data?.title || '',
+          description: data?.description || '',
+          format: data?.type || data?.format || 'En ligne',
           registrationMode: data?.registration_mode || 'open',
-          participantLimit: '150',
+          participantLimit: data?.participant_limit?.toString() || '',
           minTeamSize: data?.min_team_size?.toString() || '2',
           maxTeamSize: data?.max_team_size?.toString() || '5',
-          registrationStart: data?.registration_start || '',
-          registrationEnd: data?.registration_end || '',
-          hackathonStart: data?.start_date || '',
-          submissionDeadline: data?.end_date || '',
-          overview: data?.overview || "Ce hackathon vise à...",
+          registrationStart: data?.registration_start ? data.registration_start.slice(0, 16) : '',
+          registrationEnd: data?.registration_end ? data.registration_end.slice(0, 16) : '',
+          hackathonStart: data?.start_date ? data.start_date.slice(0, 16) : '',
+          submissionDeadline: data?.end_date ? data.end_date.slice(0, 16) : '',
+          overview: data?.overview || '',
           resources: data?.resources || '',
           rules: data?.rules || '',
-          themes: data?.interest || 'Fintech, Mobile Money',
-          technologies: data?.technologies || 'React Native, Node.js',
+          themes: data?.interest || '',
+          technologies: data?.technologies || '',
           selectedMentors: [],
-          faqs: Array.isArray(data?.faqs) && data.faqs.length > 0 ? data.faqs : [{ question: "Les équipes peuvent-elles être formées avant l'événement ?", answer: "Oui" }],
+          faqs: Array.isArray(data?.faqs) ? data.faqs : [],
           jury_questions: Array.isArray(data?.jury_questions) ? data.jury_questions : []
         };
         
@@ -98,8 +98,6 @@ export default function OrganizerEditHackathon() {
         description: formData.description,
         type: formData.format,
         status: customStatus || 'brouillon',
-        logo: logoUrl,
-        banner: bannerUrl,
         overview: formData.overview,
         rules: formData.rules,
         resources: formData.resources,
@@ -107,21 +105,27 @@ export default function OrganizerEditHackathon() {
         jury_questions: formData.jury_questions,
         min_team_size: parseInt(formData.minTeamSize, 10) || 2,
         max_team_size: parseInt(formData.maxTeamSize, 10) || 5,
+        participant_limit: formData.participantLimit ? parseInt(formData.participantLimit, 10) : null,
         registration_start: formData.registrationStart || null,
         registration_end: formData.registrationEnd || null,
-        start_date: formData.hackathonStart || new Date().toISOString().split('T')[0],
-        end_date: formData.submissionDeadline || new Date().toISOString().split('T')[0],
+        start_date: formData.hackathonStart || null,
+        end_date: formData.submissionDeadline || null,
         technologies: formData.technologies,
         registration_mode: formData.registrationMode,
         interest: formData.themes,
+        location: formData.location || null,
       };
+      // Only include image fields if they are base64 (newly uploaded)
+      if (logoUrl && logoUrl.startsWith('data:')) payload.logo = logoUrl;
+      if (bannerUrl && bannerUrl.startsWith('data:')) payload.banner = bannerUrl;
+
       await hackathonsApi.updateHackathon(id, payload);
       showToast("Les modifications ont été enregistrées avec succès !", "success");
       navigate('/organizer/hackathons');
     } catch (err) {
-      console.warn("Erreur lors de l'enregistrement via l'API.", err);
-      showToast("Les modifications ont été enregistrées avec succès !", "success");
-      navigate('/organizer/hackathons');
+      console.error("Erreur lors de l'enregistrement via l'API.", err);
+      const message = err?.message || "Erreur lors de l'enregistrement.";
+      showToast(message, "error");
     } finally {
       setIsSubmitting(false);
     }
