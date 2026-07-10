@@ -53,8 +53,16 @@ export default function HackathonWizardShell({
         }
       }
     }
-    return initialData;
+    return initialData || {};
   });
+
+  // CRITICAL: When in edit mode, initialData arrives asynchronously from the API.
+  // The useState initializer only runs once. This effect syncs formData when initialData loads.
+  useEffect(() => {
+    if (mode === 'edit' && initialData) {
+      setFormData(initialData);
+    }
+  }, [initialData, mode]);
 
   // Sauvegarde automatique dans le localStorage à chaque modification
   useEffect(() => {
@@ -62,6 +70,7 @@ export default function HackathonWizardShell({
       localStorage.setItem('hackathonDraftForm', JSON.stringify(formData));
     }
   }, [formData, mode]);
+
 
   const updateForm = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
